@@ -173,3 +173,28 @@ def test_manatal_maps():
     c = ManatalConnector("acme", session=_FakeSession([_Resp(js=js)]))
     j = c.fetch()[0]
     assert j.title == "Recruiter" and j.location == "Paris, FR"
+
+
+def test_softgarden_schemaorg_and_flat():
+    from jobmesh.connectors.softgarden import SoftgardenConnector
+    # schema.org JobPosting-style payload
+    schemaorg = [{
+        "title": "Bauleiter (m/w/d)",
+        "hiringOrganization": {"name": "Goldbeck"},
+        "jobLocation": {"address": {"addressLocality": "Bielefeld",
+                                    "addressCountry": "DE"}},
+        "url": "https://goldbeck.career.softgarden.de/job/123",
+        "datePosted": "2026-11-05", "employmentType": "FULL_TIME",
+        "description": "<p>Baustellen leiten</p>", "id": "123",
+    }]
+    c = SoftgardenConnector("goldbeck", session=_FakeSession([_Resp(js=schemaorg)]))
+    j = c.fetch()[0]
+    assert j.company == "Goldbeck" and j.location == "Bielefeld, DE"
+    assert j.title.startswith("Bauleiter") and j.source_job_id == "123"
+    # flat {jobs:[...]} payload with string fields
+    flat = {"jobs": [{"jobId": "9", "name": "Verkäufer", "location": "Köln",
+                      "jobUrl": "https://home24.career.softgarden.de/job/9",
+                      "company": "home24"}]}
+    c2 = SoftgardenConnector("home24", session=_FakeSession([_Resp(js=flat)]))
+    j2 = c2.fetch()[0]
+    assert j2.title == "Verkäufer" and j2.location == "Köln" and j2.company == "home24"

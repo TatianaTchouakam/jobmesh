@@ -15,6 +15,7 @@ from typing import Optional
 
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from . import storage
 from . import geo
@@ -27,6 +28,12 @@ app = FastAPI(
 
 DB_PATH = storage.DEFAULT_DB
 WEB_DIR = os.path.join(os.path.dirname(__file__), "web")
+
+# Serve the bundled front-end libraries (d3, topojson) and the world map
+# locally, so the interactive globe needs no external CDN.
+_VENDOR = os.path.join(WEB_DIR, "vendor")
+if os.path.isdir(_VENDOR):
+    app.mount("/vendor", StaticFiles(directory=_VENDOR), name="vendor")
 
 
 @app.get("/", include_in_schema=False)

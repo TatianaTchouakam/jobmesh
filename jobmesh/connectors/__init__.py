@@ -37,6 +37,7 @@ from .joinrise import JoinRiseConnector
 from .rippling import RipplingConnector
 from .hirehive import HireHiveConnector
 from .manatal import ManatalConnector
+from .softgarden import SoftgardenConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -66,6 +67,7 @@ REGISTRY: dict[str, type[Connector]] = {
     RipplingConnector.platform: RipplingConnector,
     HireHiveConnector.platform: HireHiveConnector,
     ManatalConnector.platform: ManatalConnector,
+    SoftgardenConnector.platform: SoftgardenConnector,
 }
 
 

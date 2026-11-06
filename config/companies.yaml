@@ -64,8 +64,11 @@ workable:
   - huggingface
 
 smartrecruiters:
-  - AveryDennison
-  - Ubisoft2
+  - AveryDennison   # industrial / materials
+  - Ubisoft2        # gaming
+  - Bosch           # industry / automotive — large, many non-tech functions
+  - visa            # finance / payments
+  - Oetker          # Dr. Oetker — food / FMCG (Bielefeld) — verify live
 
 breezy:
   - vetsez
@@ -96,6 +99,15 @@ weworkremotely:
 
 pinpoint:        # ATS (find token at {company}.pinpointhq.com) — best-effort, verify live
   - workwithus
+
+# softgarden — ATS very common in Germany/DACH. Public career feed at
+# https://{slug}.career.softgarden.de/jobs.feed.json — slug is the employer's
+# softgarden career subdomain. Great for German non-tech employers.
+softgarden:
+  - home24          # furniture e-commerce (non-tech)
+  # Add German employers by their softgarden slug (from a job URL like
+  # https://{slug}.career.softgarden.de/...). goldbeck's guessed slug 400'd —
+  # add the real one once confirmed.
 
 # --- New platforms (added in the +10 batch) ---------------------------------
 
