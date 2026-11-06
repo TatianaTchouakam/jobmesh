@@ -31,7 +31,6 @@ greenhouse:
   - asana
   - cloudflare
   - mongodb
-  - doordash
   - instacart
 
 lever:
@@ -42,10 +41,7 @@ lever:
   - whoop
   - gopuff
   - ro
-  - aircall
-  - ledger
   - entrata
-  - plaid
 
 ashby:
   - ramp
@@ -129,6 +125,26 @@ jobspresso:
 # Python.org Jobs — the official Python job board (RSS).
 pythonjobs:
   - all
+
+# Rise (joinrise.io) — cross-employer remote/tech feed (public JSON, no token).
+# Paused: their API currently returns 504 Gateway Timeout. The connector is
+# resilient (retries) — uncomment to re-enable when their service recovers.
+# joinrise:
+#   - all
+
+# Rippling — ATS. Keyless board API. Token = the company's board slug (usually
+# the company name lowercased), from an ats.rippling.com careers link. A wrong
+# slug just 404s and is logged. Add real slugs you confirm live:
+# rippling:
+#   - <company-slug>
+
+# HireHive — ATS. Token = company subdomain from {company}.hirehive.com.
+# hirehive:
+#   - <company-subdomain>
+
+# Manatal — ATS. Token = the public career-page slug (careers-page.com).
+# manatal:
+#   - <career-page-slug>
 
 # bamboohr — ATS (find token at {company}.bamboohr.com). Add a company:
 # bamboohr:

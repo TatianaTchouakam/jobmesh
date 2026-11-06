@@ -33,6 +33,10 @@ from .teamtailor import TeamtailorConnector
 from .fourdayweek import FourDayWeekConnector
 from .jobspresso import JobspressoConnector
 from .pythonjobs import PythonJobsConnector
+from .joinrise import JoinRiseConnector
+from .rippling import RipplingConnector
+from .hirehive import HireHiveConnector
+from .manatal import ManatalConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -58,6 +62,10 @@ REGISTRY: dict[str, type[Connector]] = {
     FourDayWeekConnector.platform: FourDayWeekConnector,
     JobspressoConnector.platform: JobspressoConnector,
     PythonJobsConnector.platform: PythonJobsConnector,
+    JoinRiseConnector.platform: JoinRiseConnector,
+    RipplingConnector.platform: RipplingConnector,
+    HireHiveConnector.platform: HireHiveConnector,
+    ManatalConnector.platform: ManatalConnector,
 }
 
 

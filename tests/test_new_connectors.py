@@ -16,8 +16,8 @@ from jobmesh.connectors.pythonjobs import PythonJobsConnector
 
 
 class _Resp:
-    def __init__(self, *, js=None, content=None):
-        self._js, self.content = js, content
+    def __init__(self, *, js=None, content=None, status_code=200):
+        self._js, self.content, self.status_code = js, content, status_code
 
     def raise_for_status(self):
         pass
@@ -125,3 +125,51 @@ def test_pythonjobs_splits_title():
     j = c.fetch()[0]
     assert j.title == "Senior Data Engineer" and j.company == "DataWorks GmbH"
     assert j.remote is True
+
+
+# --- Round 2 platforms ------------------------------------------------------
+
+def test_joinrise_defensive_mapping():
+    js = {"jobs": [{
+        "title": "Data Engineer", "company": {"name": "Rise Inc"},
+        "location": "Remote", "url": "https://www.joinrise.io/jobs/de-1",
+        "workArrangement": "remote", "createdAt": "2026-11-05T00:00:00Z",
+        "description": "<p>Pipelines</p>", "slug": "de-1",
+    }], "hasMore": False}
+    from jobmesh.connectors.joinrise import JoinRiseConnector
+    c = JoinRiseConnector(session=_FakeSession([_Resp(js=js)]))
+    j = c.fetch()[0]
+    assert j.title == "Data Engineer" and j.company == "Rise Inc"
+    assert j.workplace_type == "remote" and j.remote is True
+
+
+def test_rippling_flat_array():
+    arr = [{"uuid": "abc", "name": "Backend Engineer", "department": "Eng",
+            "url": "https://ats.rippling.com/acme/jobs/abc",
+            "workLocation": {"city": "Berlin", "country": "DE"}}]
+    from jobmesh.connectors.rippling import RipplingConnector
+    c = RipplingConnector("acme", session=_FakeSession([_Resp(js=arr)]))
+    j = c.fetch()[0]
+    assert j.title == "Backend Engineer" and j.company == "Acme"
+    assert j.location == "Berlin, DE" and j.source_job_id == "abc"
+
+
+def test_hirehive_maps():
+    js = {"jobs": [{"id": 7, "title": "QA Engineer", "location": "Dublin",
+                    "url": "https://acme.hirehive.com/job/7",
+                    "description": "<p>Test</p>", "department": "Quality"}]}
+    from jobmesh.connectors.hirehive import HireHiveConnector
+    c = HireHiveConnector("acme", session=_FakeSession([_Resp(js=js)]))
+    j = c.fetch()[0]
+    assert j.title == "QA Engineer" and j.source_job_id == "7"
+
+
+def test_manatal_maps():
+    js = {"data": [{"id": "h1", "position_name": "Recruiter",
+                    "location": {"city": "Paris", "country": "FR"},
+                    "url": "https://careers-page.com/acme/h1",
+                    "description": "<p>Hire</p>", "is_remote": False}]}
+    from jobmesh.connectors.manatal import ManatalConnector
+    c = ManatalConnector("acme", session=_FakeSession([_Resp(js=js)]))
+    j = c.fetch()[0]
+    assert j.title == "Recruiter" and j.location == "Paris, FR"
