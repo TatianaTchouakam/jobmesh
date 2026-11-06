@@ -21,12 +21,18 @@ greenhouse:
   - figma
   - duolingo
   - robinhood
+  - coinbase
+  - databricks
+  - dropbox
+  - brex
 
 lever:
   - leverdemo
 
 ashby:
   - ramp
+  - openai
+  - linear
 
 workable:
   - huggingface
@@ -65,6 +71,35 @@ weworkremotely:
 
 pinpoint:        # ATS (find token at {company}.pinpointhq.com) — best-effort, verify live
   - workwithus
+
+# --- New platforms (added in the +10 batch) ---------------------------------
+
+# Workday — enterprise ATS. Token packs three parts the careers URL exposes:
+#   tenant:wd{N}:site[:CompanyLabel]
+# Find them in a company's Workday careers URL, e.g.
+#   https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite
+#   -> nvidia : wd5 : NVIDIAExternalCareerSite
+# Site ids and datacenter shard (wd1/wd3/wd5/wd12...) vary per company; a
+# wrong token is skipped and logged, never fatal — verify live and add more.
+workday:
+  - nvidia:wd5:NVIDIAExternalCareerSite:NVIDIA
+
+# Teamtailor — ATS (strong in the Nordics/Europe). Token = company subdomain
+# from {company}.teamtailor.com. A public RSS feed is served at /jobs.rss.
+teamtailor:
+  - career          # Teamtailor's own careers board (demo of the connector)
+
+# 4 Day Week — curated four-day-week / remote roles (public JSON API v2).
+fourdayweek:
+  - all
+
+# Jobspresso — curated remote roles (WP Job Manager public feed).
+jobspresso:
+  - all
+
+# Python.org Jobs — the official Python job board (RSS).
+pythonjobs:
+  - all
 
 # bamboohr — ATS (find token at {company}.bamboohr.com). Add a company:
 # bamboohr:

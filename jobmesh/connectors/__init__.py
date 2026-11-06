@@ -28,6 +28,11 @@ from .jobicy import JobicyConnector
 from .himalayas import HimalayasConnector
 from .workingnomads import WorkingNomadsConnector
 from .weworkremotely import WeWorkRemotelyConnector
+from .workday import WorkdayConnector
+from .teamtailor import TeamtailorConnector
+from .fourdayweek import FourDayWeekConnector
+from .jobspresso import JobspressoConnector
+from .pythonjobs import PythonJobsConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -48,6 +53,11 @@ REGISTRY: dict[str, type[Connector]] = {
     HimalayasConnector.platform: HimalayasConnector,
     WorkingNomadsConnector.platform: WorkingNomadsConnector,
     WeWorkRemotelyConnector.platform: WeWorkRemotelyConnector,
+    WorkdayConnector.platform: WorkdayConnector,
+    TeamtailorConnector.platform: TeamtailorConnector,
+    FourDayWeekConnector.platform: FourDayWeekConnector,
+    JobspressoConnector.platform: JobspressoConnector,
+    PythonJobsConnector.platform: PythonJobsConnector,
 }
 
 
