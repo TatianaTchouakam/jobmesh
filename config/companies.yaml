@@ -48,9 +48,13 @@ remotive:
   - all
 arbeitnow:     # Germany / EU
   - all
-themuse:
-  - all
 remoteok:
   - all
 jobicy:
   - all
+himalayas:
+  - all
+# themuse is Cloudflare-protected (403 to API clients); connector kept but
+# not run. Add an API key and re-enable if you register for one.
+# themuse:
+#   - all

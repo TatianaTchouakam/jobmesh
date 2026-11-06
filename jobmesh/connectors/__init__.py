@@ -22,6 +22,7 @@ from .arbeitnow import ArbeitnowConnector
 from .themuse import TheMuseConnector
 from .remoteok import RemoteOkConnector
 from .jobicy import JobicyConnector
+from .himalayas import HimalayasConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -36,6 +37,7 @@ REGISTRY: dict[str, type[Connector]] = {
     TheMuseConnector.platform: TheMuseConnector,
     RemoteOkConnector.platform: RemoteOkConnector,
     JobicyConnector.platform: JobicyConnector,
+    HimalayasConnector.platform: HimalayasConnector,
 }
 
 
