@@ -84,6 +84,8 @@ class SmartRecruitersConnector(Connector):
             apply_url=url,
             salary=None,
             employment_type=employment_type,
+            category=(data.get("department") or {}).get("label")
+            or (data.get("function") or {}).get("label"),
             remote=remote,
             posted_at=data.get("releasedDate"),
             dedup_key=make_dedup_key(title, company, location),

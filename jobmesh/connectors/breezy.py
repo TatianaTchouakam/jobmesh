@@ -63,6 +63,7 @@ class BreezyConnector(Connector):
             apply_url=url,
             salary=None,
             employment_type=self._name_of(data.get("type")),
+            category=self._name_of(data.get("department")),
             remote=remote,
             posted_at=data.get("published_date") or data.get("creation_date"),
             dedup_key=make_dedup_key(title, company, location),

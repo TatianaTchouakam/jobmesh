@@ -72,6 +72,8 @@ class LeverConnector(Connector):
             apply_url=data.get("applyUrl") or data.get("hostedUrl"),
             salary=None,  # not exposed as a structured field by Lever
             employment_type=categories.get("commitment"),
+            workplace_type=data.get("workplaceType"),
+            category=categories.get("team") or categories.get("department"),
             remote=remote,
             posted_at=_epoch_ms_to_iso(data.get("createdAt")),
             dedup_key=make_dedup_key(title, company, location),

@@ -79,6 +79,8 @@ class WorkableConnector(Connector):
             apply_url=url,
             salary=None,
             employment_type=data.get("employment_type"),
+            workplace_type=(workplace or None),
+            category=data.get("department"),
             remote=remote,
             posted_at=data.get("published_on") or data.get("created_at"),
             dedup_key=make_dedup_key(title, company, location),

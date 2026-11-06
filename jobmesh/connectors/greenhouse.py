@@ -98,6 +98,10 @@ class GreenhouseConnector(Connector):
             apply_url=url,  # Greenhouse listing page is also the apply page
             salary=salary,
             employment_type=employment_type,
+            category=next(
+                (d.get("name") for d in (data.get("departments") or [])
+                 if d.get("name")), None
+            ),
             remote=remote,
             posted_at=posted_at,
             dedup_key=make_dedup_key(title, company, location),

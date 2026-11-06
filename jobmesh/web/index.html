@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jobmesh — unified job search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f5f6f9; --panel:#ffffff; --field:#f1f2f6; --line:#e3e6ec;
+    --text:#161922; --muted:#6a7280; --accent:#6a5cff;
+    --gold-1:#e3a600; --gold-2:#c8871a; --remote:#14a37f; --new:#2f9e65;
+    --radius:16px; --shadow:0 2px 10px rgba(20,25,40,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:Inter,system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.5}
+  a{color:inherit}
+  .wrap{max-width:940px; margin:0 auto; padding:0 20px}
+
+  header{padding:54px 0 30px; text-align:center;
+    background:radial-gradient(1000px 320px at 50% -60%, rgba(106,92,255,.12), transparent 70%)}
+  .logo{font-weight:800; font-size:48px; letter-spacing:-.025em}
+  .logo .gold{background:linear-gradient(92deg,var(--gold-1),var(--gold-2));
+    -webkit-background-clip:text; background-clip:text; color:transparent}
+  .tagline{color:var(--muted); margin-top:8px; font-size:16px}
+  .stats{margin-top:20px; display:inline-flex; gap:22px; flex-wrap:wrap; justify-content:center; font-size:14px; color:var(--muted)}
+  .stats b{color:var(--text); font-weight:700}
+
+  .search{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow); display:grid; gap:12px}
+  .search .top{display:grid; grid-template-columns:1fr auto; gap:12px}
+  .search .pair{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .search .trio{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+  .search input[type=text], .search select{width:100%; background:var(--field); border:1px solid var(--line);
+    color:var(--text); padding:14px 16px; border-radius:11px; font-size:15px; font-family:inherit}
+  #keyword{font-size:16px}
+  .search input::placeholder{color:#99a0ad}
+  .search input:focus, .search select:focus{outline:none; border-color:var(--accent); background:#fff}
+  button.go{background:var(--accent); color:#fff; border:0; border-radius:11px; padding:0 26px;
+    font-weight:600; font-size:15px; cursor:pointer}
+  button.go:hover{filter:brightness(1.07)}
+
+  .bar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:22px 2px 12px; flex-wrap:wrap}
+  .count{color:var(--muted); font-size:13px}
+  .count b{color:var(--text)}
+  .chips-active{display:flex; gap:8px; flex-wrap:wrap}
+  .fchip{display:inline-flex; align-items:center; gap:6px; background:#ecebff; color:#4b3fd6;
+    border:1px solid #dcd9ff; font-size:12px; padding:4px 6px 4px 11px; border-radius:999px}
+  .fchip button{background:none; border:0; color:#6a5cff; cursor:pointer; font-size:14px; line-height:1; padding:0 2px}
+  .clear{background:none; border:0; color:var(--accent); font-size:13px; cursor:pointer; font-weight:600}
+  .clear:hover{text-decoration:underline}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px; margin-bottom:13px; box-shadow:var(--shadow);
+    transition:border-color .15s, transform .15s, box-shadow .15s}
+  .card:hover{border-color:#cdd2db; transform:translateY(-1px); box-shadow:0 6px 18px rgba(20,25,40,.08)}
+  .card .top{display:flex; justify-content:space-between; gap:12px; align-items:flex-start}
+  .card h3{margin:0; font-size:17px; font-weight:600; display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+  .card h3 a:hover{color:var(--accent)}
+  .new{background:var(--new); color:#fff; font-size:10.5px; font-weight:700; letter-spacing:.03em;
+    padding:2px 7px; border-radius:6px; text-transform:uppercase}
+  .company{color:var(--muted); font-size:14px; margin-top:3px}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:13px}
+  .chip{background:var(--field); border:1px solid var(--line); color:#525a68; font-size:12px;
+    padding:4px 10px; border-radius:999px; white-space:nowrap}
+  .chip.badge{color:#fff; border:0; font-weight:500}
+  .chip.cat{color:#5a3fb5; background:#efeaff; border-color:#e0d8ff}
+  .chip.remote{color:var(--remote); background:rgba(20,163,127,.08); border-color:rgba(20,163,127,.3)}
+  .chip.salary{color:#9a6b00; background:rgba(227,166,0,.1); border-color:rgba(227,166,0,.3)}
+  .apply{font-size:14px; font-weight:600; color:var(--accent); text-decoration:none; white-space:nowrap}
+  .apply:hover{text-decoration:underline}
+  .more{display:block; margin:8px auto 0; background:#fff; border:1px solid var(--line); color:var(--text);
+    padding:13px 28px; border-radius:11px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:var(--shadow)}
+  .more:hover{border-color:var(--accent); color:var(--accent)}
+  .empty{color:var(--muted); text-align:center; padding:46px 0}
+  footer{color:#9aa1ad; text-align:center; font-size:12px; padding:34px 0 54px}
+
+  @media(max-width:680px){
+    .logo{font-size:38px}
+    .search .top{grid-template-columns:1fr}
+    .search .pair{grid-template-columns:1fr}
+    .search .trio{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="logo">Job<span class="gold">mesh</span></div>
+    <div class="tagline">Every job, from every source, in one live, searchable index.</div>
+    <div class="stats" id="stats"><span>Loading index…</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <form class="search" id="form" autocomplete="off">
+    <div class="top">
+      <input type="text" id="keyword" placeholder="Role or skill — e.g. data engineer, python, sql" />
+      <button class="go" type="submit">Search</button>
+    </div>
+    <div class="pair">
+      <input type="text" id="company" placeholder="Company" />
+      <input type="text" id="location" placeholder="Location" />
+    </div>
+    <div class="trio">
+      <select id="workplace"><option value="">Any workplace</option></select>
+      <select id="jobtype"><option value="">Any job type</option></select>
+      <select id="category"><option value="">Any domain</option></select>
+    </div>
+  </form>
+
+  <div class="bar">
+    <div class="count" id="count"></div>
+    <div class="chips-active" id="active"></div>
+  </div>
+  <div id="results"></div>
+  <div id="morewrap"></div>
+</main>
+
+<footer>jobmesh · a unified index of job postings across many ATS and job boards</footer>
+
+<script>
+const PLATFORM_COLORS = {
+  greenhouse:"#2f9e65", lever:"#5a6cf0", ashby:"#b65cff",
+  workable:"#e0567a", smartrecruiters:"#2aa7c7", recruitee:"#e0864f", breezy:"#1fae8f"
+};
+const WORKPLACE_LABELS = {remote:"Remote", hybrid:"Hybrid", onsite:"On-site"};
+const FIELD_LABELS = {workplace_type:"Workplace", employment_type:"Job type", category:"Domain"};
+const PAGE = 30;
+let offset = 0;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function filterValues(){
+  return {
+    keyword:$("keyword").value.trim(), company:$("company").value.trim(),
+    location:$("location").value.trim(), workplace_type:$("workplace").value,
+    employment_type:$("jobtype").value, category:$("category").value
+  };
+}
+function toParams(v){
+  const p = new URLSearchParams();
+  Object.entries(v).forEach(([k,val]) => { if(val) p.set(k,val); });
+  return p;
+}
+
+function relDate(iso){
+  if(!iso) return null;
+  const d = new Date(iso); if(isNaN(d)) return null;
+  const days = Math.floor((Date.now()-d)/86400000);
+  if(days <= 0) return "today";
+  if(days === 1) return "yesterday";
+  if(days < 7) return days+" days ago";
+  if(days < 30) return Math.floor(days/7)+"w ago";
+  return d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
+}
+function isNew(iso){
+  if(!iso) return false;
+  const d = new Date(iso); if(isNaN(d)) return false;
+  return (Date.now()-d) < 48*3600*1000;
+}
+
+function fillSelect(id, counts, anyLabel, labelMap){
+  const sel = $(id); const current = sel.value;
+  sel.innerHTML = `<option value="">${anyLabel}</option>`;
+  Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val,n]) => {
+    const o = document.createElement("option");
+    o.value = val;
+    o.textContent = `${(labelMap && labelMap[val]) || val} (${n.toLocaleString()})`;
+    sel.appendChild(o);
+  });
+  sel.value = current;  // preserve selection
+}
+
+async function loadStats(){
+  try{
+    const s = await (await fetch("/stats")).json();
+    const plats = Object.keys(s.open_by_platform || {}).length;
+    $("stats").innerHTML =
+      `<span><b>${s.open_postings.toLocaleString()}</b> open jobs</span>` +
+      `<span><b>${plats}</b> platforms</span>` +
+      `<span><b>${s.boards_indexed}</b> company boards</span>`;
+  }catch(e){ $("stats").textContent = "Index not reachable."; }
+}
+
+async function loadFacets(){
+  const v = filterValues();
+  try{
+    const f = await (await fetch("/facets?"+toParams(v).toString())).json();
+    fillSelect("workplace", f.workplace_type||{}, "Any workplace", WORKPLACE_LABELS);
+    fillSelect("jobtype", f.employment_type||{}, "Any job type");
+    fillSelect("category", f.category||{}, "Any domain");
+    $("count").innerHTML = `<b>${(f.total||0).toLocaleString()}</b> jobs match`;
+    renderActive(v);
+  }catch(e){}
+}
+
+function renderActive(v){
+  const labels = {
+    keyword:"Keyword", company:"Company", location:"Location",
+    workplace_type:"Workplace", employment_type:"Job type", category:"Domain"
+  };
+  const chips = Object.entries(v).filter(([k,val]) => val).map(([k,val]) => {
+    const show = k==="workplace_type" ? (WORKPLACE_LABELS[val]||val) : val;
+    return `<span class="fchip">${labels[k]}: ${esc(show)}<button data-k="${k}">×</button></span>`;
+  });
+  $("active").innerHTML = chips.length
+    ? chips.join("") + `<button class="clear" id="clearbtn">Clear all</button>` : "";
+  document.querySelectorAll(".fchip button").forEach(b =>
+    b.onclick = () => { clearField(b.dataset.k); });
+  const cb = $("clearbtn"); if(cb) cb.onclick = clearAll;
+}
+const FIELD_INPUTS = {keyword:"keyword", company:"company", location:"location",
+  workplace_type:"workplace", employment_type:"jobtype", category:"category"};
+function clearField(k){ $(FIELD_INPUTS[k]).value=""; runSearch(); }
+function clearAll(){ Object.values(FIELD_INPUTS).forEach(id => $(id).value=""); runSearch(); }
+
+function card(j){
+  const chips = [];
+  if(j.source_platform){
+    const c = PLATFORM_COLORS[j.source_platform] || "#5a6cf0";
+    chips.push(`<span class="chip badge" style="background:${c}">${esc(j.source_platform)}</span>`);
+  }
+  if(j.category && j.category!=="Other") chips.push(`<span class="chip cat">${esc(j.category)}</span>`);
+  if(j.location) chips.push(`<span class="chip">${esc(j.location)}</span>`);
+  if(j.workplace_type) chips.push(`<span class="chip remote">${WORKPLACE_LABELS[j.workplace_type]||j.workplace_type}</span>`);
+  if(j.employment_type) chips.push(`<span class="chip">${esc(j.employment_type)}</span>`);
+  if(j.salary) chips.push(`<span class="chip salary">${esc(j.salary)}</span>`);
+  const d = relDate(j.posted_at); if(d) chips.push(`<span class="chip">${d}</span>`);
+  const url = j.apply_url || j.source_url || "#";
+  const badge = isNew(j.first_seen) ? `<span class="new">New</span>` : "";
+  return `<div class="card">
+    <div class="top">
+      <div>
+        <h3><a href="${esc(url)}" target="_blank" rel="noopener">${esc(j.title||"Untitled")}</a>${badge}</h3>
+        <div class="company">${esc(j.company||"")}</div>
+      </div>
+      <a class="apply" href="${esc(url)}" target="_blank" rel="noopener">Apply →</a>
+    </div>
+    <div class="chips">${chips.join("")}</div>
+  </div>`;
+}
+
+async function fetchJobs(){
+  const p = toParams(filterValues());
+  p.set("limit", PAGE); p.set("offset", offset);
+  return (await (await fetch("/jobs?"+p.toString())).json());
+}
+
+async function runSearch(){
+  offset = 0;
+  loadFacets();
+  const data = await fetchJobs();
+  const rows = data.results || [];
+  $("results").innerHTML = rows.length
+    ? rows.map(card).join("")
+    : `<div class="empty">No matching jobs. Try a broader search.</div>`;
+  renderMore(data);
+}
+
+async function loadMore(){
+  offset += PAGE;
+  const data = await fetchJobs();
+  $("results").insertAdjacentHTML("beforeend", (data.results||[]).map(card).join(""));
+  renderMore(data);
+}
+
+function renderMore(data){
+  const shown = offset + (data.results||[]).length;
+  $("morewrap").innerHTML = (data.total && shown < data.total)
+    ? `<button class="more" id="morebtn">Load more (${(data.total-shown).toLocaleString()} more)</button>` : "";
+  const mb = $("morebtn"); if(mb) mb.onclick = loadMore;
+}
+
+$("form").addEventListener("submit", e => { e.preventDefault(); runSearch(); });
+["workplace","jobtype","category"].forEach(id => $(id).addEventListener("change", runSearch));
+loadStats();
+runSearch();
+</script>
+</body>
+</html>

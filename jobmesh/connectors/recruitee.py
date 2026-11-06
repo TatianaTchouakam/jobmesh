@@ -45,6 +45,16 @@ class RecruiteeConnector(Connector):
         remote_flag = data.get("remote")
         remote = remote_flag if isinstance(remote_flag, bool) else detect_remote(location)
 
+        # Recruitee exposes remote / hybrid / on_site as separate booleans.
+        if data.get("hybrid"):
+            workplace = "hybrid"
+        elif data.get("remote"):
+            workplace = "remote"
+        elif data.get("on_site"):
+            workplace = "onsite"
+        else:
+            workplace = None
+
         emp_code = data.get("employment_type_code")
         employment_type = emp_code.replace("_", " ").title() if emp_code else None
 
@@ -63,6 +73,8 @@ class RecruiteeConnector(Connector):
             apply_url=data.get("careers_apply_url") or url,
             salary=None,
             employment_type=employment_type,
+            workplace_type=workplace,
+            category=data.get("department"),
             remote=remote,
             posted_at=data.get("published_at") or data.get("created_at"),
             dedup_key=make_dedup_key(title, company, location),

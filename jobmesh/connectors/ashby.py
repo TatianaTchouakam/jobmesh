@@ -79,6 +79,8 @@ class AshbyConnector(Connector):
             apply_url=data.get("applyUrl") or job_url,
             salary=_salary(data.get("compensation")),
             employment_type=data.get("employmentType"),
+            workplace_type=data.get("workplaceType"),
+            category=data.get("department") or data.get("team"),
             remote=remote,
             posted_at=data.get("publishedAt"),
             dedup_key=make_dedup_key(title, company, location),

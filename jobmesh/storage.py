@@ -25,7 +25,8 @@ DEFAULT_DB = "jobmesh.db"
 # Fields compared to decide whether an existing posting has changed.
 _TRACKED_FIELDS = (
     "title", "company", "location", "description", "source_url",
-    "apply_url", "salary", "employment_type", "remote", "posted_at",
+    "apply_url", "salary", "employment_type", "workplace_type",
+    "category", "remote", "posted_at",
 )
 
 _SCHEMA = """
@@ -42,6 +43,8 @@ CREATE TABLE IF NOT EXISTS jobs (
     apply_url       TEXT,
     salary          TEXT,
     employment_type TEXT,
+    workplace_type  TEXT,
+    category        TEXT,
     remote          INTEGER,
     posted_at       TEXT,
     dedup_key       TEXT,
@@ -70,7 +73,17 @@ def connect(db_path: str = DEFAULT_DB) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     conn.executescript(_SCHEMA)
+    _migrate(conn)
     return conn
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Add columns introduced after a database was first created."""
+    existing = {row["name"] for row in conn.execute("PRAGMA table_info(jobs)")}
+    for col in ("workplace_type", "category"):
+        if col not in existing:
+            conn.execute(f"ALTER TABLE jobs ADD COLUMN {col} TEXT")
+    conn.commit()
 
 
 @contextmanager
@@ -106,16 +119,18 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
                 INSERT INTO jobs (
                     uid, source_platform, source_board, source_job_id,
                     title, company, location, description, source_url,
-                    apply_url, salary, employment_type, remote, posted_at,
-                    dedup_key, first_seen, last_checked, last_changed, is_open
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)
+                    apply_url, salary, employment_type, workplace_type,
+                    category, remote, posted_at, dedup_key, first_seen,
+                    last_checked, last_changed, is_open
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)
                 """,
                 (
                     job.uid, job.source_platform, job.source_board,
                     job.source_job_id, job.title, job.company, job.location,
                     job.description, job.source_url, job.apply_url, job.salary,
-                    job.employment_type, _bool(job.remote), job.posted_at,
-                    job.dedup_key, now, now, now,
+                    job.employment_type, job.workplace_type, job.category,
+                    _bool(job.remote), job.posted_at, job.dedup_key,
+                    now, now, now,
                 ),
             )
             new += 1
@@ -126,15 +141,16 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
             """
             UPDATE jobs SET
                 title=?, company=?, location=?, description=?, source_url=?,
-                apply_url=?, salary=?, employment_type=?, remote=?,
-                posted_at=?, dedup_key=?, last_checked=?,
+                apply_url=?, salary=?, employment_type=?, workplace_type=?,
+                category=?, remote=?, posted_at=?, dedup_key=?, last_checked=?,
                 last_changed=?, is_open=1
             WHERE uid=?
             """,
             (
                 job.title, job.company, job.location, job.description,
                 job.source_url, job.apply_url, job.salary, job.employment_type,
-                _bool(job.remote), job.posted_at, job.dedup_key, now,
+                job.workplace_type, job.category, _bool(job.remote),
+                job.posted_at, job.dedup_key, now,
                 now if changed else row["last_changed"], job.uid,
             ),
         )
@@ -190,36 +206,70 @@ def log_fetch(
 
 # -- reads ----------------------------------------------------------------
 
-def search(
-    conn: sqlite3.Connection,
-    keyword: Optional[str] = None,
-    company: Optional[str] = None,
-    location: Optional[str] = None,
-    open_only: bool = True,
-    limit: int = 20,
-    offset: int = 0,
-) -> list[dict]:
-    """Filtered, paginated search over the index."""
-    clauses, params = [], []
-    if open_only:
-        clauses.append("is_open = 1")
-    if keyword:
-        clauses.append("(title LIKE ? OR description LIKE ?)")
-        params += [f"%{keyword}%", f"%{keyword}%"]
-    if company:
-        clauses.append("company LIKE ?")
-        params.append(f"%{company}%")
-    if location:
-        clauses.append("location LIKE ?")
-        params.append(f"%{location}%")
+def _build_where(f: dict, exclude: Optional[str] = None):
+    """Build a WHERE clause from a filter dict, optionally skipping one key.
 
+    `exclude` lets the facet counts ignore a filter's own selection, so the
+    dropdown still shows the counts you'd get by switching to another value.
+    """
+    clauses, params = [], []
+    if f.get("open_only", True):
+        clauses.append("is_open = 1")
+    if f.get("keyword") and exclude != "keyword":
+        clauses.append("(title LIKE ? OR description LIKE ?)")
+        params += [f"%{f['keyword']}%", f"%{f['keyword']}%"]
+    if f.get("company") and exclude != "company":
+        clauses.append("company LIKE ?"); params.append(f"%{f['company']}%")
+    if f.get("location") and exclude != "location":
+        clauses.append("location LIKE ?"); params.append(f"%{f['location']}%")
+    if f.get("platform") and exclude != "platform":
+        clauses.append("source_platform = ?"); params.append(f["platform"])
+    if f.get("workplace_type") and exclude != "workplace_type":
+        clauses.append("workplace_type = ?"); params.append(f["workplace_type"])
+    if f.get("employment_type") and exclude != "employment_type":
+        clauses.append("employment_type = ?"); params.append(f["employment_type"])
+    if f.get("category") and exclude != "category":
+        clauses.append("category = ?"); params.append(f["category"])
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+    return where, params
+
+
+def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
+           **filters) -> list[dict]:
+    """Filtered, paginated search. Filters: keyword, company, location,
+    platform, workplace_type, employment_type, category, open_only."""
+    where, params = _build_where(filters)
     sql = (
         f"SELECT * FROM jobs {where} "
         f"ORDER BY COALESCE(posted_at, first_seen) DESC LIMIT ? OFFSET ?"
     )
-    params += [limit, offset]
-    return [dict(r) for r in conn.execute(sql, params).fetchall()]
+    return [dict(r) for r in conn.execute(sql, params + [limit, offset]).fetchall()]
+
+
+def count(conn: sqlite3.Connection, **filters) -> int:
+    """Total postings matching the filters (ignoring limit/offset)."""
+    where, params = _build_where(filters)
+    return conn.execute(f"SELECT COUNT(*) FROM jobs {where}", params).fetchone()[0]
+
+
+def facets(conn: sqlite3.Connection, **filters) -> dict:
+    """Return the total plus value counts for each filterable field.
+
+    Each field's counts ignore that field's own current selection, so the
+    dropdowns show how many jobs each option would yield.
+    """
+    out = {"total": count(conn, **filters)}
+    for field in ("workplace_type", "employment_type", "category"):
+        where, params = _build_where(filters, exclude=field)
+        where = (where + f" AND {field} IS NOT NULL") if where \
+            else f"WHERE {field} IS NOT NULL"
+        rows = conn.execute(
+            f"SELECT {field} AS v, COUNT(*) AS n FROM jobs {where} "
+            f"GROUP BY {field} ORDER BY n DESC",
+            params,
+        ).fetchall()
+        out[field] = {r["v"]: r["n"] for r in rows}
+    return out
 
 
 def stats(conn: sqlite3.Connection) -> dict:

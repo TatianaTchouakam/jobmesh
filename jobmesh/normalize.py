@@ -60,6 +60,89 @@ def _slug(value: str) -> str:
     return value
 
 
+def normalize_workplace(raw: Optional[str]) -> Optional[str]:
+    """Map varied workplace labels to: 'remote' / 'hybrid' / 'onsite' / None.
+
+    Sources phrase this differently ("Remote", "on-site", "Hybrid",
+    "telecommuting"), so we reduce to a small, filterable set.
+    """
+    if not raw:
+        return None
+    s = re.sub(r"[^a-z]", "", str(raw).lower())
+    if "hybrid" in s:
+        return "hybrid"
+    if "remote" in s or "telecommut" in s or "anywhere" in s:
+        return "remote"
+    if "onsite" in s or "inoffice" in s or "office" in s:
+        return "onsite"
+    return None
+
+
+def normalize_employment(raw: Optional[str]) -> Optional[str]:
+    """Map varied employment-type labels to a clean, consistent form.
+
+    e.g. "FullTime", "full-time", "fulltime_permanent" -> "Full-time".
+    Unknown values are kept, title-cased, so nothing is lost.
+    """
+    if not raw:
+        return None
+    s = re.sub(r"[^a-z]", "", str(raw).lower())
+    if "intern" in s:
+        return "Internship"
+    if "parttime" in s:
+        return "Part-time"
+    if "fulltime" in s:
+        return "Full-time"
+    if "contract" in s or "freelance" in s or "b2b" in s:
+        return "Contract"
+    if "temp" in s:
+        return "Temporary"
+    if "volunteer" in s:
+        return "Volunteer"
+    return str(raw).strip().title()
+
+
+#: Broad domains, matched in order (first hit wins) against the posting's
+#: department/team text and its title.
+_CATEGORY_RULES = (
+    ("Data & AI", ("data", "analytics", "machine learning", " ml ", "ai ",
+                   "scientist", "analyst")),
+    ("Engineering", ("engineer", "developer", "software", "backend",
+                     "frontend", "full stack", "devops", "sre", "platform",
+                     "infrastructure", "security", "qa", "programmer")),
+    ("Design", ("design", "ux", "ui ", "researcher", "creative")),
+    ("Product", ("product manager", "product management", "product owner",
+                 "program manager")),
+    ("Sales", ("sales", "account executive", "account manager",
+               "business development", "revenue", "commercial", "partnerships")),
+    ("Marketing", ("marketing", "growth", "content", "brand", "seo",
+                   "communications", "social media")),
+    ("Finance", ("finance", "accounting", "accountant", "controller",
+                 "fp&a", "treasury", "audit")),
+    ("People & HR", ("people", "human resources", " hr ", "talent",
+                     "recruit", "recruiter")),
+    ("Operations", ("operations", " ops", "logistics", "supply",
+                    "procurement", "facilities")),
+    ("Customer Support", ("support", "customer success", "customer service",
+                          "help desk")),
+    ("Legal", ("legal", "counsel", "compliance", "paralegal")),
+)
+
+
+def normalize_category(department: Optional[str], title: Optional[str]) -> str:
+    """Bucket a posting into a broad domain from its department and title.
+
+    Department/team labels are free-text and vary by company, so we match
+    keywords against them (and the title as a fallback) to produce a small,
+    filterable set. Anything unmatched becomes 'Other'.
+    """
+    text = f" {(department or '')} {(title or '')} ".lower()
+    for label, keywords in _CATEGORY_RULES:
+        if any(k in text for k in keywords):
+            return label
+    return "Other"
+
+
 def make_dedup_key(title: str, company: str, location: Optional[str]) -> str:
     """Build a key that groups the *same* opening seen on different sources.
 
