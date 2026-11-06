@@ -1,0 +1,12 @@
+# Render deployment blueprint for jobmesh.
+# The index is built once during the build step, then the API serves it.
+services:
+  - type: web
+    name: jobmesh
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python -m jobmesh.cli ingest || true"
+    startCommand: "uvicorn jobmesh.api:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
