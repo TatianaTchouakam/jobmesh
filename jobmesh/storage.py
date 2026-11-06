@@ -230,6 +230,12 @@ def _build_where(f: dict, exclude: Optional[str] = None):
         clauses.append("employment_type = ?"); params.append(f["employment_type"])
     if f.get("category") and exclude != "category":
         clauses.append("category = ?"); params.append(f["category"])
+    if f.get("country") and exclude != "country":
+        from .geo import country_patterns
+        pats = country_patterns(f["country"])
+        if pats:
+            clauses.append("(" + " OR ".join("location LIKE ?" for _ in pats) + ")")
+            params += pats
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     return where, params
 
@@ -278,6 +284,16 @@ def facets(conn: sqlite3.Connection, **filters) -> dict:
     return out
 
 
+def location_counts(conn: sqlite3.Connection) -> dict[str, int]:
+    """Open-posting counts grouped by raw location string."""
+    rows = conn.execute(
+        "SELECT location AS loc, COUNT(*) AS n FROM jobs "
+        "WHERE is_open=1 AND location IS NOT NULL AND location <> '' "
+        "GROUP BY location"
+    ).fetchall()
+    return {r["loc"]: r["n"] for r in rows}
+
+
 def stats(conn: sqlite3.Connection) -> dict:
     """Headline numbers about the current index."""
     total = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
@@ -292,6 +308,13 @@ def stats(conn: sqlite3.Connection) -> dict:
         "SELECT COUNT(*) - COUNT(DISTINCT dedup_key) FROM jobs "
         "WHERE is_open=1 AND dedup_key IS NOT NULL"
     ).fetchone()[0]
+    companies = conn.execute(
+        "SELECT COUNT(DISTINCT company) FROM jobs "
+        "WHERE is_open=1 AND company IS NOT NULL AND company <> ''"
+    ).fetchone()[0]
+    platforms = conn.execute(
+        "SELECT COUNT(DISTINCT source_platform) FROM jobs WHERE is_open=1"
+    ).fetchone()[0]
     by_platform = {
         r["source_platform"]: r["n"]
         for r in conn.execute(
@@ -304,6 +327,8 @@ def stats(conn: sqlite3.Connection) -> dict:
         "open_postings": open_,
         "closed_postings": total - open_,
         "boards_indexed": boards,
+        "platforms": platforms,
+        "companies": companies,
         "duplicate_open_postings": dupes,
         "open_by_platform": by_platform,
     }

@@ -17,6 +17,7 @@ from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
 
 from . import storage
+from . import geo
 
 app = FastAPI(
     title="jobmesh API",
@@ -47,11 +48,12 @@ def get_stats() -> dict:
 
 
 def _filters(keyword, company, location, platform, workplace_type,
-             employment_type, category) -> dict:
+             employment_type, category, country=None) -> dict:
     return {
         "keyword": keyword, "company": company, "location": location,
         "platform": platform, "workplace_type": workplace_type,
         "employment_type": employment_type, "category": category,
+        "country": country,
     }
 
 
@@ -64,12 +66,13 @@ def list_jobs(
     workplace_type: Optional[str] = Query(None, description="remote / hybrid / onsite"),
     employment_type: Optional[str] = Query(None, description="e.g. Full-time, Contract"),
     category: Optional[str] = Query(None, description="broad domain, e.g. Engineering"),
+    country: Optional[str] = Query(None, description="ISO-2 country, e.g. DE"),
     limit: int = Query(30, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ) -> dict:
     """Search the index with filters and pagination."""
     f = _filters(keyword, company, location, platform, workplace_type,
-                 employment_type, category)
+                 employment_type, category, country)
     with storage.session(DB_PATH) as conn:
         rows = storage.search(conn, limit=limit, offset=offset, **f)
         total = storage.count(conn, **f)
@@ -82,6 +85,14 @@ def list_jobs(
     }
 
 
+@app.get("/geo")
+def get_geo() -> dict:
+    """Open-posting counts grouped by (best-effort) country, for the globe."""
+    with storage.session(DB_PATH) as conn:
+        counts = storage.location_counts(conn)
+    return geo.aggregate(counts)
+
+
 @app.get("/facets")
 def get_facets(
     keyword: Optional[str] = Query(None),
@@ -91,9 +102,10 @@ def get_facets(
     workplace_type: Optional[str] = Query(None),
     employment_type: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
+    country: Optional[str] = Query(None),
 ) -> dict:
     """Total plus per-value counts for each filter, given the other filters."""
     f = _filters(keyword, company, location, platform, workplace_type,
-                 employment_type, category)
+                 employment_type, category, country)
     with storage.session(DB_PATH) as conn:
         return storage.facets(conn, **f)
