@@ -1,0 +1,26 @@
+# Boards to index, grouped by platform.
+#
+# A "board" is the company's identifier on that platform. You find it in
+# the company's careers URL, e.g.:
+#   https://boards.greenhouse.io/gitlab   ->  gitlab
+#
+# Add a company by dropping its board token on a new line. No code change
+# needed — the pipeline reads this file.
+
+greenhouse:
+  - gitlab
+  - airbnb
+  - stripe
+  - figma
+  - duolingo
+  - robinhood
+
+# Platforms below are on the roadmap (connectors not yet implemented).
+# Listing a board here does nothing until its connector exists.
+#
+# lever:
+#   - leverdemo
+# ashby:
+#   - ramp
+# workable:
+#   - (subdomain)

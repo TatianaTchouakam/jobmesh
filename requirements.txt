@@ -1,0 +1,7 @@
+requests>=2.31
+PyYAML>=6.0
+fastapi>=0.110
+uvicorn[standard]>=0.29
+
+# Dev / tests
+pytest>=8.0
