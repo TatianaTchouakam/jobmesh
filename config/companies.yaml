@@ -2,10 +2,17 @@
 #
 # A "board" is the company's identifier on that platform. You find it in
 # the company's careers URL, e.g.:
-#   https://boards.greenhouse.io/gitlab   ->  gitlab
+#   https://boards.greenhouse.io/gitlab        -> gitlab      (greenhouse)
+#   https://jobs.lever.co/leverdemo            -> leverdemo   (lever)
+#   https://jobs.ashbyhq.com/ramp              -> ramp        (ashby)
+#   https://apply.workable.com/huggingface     -> huggingface (workable)
+#   https://jobs.smartrecruiters.com/Ubisoft2  -> Ubisoft2    (smartrecruiters)
+#   https://{company}.recruitee.com            -> {company}   (recruitee)
+#   https://{company}.breezy.hr                -> {company}   (breezy)
 #
 # Add a company by dropping its board token on a new line. No code change
-# needed — the pipeline reads this file.
+# needed. A token that doesn't exist is skipped (logged as a fetch
+# failure), so it never breaks the run.
 
 greenhouse:
   - gitlab
@@ -17,12 +24,21 @@ greenhouse:
 
 lever:
   - leverdemo
-# Platforms below are on the roadmap (connectors not yet implemented).
-# Listing a board here does nothing until its connector exists.
-#
-# lever:
-#   - leverdemo
-# ashby:
-#   - ramp
-# workable:
-#   - (subdomain)
+
+ashby:
+  - ramp
+
+workable:
+  - huggingface
+
+smartrecruiters:
+  - AveryDennison
+  - Ubisoft2
+
+breezy:
+  - vetsez
+
+recruitee:
+  # Add a company that uses Recruitee, e.g. its subdomain from
+  # https://{company}.recruitee.com — the connector is ready.
+  []

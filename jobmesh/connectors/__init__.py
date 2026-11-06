@@ -10,13 +10,20 @@ from __future__ import annotations
 from .base import Connector
 from .greenhouse import GreenhouseConnector
 from .lever import LeverConnector
+from .ashby import AshbyConnector
+from .workable import WorkableConnector
+from .smartrecruiters import SmartRecruitersConnector
+from .recruitee import RecruiteeConnector
+from .breezy import BreezyConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
     LeverConnector.platform: LeverConnector,
-    # Roadmap — one line each as they are implemented:
-    # "ashby": AshbyConnector,
-    # "workable": WorkableConnector,
+    AshbyConnector.platform: AshbyConnector,
+    WorkableConnector.platform: WorkableConnector,
+    SmartRecruitersConnector.platform: SmartRecruitersConnector,
+    RecruiteeConnector.platform: RecruiteeConnector,
+    BreezyConnector.platform: BreezyConnector,
 }
 
 
@@ -36,6 +43,11 @@ __all__ = [
     "Connector",
     "GreenhouseConnector",
     "LeverConnector",
+    "AshbyConnector",
+    "WorkableConnector",
+    "SmartRecruitersConnector",
+    "RecruiteeConnector",
+    "BreezyConnector",
     "REGISTRY",
     "build_connector",
 ]
