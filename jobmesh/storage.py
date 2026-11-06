@@ -259,8 +259,14 @@ def facets(conn: sqlite3.Connection, **filters) -> dict:
     dropdowns show how many jobs each option would yield.
     """
     out = {"total": count(conn, **filters)}
-    for field in ("workplace_type", "employment_type", "category"):
-        where, params = _build_where(filters, exclude=field)
+    # (column, filter-key) — the platform column and its filter key differ.
+    for field, key in (
+        ("workplace_type", "workplace_type"),
+        ("employment_type", "employment_type"),
+        ("category", "category"),
+        ("source_platform", "platform"),
+    ):
+        where, params = _build_where(filters, exclude=key)
         where = (where + f" AND {field} IS NOT NULL") if where \
             else f"WHERE {field} IS NOT NULL"
         rows = conn.execute(
