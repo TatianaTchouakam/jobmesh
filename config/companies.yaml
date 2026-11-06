@@ -25,14 +25,44 @@ greenhouse:
   - databricks
   - dropbox
   - brex
+  - lyft
+  - reddit
+  - discord
+  - asana
+  - cloudflare
+  - mongodb
+  - doordash
+  - instacart
 
 lever:
   - leverdemo
+  - spotify
+  - palantir
+  - zoox
+  - whoop
+  - gopuff
+  - ro
+  - aircall
+  - ledger
+  - entrata
+  - plaid
 
 ashby:
   - ramp
   - openai
   - linear
+  - elevenlabs
+  - notion
+  - cursor
+  - replit
+  - supabase
+  - docker
+  - modal
+  - posthog
+  - mercury
+  - vercel
+  - deel
+  - clerk
 
 workable:
   - huggingface
@@ -44,10 +74,9 @@ smartrecruiters:
 breezy:
   - vetsez
 
-recruitee:
-  # Add a company that uses Recruitee, e.g. its subdomain from
-  # https://{company}.recruitee.com — the connector is ready.
-  []
+recruitee:   # ATS — subdomain from https://{company}.recruitee.com
+  - vandebron        # Dutch energy company (verified live)
+  # Add more: find the subdomain in a company's Recruitee careers URL.
 
 # --- Job boards (one public feed each, many companies; "all" = whole feed) ---
 personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.personio.de)
