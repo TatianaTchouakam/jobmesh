@@ -44,6 +44,9 @@ recruitee:
   []
 
 # --- Job boards (one public feed each, many companies; "all" = whole feed) ---
+personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.personio.de)
+  - sennder
+  - pennylane
 remotive:
   - all
 arbeitnow:     # Germany / EU
@@ -54,6 +57,14 @@ jobicy:
   - all
 himalayas:
   - all
+workingnomads:
+  - all
+weworkremotely:
+  - all
+
+# bamboohr — ATS (find token at {company}.bamboohr.com). Add a company:
+# bamboohr:
+#   - {subdomain}
 # themuse is Cloudflare-protected (403 to API clients); connector kept but
 # not run. Add an API key and re-enable if you register for one.
 # themuse:

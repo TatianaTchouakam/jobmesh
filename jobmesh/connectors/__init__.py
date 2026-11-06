@@ -17,12 +17,16 @@ from .smartrecruiters import SmartRecruitersConnector
 from .recruitee import RecruiteeConnector
 from .breezy import BreezyConnector
 # Job-board connectors (one feed, many companies)
+from .personio import PersonioConnector
+from .bamboohr import BambooHrConnector
 from .remotive import RemotiveConnector
 from .arbeitnow import ArbeitnowConnector
 from .themuse import TheMuseConnector
 from .remoteok import RemoteOkConnector
 from .jobicy import JobicyConnector
 from .himalayas import HimalayasConnector
+from .workingnomads import WorkingNomadsConnector
+from .weworkremotely import WeWorkRemotelyConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -32,12 +36,16 @@ REGISTRY: dict[str, type[Connector]] = {
     SmartRecruitersConnector.platform: SmartRecruitersConnector,
     RecruiteeConnector.platform: RecruiteeConnector,
     BreezyConnector.platform: BreezyConnector,
+    PersonioConnector.platform: PersonioConnector,
+    BambooHrConnector.platform: BambooHrConnector,
     RemotiveConnector.platform: RemotiveConnector,
     ArbeitnowConnector.platform: ArbeitnowConnector,
     TheMuseConnector.platform: TheMuseConnector,
     RemoteOkConnector.platform: RemoteOkConnector,
     JobicyConnector.platform: JobicyConnector,
     HimalayasConnector.platform: HimalayasConnector,
+    WorkingNomadsConnector.platform: WorkingNomadsConnector,
+    WeWorkRemotelyConnector.platform: WeWorkRemotelyConnector,
 }
 
 
