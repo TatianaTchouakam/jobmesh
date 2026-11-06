@@ -63,6 +63,9 @@ workingnomads:
 weworkremotely:
   - all
 
+pinpoint:        # ATS (find token at {company}.pinpointhq.com) — best-effort, verify live
+  - workwithus
+
 # bamboohr — ATS (find token at {company}.bamboohr.com). Add a company:
 # bamboohr:
 #   - {subdomain}

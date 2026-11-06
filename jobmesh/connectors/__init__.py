@@ -19,6 +19,7 @@ from .breezy import BreezyConnector
 # Job-board connectors (one feed, many companies)
 from .personio import PersonioConnector
 from .bamboohr import BambooHrConnector
+from .pinpoint import PinpointConnector
 from .remotive import RemotiveConnector
 from .arbeitnow import ArbeitnowConnector
 from .themuse import TheMuseConnector
@@ -38,6 +39,7 @@ REGISTRY: dict[str, type[Connector]] = {
     BreezyConnector.platform: BreezyConnector,
     PersonioConnector.platform: PersonioConnector,
     BambooHrConnector.platform: BambooHrConnector,
+    PinpointConnector.platform: PinpointConnector,
     RemotiveConnector.platform: RemotiveConnector,
     ArbeitnowConnector.platform: ArbeitnowConnector,
     TheMuseConnector.platform: TheMuseConnector,
