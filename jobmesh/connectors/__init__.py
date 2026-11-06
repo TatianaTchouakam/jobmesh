@@ -9,11 +9,12 @@ from __future__ import annotations
 
 from .base import Connector
 from .greenhouse import GreenhouseConnector
+from .lever import LeverConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
+    LeverConnector.platform: LeverConnector,
     # Roadmap — one line each as they are implemented:
-    # "lever": LeverConnector,
     # "ashby": AshbyConnector,
     # "workable": WorkableConnector,
 }
@@ -31,4 +32,10 @@ def build_connector(platform: str, board: str) -> Connector:
     return cls(board)
 
 
-__all__ = ["Connector", "GreenhouseConnector", "REGISTRY", "build_connector"]
+__all__ = [
+    "Connector",
+    "GreenhouseConnector",
+    "LeverConnector",
+    "REGISTRY",
+    "build_connector",
+]
