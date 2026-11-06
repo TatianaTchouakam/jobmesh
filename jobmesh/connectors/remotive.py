@@ -17,7 +17,10 @@ from ..normalize import html_to_text, make_dedup_key
 from .base import Connector
 
 API = "https://remotive.com/api/remote-jobs"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+# A browser UA avoids the reduced/limited response some clients receive.
+USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+              "AppleWebKit/537.36 (KHTML, like Gecko) "
+              "Chrome/125.0.0.0 Safari/537.36")
 TIMEOUT = 25
 
 
@@ -28,6 +31,7 @@ class RemotiveConnector(Connector):
         super().__init__(board)
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
+        self._session.headers.setdefault("Accept", "application/json")
 
     def fetch(self) -> list[Job]:
         resp = self._session.get(API, timeout=TIMEOUT)

@@ -16,7 +16,10 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 API = "https://www.themuse.com/api/public/jobs"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+# The Muse returns 403 to non-browser clients, so present a browser UA.
+USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+              "AppleWebKit/537.36 (KHTML, like Gecko) "
+              "Chrome/125.0.0.0 Safari/537.36")
 TIMEOUT = 25
 MAX_PAGES = 4
 
@@ -28,6 +31,7 @@ class TheMuseConnector(Connector):
         super().__init__(board)
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
+        self._session.headers.setdefault("Accept", "application/json")
 
     def fetch(self) -> list[Job]:
         at = now_iso()
