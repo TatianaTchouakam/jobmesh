@@ -8,6 +8,7 @@ write the connector, then register it here.
 from __future__ import annotations
 
 from .base import Connector
+# ATS connectors (per-company boards)
 from .greenhouse import GreenhouseConnector
 from .lever import LeverConnector
 from .ashby import AshbyConnector
@@ -15,6 +16,12 @@ from .workable import WorkableConnector
 from .smartrecruiters import SmartRecruitersConnector
 from .recruitee import RecruiteeConnector
 from .breezy import BreezyConnector
+# Job-board connectors (one feed, many companies)
+from .remotive import RemotiveConnector
+from .arbeitnow import ArbeitnowConnector
+from .themuse import TheMuseConnector
+from .remoteok import RemoteOkConnector
+from .jobicy import JobicyConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -24,6 +31,11 @@ REGISTRY: dict[str, type[Connector]] = {
     SmartRecruitersConnector.platform: SmartRecruitersConnector,
     RecruiteeConnector.platform: RecruiteeConnector,
     BreezyConnector.platform: BreezyConnector,
+    RemotiveConnector.platform: RemotiveConnector,
+    ArbeitnowConnector.platform: ArbeitnowConnector,
+    TheMuseConnector.platform: TheMuseConnector,
+    RemoteOkConnector.platform: RemoteOkConnector,
+    JobicyConnector.platform: JobicyConnector,
 }
 
 
@@ -39,15 +51,4 @@ def build_connector(platform: str, board: str) -> Connector:
     return cls(board)
 
 
-__all__ = [
-    "Connector",
-    "GreenhouseConnector",
-    "LeverConnector",
-    "AshbyConnector",
-    "WorkableConnector",
-    "SmartRecruitersConnector",
-    "RecruiteeConnector",
-    "BreezyConnector",
-    "REGISTRY",
-    "build_connector",
-]
+__all__ = ["Connector", "REGISTRY", "build_connector"]

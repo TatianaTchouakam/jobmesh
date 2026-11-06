@@ -42,3 +42,15 @@ recruitee:
   # Add a company that uses Recruitee, e.g. its subdomain from
   # https://{company}.recruitee.com — the connector is ready.
   []
+
+# --- Job boards (one public feed each, many companies; "all" = whole feed) ---
+remotive:
+  - all
+arbeitnow:     # Germany / EU
+  - all
+themuse:
+  - all
+remoteok:
+  - all
+jobicy:
+  - all
