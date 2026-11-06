@@ -45,8 +45,9 @@ recruitee:
 
 # --- Job boards (one public feed each, many companies; "all" = whole feed) ---
 personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.personio.de)
-  - sennder
-  - pennylane
+  - circus
+  - wandelbots
+  - 1komma5grad
 remotive:
   - all
 arbeitnow:     # Germany / EU
