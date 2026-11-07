@@ -42,6 +42,14 @@ _VENDOR = os.path.join(WEB_DIR, "vendor")
 if os.path.isdir(_VENDOR):
     app.mount("/vendor", StaticFiles(directory=_VENDOR), name="vendor")
 
+# Expose the index to AI agents over MCP (POST /mcp). Wrapped so a problem
+# in the MCP layer can never stop the main API from starting.
+try:
+    from .mcp_server import register_mcp
+    register_mcp(app, DB_PATH)
+except Exception:  # pragma: no cover
+    pass
+
 
 @app.get("/", include_in_schema=False)
 def home() -> FileResponse:
