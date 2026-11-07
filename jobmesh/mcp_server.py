@@ -180,6 +180,22 @@ def register_mcp(app, db_path: str) -> None:
         return JSONResponse(body)
 
     @app.get("/mcp", include_in_schema=False)
-    async def mcp_get():
-        # We don't offer a server-initiated SSE stream; POST JSON-RPC instead.
-        return JSONResponse(_err(None, -32601, "Use POST JSON-RPC"), status_code=405)
+    async def mcp_get(request: Request):
+        # Real MCP clients open a stream with `Accept: text/event-stream`;
+        # we don't offer a server-initiated stream, so they get 405. A plain
+        # browser visit gets a friendly description confirming the server is
+        # live and listing its tools.
+        if "text/event-stream" in request.headers.get("accept", ""):
+            return JSONResponse(
+                _err(None, -32601, "No server stream; use POST JSON-RPC"),
+                status_code=405,
+            )
+        return JSONResponse({
+            "server": SERVER_INFO,
+            "protocolVersion": PROTOCOL_VERSION,
+            "description": ("Jobmesh MCP server. Point an MCP-capable AI client "
+                            "at this URL (HTTP POST, JSON-RPC 2.0) to search the "
+                            "live job index — no account, no scraping."),
+            "transport": "streamable-http (POST /mcp)",
+            "tools": [t["name"] for t in TOOLS],
+        })

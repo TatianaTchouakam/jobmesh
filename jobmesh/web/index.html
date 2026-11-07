@@ -46,7 +46,7 @@
   .herowrap{max-width:1180px;margin:0 auto;padding:50px 24px 26px;display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center}
   .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-2);margin-bottom:16px}
   .eyebrow .d{width:6px;height:6px;border-radius:50%;background:var(--gold-1)}
-  h1{font-size:clamp(34px,4.6vw,56px);line-height:1.02;letter-spacing:-.03em;font-weight:900;margin:0 0 16px}
+  h1{font-size:clamp(30px,3.6vw,44px);line-height:1.05;letter-spacing:-.03em;font-weight:900;margin:0 0 14px}
   h1 .g{background:linear-gradient(94deg,var(--gold-1),var(--gold-2));-webkit-background-clip:text;background-clip:text;color:transparent}
   .lead{font-size:16.5px;color:#4a5262;max-width:33em;margin:0 0 22px}
 
@@ -190,6 +190,20 @@
   </div>
 </header>
 
+<style>
+  .mcpbar{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;background:linear-gradient(90deg,#fff7e6,#fffdf5);border-bottom:1px solid rgba(227,166,0,.25);color:#5a4a1f;font-size:13px;padding:8px 16px}
+  .mcpbar .mcpico{font-size:14px}
+  .mcpbar code{background:#fff;border:1px solid rgba(227,166,0,.3);color:var(--gold-2);padding:2px 8px;border-radius:6px;font-size:12.5px}
+  .mcpbar .mcpcopy{background:linear-gradient(92deg,var(--gold-1),var(--gold-2));color:#fff;border:0;border-radius:7px;padding:4px 12px;font-weight:700;font-size:12.5px;cursor:pointer}
+  .mcpbar .mcpcopy:hover{filter:brightness(1.05)}
+</style>
+<div class="mcpbar">
+  <span class="mcpico">🤖</span>
+  <span data-i18n="mcp_label">Search Jobmesh from your AI agent — connect over MCP:</span>
+  <code id="mcpurl">/mcp</code>
+  <button type="button" class="mcpcopy" id="mcpcopy" data-i18n="mcp_copy">Copy</button>
+</div>
+
 <section class="hero">
   <div class="herowrap">
     <div>
@@ -220,23 +234,21 @@
       <div class="stat"><span class="v" data-k="boards_indexed">—</span><span class="k" data-i18n="s_sources">sources connected</span></div>
       <div class="stat"><span class="v" data-k="platforms">—</span><span class="k" data-i18n="s_platforms">ATS &amp; job-board platforms</span></div>
       <div class="stat"><span class="v" data-k="countries">—</span><span class="k" data-i18n="s_countries">countries</span></div>
-      <div class="bandnote" id="bandnote"></div>
     </div>
   </div>
-  <div class="pstrip" id="pstrip"><span class="lbl" data-i18n="pulling">Pulling from</span></div>
 </section>
 
 <div class="tip gtip" id="gtip"></div>
 
 <style>
   .cvsec{max-width:1180px;margin:20px auto 0;padding:0 24px}
-  .cvwrap{background:#fff;border:1px solid var(--line,#e7e9f0);border-radius:14px;box-shadow:0 1px 2px rgba(20,24,40,.04);overflow:hidden}
-  .cvsum{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 18px;font-weight:600;font-size:14.5px;color:var(--text)}
+  .cvwrap{background:linear-gradient(180deg,#fffdf5,#fff);border:1px solid rgba(227,166,0,.38);border-radius:14px;box-shadow:0 1px 3px rgba(196,135,26,.10);overflow:hidden}
+  .cvsum{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 18px;font-weight:700;font-size:15px;color:var(--gold-2)}
   .cvsum::-webkit-details-marker{display:none}
   .cvsum .cvicon{font-size:15px}
-  .cvsum .cvchev{margin-left:auto;color:var(--soft);font-size:12px;transition:transform .15s}
+  .cvsum .cvchev{margin-left:auto;color:var(--gold-2);font-size:12px;transition:transform .15s}
   details[open] .cvsum .cvchev{transform:rotate(180deg)}
-  .cvsum:hover{background:#fafbfe}
+  .cvsum:hover{background:#fffaef}
   .cvbody{padding:2px 18px 20px}
   .cvsub{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
   #cvtext{width:100%;box-sizing:border-box;border:1px solid var(--line,#e7e9f0);border-radius:11px;padding:12px 13px;font:inherit;font-size:14px;resize:vertical;background:var(--field,#f7f8fb)}
@@ -274,6 +286,8 @@
     </div>
   </details>
 </section>
+
+<div class="pstrip" id="pstrip"><span class="lbl" data-i18n="pulling">Pulling from</span></div>
 
 <div class="main">
   <aside class="side" id="side"></aside>
@@ -327,12 +341,13 @@ const PAGE=25;
 const I18N={
   en:{live:"Live index · refreshed continuously",eyebrow:"One index · many sources",
     h1:'Every job, from every source — one <span class="g">mesh</span>.',
-    lead:"Jobmesh pulls live openings straight from company career pages and job boards, deduplicates them, and links every role back to its source. No reposts, no dead links.",
+    lead:"Every opening, from every source — one clean, deduplicated index. Paste your CV and we'll surface the jobs that fit you.",
     ph_keyword:"Role or skill",ph_location:"Location",search:"Search",
     ph_prefix:"Role or skill — ",ph_examples:["data engineer","software developer","nurse","sales manager","logistics","chef","accountant","electrician","designer","marketing manager"],
     drag:"drag to spin",s_jobs:"open jobs",s_companies:"companies",s_sources:"sources connected",
     s_platforms:"ATS & job-board platforms",s_countries:"countries",pulling:"Pulling from",
     footer:"jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source",
+    mcp_label:"Search Jobmesh from your AI agent — connect over MCP:",mcp_copy:"Copy",mcp_copied:"Copied!",
     open_roles:"open roles",most_open:"Most open roles",gcard_open:"Open roles",filtering_by:"Filtering by",
     remote_note:"{n} roles open to remote",apply:"Apply at source ↗",save:"Save",saved:"Saved",
     load_more:"Load more",more:"more",empty:"No matching jobs. Try a broader search.",clear:"Clear all filters",
@@ -345,12 +360,13 @@ const I18N={
     fb_thanks:"Thanks — your feedback was sent!",fb_empty:"No feedback yet. Be the first to share.",fb_anon:"Anonymous",fb_sending:"Sending…"},
   de:{live:"Live-Index · laufend aktualisiert",eyebrow:"Ein Index · viele Quellen",
     h1:'Jeder Job, aus jeder Quelle — ein <span class="g">Mesh</span>.',
-    lead:"Jobmesh holt offene Stellen direkt von Karriereseiten und Jobbörsen, entfernt Dubletten und verlinkt jede Stelle zurück zur Quelle. Keine Reposts, keine toten Links.",
+    lead:"Alle Stellen, aus allen Quellen — ein sauberer, dublettenfreier Index. Füge deinen Lebenslauf ein und wir finden die passenden Jobs.",
     ph_keyword:"Beruf oder Skill",ph_location:"Ort",search:"Suchen",
     ph_prefix:"Beruf oder Skill — ",ph_examples:["Data Engineer","Softwareentwickler","Krankenpfleger","Vertriebsleiter","Logistik","Koch","Buchhalter","Elektriker","Designer","Marketing"],
     drag:"zum Drehen ziehen",s_jobs:"offene Jobs",s_companies:"Unternehmen",s_sources:"verbundene Quellen",
     s_platforms:"ATS- & Jobbörsen-Plattformen",s_countries:"Länder",pulling:"Quellen",
     footer:"jobmesh · ein vereinter Index von Stellenanzeigen aus vielen ATS und Jobbörsen · jede Stelle verlinkt zurück zur Originalquelle",
+    mcp_label:"Durchsuche Jobmesh aus deinem KI-Agenten — per MCP verbinden:",mcp_copy:"Kopieren",mcp_copied:"Kopiert!",
     open_roles:"offene Stellen",most_open:"Meiste offene Stellen",gcard_open:"Offene Stellen",filtering_by:"Gefiltert nach",
     remote_note:"{n} Stellen remote möglich",apply:"Direkt bewerben ↗",save:"Merken",saved:"Gemerkt",
     load_more:"Mehr laden",more:"weitere",empty:"Keine passenden Jobs. Versuche eine breitere Suche.",clear:"Alle Filter löschen",
@@ -363,12 +379,13 @@ const I18N={
     fb_thanks:"Danke — dein Feedback wurde gesendet!",fb_empty:"Noch kein Feedback. Sei die erste Person.",fb_anon:"Anonym",fb_sending:"Wird gesendet…"},
   fr:{live:"Index en direct · actualisé en continu",eyebrow:"Un index · plusieurs sources",
     h1:'Chaque offre, de chaque source — un seul <span class="g">mesh</span>.',
-    lead:"Jobmesh récupère les offres directement depuis les pages carrière et les job boards, supprime les doublons et relie chaque offre à sa source. Pas de reposts, pas de liens morts.",
+    lead:"Toutes les offres, de toutes les sources — un index propre et dédupliqué. Colle ton CV, on te trouve les jobs faits pour toi.",
     ph_keyword:"Métier ou compétence",ph_location:"Lieu",search:"Rechercher",
     ph_prefix:"Métier ou compétence — ",ph_examples:["data engineer","développeur","infirmier","commercial","logistique","cuisinier","comptable","électricien","designer","marketing"],
     drag:"faites tourner",s_jobs:"offres ouvertes",s_companies:"entreprises",s_sources:"sources connectées",
     s_platforms:"plateformes ATS & job boards",s_countries:"pays",pulling:"Sources",
     footer:"jobmesh · un index unifié des offres d'emploi issues de nombreux ATS et job boards · chaque offre renvoie à sa source d'origine",
+    mcp_label:"Interroge Jobmesh depuis ton agent IA — connecte-toi en MCP :",mcp_copy:"Copier",mcp_copied:"Copié !",
     open_roles:"offres ouvertes",most_open:"Le plus d'offres",gcard_open:"Offres ouvertes",filtering_by:"Filtré par",
     remote_note:"{n} offres ouvertes au télétravail",apply:"Postuler à la source ↗",save:"Enregistrer",saved:"Enregistré",
     load_more:"Voir plus",more:"de plus",empty:"Aucune offre. Élargis ta recherche.",clear:"Effacer les filtres",
@@ -404,7 +421,7 @@ function applyI18n(){
 }
 function setLang(l){LANG=l;try{localStorage.setItem("jobmesh_lang",l)}catch(e){}
   applyI18n();startPlaceholder();applyBandNote();$("herochips").innerHTML="";loadHeroChips();if(window.__refreshGcard)window.__refreshGcard();loadFeedback();runSearch();}
-function applyBandNote(){if(GEO&&GEO.remote)$("bandnote").textContent=t("remote_note").replace("{n}",GEO.remote.toLocaleString());}
+function applyBandNote(){const bn=$("bandnote");if(bn&&GEO&&GEO.remote)bn.textContent=t("remote_note").replace("{n}",GEO.remote.toLocaleString());}
 
 let offset=0, saved=loadSaved();
 
@@ -845,6 +862,18 @@ $("cvfile").addEventListener("change",async e=>{
   }catch(err){ cvStatus(t("cv_readerr")); }
   finally{ e.target.value=""; }
 });
+
+/* MCP banner: show this site's live /mcp URL and let visitors copy it. */
+(function(){
+  const url=(location.origin||"")+"/mcp";
+  const u=$("mcpurl"); if(u)u.textContent=url;
+  const b=$("mcpcopy");
+  if(b)b.addEventListener("click",()=>{
+    try{const p=navigator.clipboard&&navigator.clipboard.writeText(url);if(p&&p.catch)p.catch(()=>{});}catch(e){}
+    b.textContent=t("mcp_copied");
+    setTimeout(()=>{b.textContent=t("mcp_copy");},1500);
+  });
+})();
 
 $("form").addEventListener("submit",e=>{e.preventDefault();scrollToResults();runSearch()});
 $("fbform").addEventListener("submit",submitFeedback);

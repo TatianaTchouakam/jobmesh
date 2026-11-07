@@ -78,7 +78,11 @@ def test_mcp_notification_and_get():
         # A notification (no id) is acknowledged with 202 and no body.
         r = client.post("/mcp", json={"jsonrpc": "2.0", "method": "notifications/initialized"})
         assert r.status_code == 202
-        # GET is not an SSE stream here.
-        assert client.get("/mcp").status_code == 405
+        # A browser GET returns a friendly description (200) listing the tools.
+        info = client.get("/mcp")
+        assert info.status_code == 200
+        assert "search_jobs" in info.json()["tools"]
+        # An MCP client asking for a server stream gets 405 (none offered).
+        assert client.get("/mcp", headers={"accept": "text/event-stream"}).status_code == 405
     finally:
         os.remove(db)
