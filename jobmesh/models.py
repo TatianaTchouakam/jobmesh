@@ -15,6 +15,7 @@ from .normalize import (
     normalize_employment,
     normalize_workplace,
     normalize_category,
+    normalize_level,
 )
 
 
@@ -45,6 +46,7 @@ class Job:
     employment_type: Optional[str] = None   # Full-time / Part-time / Contract / ...
     workplace_type: Optional[str] = None    # remote / hybrid / onsite
     category: Optional[str] = None          # broad domain (set from department)
+    level: Optional[str] = None             # seniority (Internship/Junior/Senior/...)
     remote: Optional[bool] = None
     posted_at: Optional[str] = None     # original posting date (ISO-8601)
 
@@ -67,6 +69,9 @@ class Job:
         # Bucket into a broad domain from the department (passed in via
         # `category`) and the title.
         self.category = normalize_category(self.category, self.title)
+        # Detect seniority/experience level from the title and job type.
+        if self.level is None:
+            self.level = normalize_level(self.title, self.employment_type)
 
     @property
     def uid(self) -> str:

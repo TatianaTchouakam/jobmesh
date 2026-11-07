@@ -26,7 +26,7 @@ DEFAULT_DB = "jobmesh.db"
 _TRACKED_FIELDS = (
     "title", "company", "location", "description", "source_url",
     "apply_url", "salary", "employment_type", "workplace_type",
-    "category", "remote", "posted_at",
+    "category", "level", "remote", "posted_at",
 )
 
 _SCHEMA = """
@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     employment_type TEXT,
     workplace_type  TEXT,
     category        TEXT,
+    level           TEXT,
     remote          INTEGER,
     posted_at       TEXT,
     dedup_key       TEXT,
@@ -88,7 +89,7 @@ def connect(db_path: str = DEFAULT_DB) -> sqlite3.Connection:
 def _migrate(conn: sqlite3.Connection) -> None:
     """Add columns introduced after a database was first created."""
     existing = {row["name"] for row in conn.execute("PRAGMA table_info(jobs)")}
-    for col in ("workplace_type", "category"):
+    for col in ("workplace_type", "category", "level"):
         if col not in existing:
             conn.execute(f"ALTER TABLE jobs ADD COLUMN {col} TEXT")
     conn.commit()
@@ -128,16 +129,16 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
                     uid, source_platform, source_board, source_job_id,
                     title, company, location, description, source_url,
                     apply_url, salary, employment_type, workplace_type,
-                    category, remote, posted_at, dedup_key, first_seen,
+                    category, level, remote, posted_at, dedup_key, first_seen,
                     last_checked, last_changed, is_open
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)
                 """,
                 (
                     job.uid, job.source_platform, job.source_board,
                     job.source_job_id, job.title, job.company, job.location,
                     job.description, job.source_url, job.apply_url, job.salary,
                     job.employment_type, job.workplace_type, job.category,
-                    _bool(job.remote), job.posted_at, job.dedup_key,
+                    job.level, _bool(job.remote), job.posted_at, job.dedup_key,
                     now, now, now,
                 ),
             )
@@ -150,14 +151,14 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
             UPDATE jobs SET
                 title=?, company=?, location=?, description=?, source_url=?,
                 apply_url=?, salary=?, employment_type=?, workplace_type=?,
-                category=?, remote=?, posted_at=?, dedup_key=?, last_checked=?,
+                category=?, level=?, remote=?, posted_at=?, dedup_key=?, last_checked=?,
                 last_changed=?, is_open=1
             WHERE uid=?
             """,
             (
                 job.title, job.company, job.location, job.description,
                 job.source_url, job.apply_url, job.salary, job.employment_type,
-                job.workplace_type, job.category, _bool(job.remote),
+                job.workplace_type, job.category, job.level, _bool(job.remote),
                 job.posted_at, job.dedup_key, now,
                 now if changed else row["last_changed"], job.uid,
             ),
@@ -238,6 +239,8 @@ def _build_where(f: dict, exclude: Optional[str] = None):
         clauses.append("employment_type = ?"); params.append(f["employment_type"])
     if f.get("category") and exclude != "category":
         clauses.append("category = ?"); params.append(f["category"])
+    if f.get("level") and exclude != "level":
+        clauses.append("level = ?"); params.append(f["level"])
     if f.get("country") and exclude != "country":
         from .geo import country_patterns
         pats = country_patterns(f["country"])
@@ -277,6 +280,7 @@ def facets(conn: sqlite3.Connection, **filters) -> dict:
     for field, key in (
         ("workplace_type", "workplace_type"),
         ("employment_type", "employment_type"),
+        ("level", "level"),
         ("category", "category"),
         ("source_platform", "platform"),
     ):

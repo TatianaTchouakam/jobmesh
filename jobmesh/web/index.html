@@ -301,6 +301,7 @@ const WP={remote:"Remote",hybrid:"Hybrid",onsite:"On-site"};
 const AVC=["#5d50e6","#108a6c","#d1495b","#2aa7c7","#e0864f","#7b6cf6","#2f9e65","#c4871a","#e0567a","#20a4f3"];
 const FGROUPS=[
   {key:"workplace_type",param:"workplace_type",titleKey:"g_workplace",wp:true},
+  {key:"level",param:"level",titleKey:"g_level",lvl:true},
   {key:"employment_type",param:"employment_type",titleKey:"g_jobtype"},
   {key:"category",param:"category",titleKey:"g_domain",cat:true},
   {key:"source_platform",param:"platform",titleKey:"g_found"},
@@ -323,7 +324,7 @@ const I18N={
     open_roles:"open roles",most_open:"Most open roles",gcard_open:"Open roles",filtering_by:"Filtering by",
     remote_note:"{n} roles open to remote",apply:"Apply at source ↗",save:"Save",saved:"Saved",
     load_more:"Load more",more:"more",empty:"No matching jobs. Try a broader search.",clear:"Clear all filters",
-    g_workplace:"Workplace",g_jobtype:"Job type",g_domain:"Domain",g_found:"Found on",g_country:"Country",
+    g_workplace:"Workplace",g_level:"Level",g_jobtype:"Job type",g_domain:"Domain",g_found:"Found on",g_country:"Country",
     n_keyword:"Keyword",n_location:"Location",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"On-site",
     d_today:"Today",d_week:"This week",d_month:"This month",d_earlier:"Earlier",
     cv_title:"Find jobs for your profile",cv_sub:"Paste your CV — Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored; it runs entirely in your browser.",cv_ph:"Paste your CV / résumé text here…",cv_analyze:"Analyse my CV",cv_upload:"…or upload a .txt file",cv_detected:"Your top skills — tap one to see matching jobs:",cv_none:"No clear skills detected — try pasting more of your CV.",
@@ -341,7 +342,7 @@ const I18N={
     open_roles:"offene Stellen",most_open:"Meiste offene Stellen",gcard_open:"Offene Stellen",filtering_by:"Gefiltert nach",
     remote_note:"{n} Stellen remote möglich",apply:"Direkt bewerben ↗",save:"Merken",saved:"Gemerkt",
     load_more:"Mehr laden",more:"weitere",empty:"Keine passenden Jobs. Versuche eine breitere Suche.",clear:"Alle Filter löschen",
-    g_workplace:"Arbeitsmodell",g_jobtype:"Anstellungsart",g_domain:"Bereich",g_found:"Gefunden auf",g_country:"Land",
+    g_workplace:"Arbeitsmodell",g_level:"Level",g_jobtype:"Anstellungsart",g_domain:"Bereich",g_found:"Gefunden auf",g_country:"Land",
     n_keyword:"Stichwort",n_location:"Ort",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"Vor Ort",
     d_today:"Heute",d_week:"Diese Woche",d_month:"Diesen Monat",d_earlier:"Früher",
     cv_title:"Jobs für dein Profil finden",cv_sub:"Füge deinen Lebenslauf ein — Jobmesh liest deine Skills und zeigt passende Stellen aus allen Branchen und Ländern. Nichts wird hochgeladen oder gespeichert; alles läuft in deinem Browser.",cv_ph:"Füge hier den Text deines Lebenslaufs ein…",cv_analyze:"Lebenslauf analysieren",cv_upload:"…oder .txt-Datei hochladen",cv_detected:"Deine wichtigsten Skills — tippe auf einen, um passende Jobs zu sehen:",cv_none:"Keine klaren Skills erkannt — füge mehr von deinem Lebenslauf ein.",
@@ -359,7 +360,7 @@ const I18N={
     open_roles:"offres ouvertes",most_open:"Le plus d'offres",gcard_open:"Offres ouvertes",filtering_by:"Filtré par",
     remote_note:"{n} offres ouvertes au télétravail",apply:"Postuler à la source ↗",save:"Enregistrer",saved:"Enregistré",
     load_more:"Voir plus",more:"de plus",empty:"Aucune offre. Élargis ta recherche.",clear:"Effacer les filtres",
-    g_workplace:"Mode de travail",g_jobtype:"Type de contrat",g_domain:"Domaine",g_found:"Trouvé sur",g_country:"Pays",
+    g_workplace:"Mode de travail",g_level:"Niveau",g_jobtype:"Type de contrat",g_domain:"Domaine",g_found:"Trouvé sur",g_country:"Pays",
     n_keyword:"Mot-clé",n_location:"Lieu",wp_remote:"Télétravail",wp_hybrid:"Hybride",wp_onsite:"Sur site",
     d_today:"Aujourd'hui",d_week:"Cette semaine",d_month:"Ce mois-ci",d_earlier:"Plus tôt",
     cv_title:"Trouve des jobs pour ton profil",cv_sub:"Colle ton CV — Jobmesh lit tes compétences et affiche les offres qui correspondent, tous secteurs et tous pays. Rien n'est envoyé ni stocké ; tout se passe dans ton navigateur.",cv_ph:"Colle ici le texte de ton CV…",cv_analyze:"Analyser mon CV",cv_upload:"…ou charge un fichier .txt",cv_detected:"Tes compétences clés — clique sur l'une pour voir les offres :",cv_none:"Aucune compétence claire détectée — colle plus de ton CV.",
@@ -376,6 +377,11 @@ let LANG=(()=>{try{const s=localStorage.getItem("jobmesh_lang");if(s)return s;}c
   const n=(navigator.language||"en").slice(0,2).toLowerCase();return ["en","de","fr"].includes(n)?n:"en";})();
 function t(k){return (I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;}
 function tcat(c){return (LANG!=="en"&&CATLABEL[LANG]&&CATLABEL[LANG][c])||c;}
+const LEVELLABEL={
+  de:{"Internship":"Praktikum","Apprenticeship":"Ausbildung","Working Student":"Werkstudent","Junior / Entry":"Junior / Einstieg","Senior":"Senior","Lead / Principal":"Lead / Principal","Manager":"Management"},
+  fr:{"Internship":"Stage","Apprenticeship":"Alternance","Working Student":"Étudiant","Junior / Entry":"Junior / Débutant","Senior":"Senior","Lead / Principal":"Lead / Principal","Manager":"Encadrement"},
+};
+function tlvl(v){return (LANG!=="en"&&LEVELLABEL[LANG]&&LEVELLABEL[LANG][v])||v;}
 function wpl(v){return t("wp_"+v)|| (WP[v]||v);}
 function applyI18n(){
   document.documentElement.lang=LANG;
@@ -395,7 +401,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 function loadSaved(){try{return new Set(JSON.parse(localStorage.getItem("jobmesh_saved")||"[]"))}catch(e){return new Set()}}
 function persistSaved(){try{localStorage.setItem("jobmesh_saved",JSON.stringify([...saved]))}catch(e){}}
 
-const F={keyword:"",location:"",workplace_type:"",employment_type:"",category:"",platform:"",country:""};
+const F={keyword:"",location:"",workplace_type:"",employment_type:"",category:"",level:"",platform:"",country:""};
 
 function params(extra){
   const p=new URLSearchParams();
@@ -631,7 +637,7 @@ async function loadFacets(){
       if(!entries.length)continue;
       html+=`<div class="fgroup"><h4>${t(g.titleKey)}</h4>`;
       for(const [val,n] of entries){
-        const label=g.wp?wpl(val):(g.cat?tcat(val):val);
+        const label=g.wp?wpl(val):(g.cat?tcat(val):(g.lvl?tlvl(val):val));
         const active=F[g.param]===val;
         html+=`<div class="frow${active?" active":""}" data-param="${g.param}" data-val="${esc(val)}"><span>${esc(label)}</span><span class="n">${n.toLocaleString()}</span></div>`;
       }
@@ -652,7 +658,7 @@ async function loadFacets(){
 function renderActiveChips(){
   const names={keyword:t("n_keyword"),location:t("n_location"),workplace_type:t("g_workplace"),employment_type:t("g_jobtype"),category:t("g_domain"),platform:t("g_found"),country:t("g_country")};
   const chips=Object.entries(F).filter(([k,v])=>v).map(([k,v])=>{
-    let show=v;if(k==="workplace_type")show=wpl(v);if(k==="country")show=CNAME[v]||v;if(k==="category")show=tcat(v);
+    let show=v;if(k==="workplace_type")show=wpl(v);if(k==="country")show=CNAME[v]||v;if(k==="category")show=tcat(v);if(k==="level")show=tlvl(v);
     return `<span class="fchip"><b>${names[k]}:</b> ${esc(show)}<button data-k="${k}">×</button></span>`;
   });
   $("active").innerHTML=chips.join("");

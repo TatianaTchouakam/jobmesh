@@ -195,6 +195,37 @@ def normalize_category(department: Optional[str], title: Optional[str]) -> str:
     return "Other"
 
 
+# Seniority / experience level, detected from the title (and employment
+# type). Ordered: the FIRST bucket whose pattern matches wins, so the
+# junior-side buckets (internship, apprenticeship, junior) come first — a
+# "Junior Project Manager" should read as Junior, not Manager.
+_LEVEL_RULES = (
+    ("Internship", r"\bintern(ship)?\b|praktik|praktikant|stagiaire|becari"),
+    ("Apprenticeship", r"apprentice|apprenticeship|ausbildung|auszubildende|\bazubi\b|alternan|trainee|graduate (program|scheme|trainee)|duales? stud|dual study"),
+    ("Working Student", r"working student|werkstudent|\bétudiant|\betudiant"),
+    ("Junior / Entry", r"\bjunior\b|\bjr\b|entry[ -]level|einsteiger|d[ée]butant|\bgraduate\b|\bgrad\b"),
+    ("Lead / Principal", r"\blead\b|principal|\bstaff\b|head of|\bhead\b|director|\bvp\b|vice president|chief|leiter|leitung|responsable|teamlead|tech lead"),
+    ("Manager", r"manager|\bmgr\b|management|gestionnaire|leitende"),
+    ("Senior", r"\bsenior\b|\bsnr\b|\bsr\b|erfahren|confirm[ée]|exp[ée]riment|experienced"),
+)
+
+
+def normalize_level(title: Optional[str],
+                    employment_type: Optional[str] = None) -> Optional[str]:
+    """Detect a seniority/experience level from the title (and job type).
+
+    Returns one of a small, filterable set (Internship, Apprenticeship,
+    Working Student, Junior / Entry, Senior, Lead / Principal, Manager), or
+    None when the title carries no clear level signal — most postings don't,
+    and those are simply left out of the level facet.
+    """
+    text = f" {(employment_type or '')} {(title or '')} ".lower()
+    for label, pattern in _LEVEL_RULES:
+        if re.search(pattern, text):
+            return label
+    return None
+
+
 def make_dedup_key(title: str, company: str, location: Optional[str]) -> str:
     """Build a key that groups the *same* opening seen on different sources.
 
