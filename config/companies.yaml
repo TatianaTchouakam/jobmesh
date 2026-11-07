@@ -191,6 +191,43 @@ devitjobs:
 # manatal:
 #   - <career-page-slug>
 
+# === Generalist job boards — ALL sectors, worldwide (free API key) =========
+# These three bring non-tech + international coverage (Africa included).
+# They need a FREE key, read from environment variables (never in the repo).
+# Set the env vars (locally or in Render -> Environment), then UNCOMMENT the
+# block. A missing key is logged as a normal fetch failure, never fatal.
+
+# Adzuna — all sectors. One entry per country code. FREE tier is ~250
+#   calls/day, ~2,500/month, so keep the list short (6 countries x 2 pages
+#   ≈ 12 calls/run = safe). Add more only on a paid Adzuna plan.
+#   Note: in Africa, Adzuna covers South Africa (za) only — for Nigeria,
+#   Kenya, Ghana etc. use Jooble below.
+#   Env: ADZUNA_APP_ID, ADZUNA_APP_KEY   (https://developer.adzuna.com)
+# adzuna:
+#   - za            # 🇿🇦 South Africa
+#   - de            # 🇩🇪 Germany
+#   - gb            # 🇬🇧 United Kingdom
+#   - us            # 🇺🇸 United States
+#   - fr            # 🇫🇷 France
+#   - in            # 🇮🇳 India
+
+# Jooble — 70+ countries (many African markets), all sectors.
+#   One entry per location string; "all" = no location filter. FREE key
+#   defaults to ~500 requests total (2 pages x 5 locations = 10/run), so
+#   keep the list short; reply to Jooble's email to raise the limit.
+#   Env: JOOBLE_API_KEY                  (https://jooble.org/api/about)
+jooble:
+  - Nigeria
+  - South Africa
+  - Kenya
+  - Ghana
+  - Germany
+
+# USAJobs — US federal jobs, all sectors (health, admin, logistics...).
+#   Env: USAJOBS_EMAIL, USAJOBS_API_KEY  (https://developer.usajobs.gov/APIRequest)
+# usajobs:
+#   - all
+
 # bamboohr — ATS (find token at {company}.bamboohr.com). Add a company:
 # bamboohr:
 #   - {subdomain}
