@@ -226,6 +226,43 @@
 
 <div class="tip gtip" id="gtip"></div>
 
+<style>
+  .cvsec{max-width:980px;margin:34px auto 0;padding:0 16px}
+  .cvwrap{background:#fff;border:1px solid var(--line,#e7e9f0);border-radius:16px;padding:22px 22px 24px;box-shadow:0 1px 2px rgba(20,24,40,.04)}
+  .cvhead h2{font-size:19px;margin:0 0 4px}
+  .cvhead p{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
+  #cvtext{width:100%;box-sizing:border-box;border:1px solid var(--line,#e7e9f0);border-radius:11px;padding:12px 13px;font:inherit;font-size:14px;resize:vertical;background:var(--field,#f7f8fb)}
+  #cvtext:focus{outline:none;box-shadow:0 0 0 2px var(--accent) inset}
+  .cvrow{display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap}
+  .cvrow .cvgo{border:0;border-radius:11px;padding:11px 22px;font-weight:600;font-size:14.5px;cursor:pointer;background:linear-gradient(92deg,var(--gold-1),var(--gold-2));color:#fff}
+  .cvrow .cvgo:hover{filter:brightness(1.06)}
+  .cvupload{color:var(--accent);font-size:13.5px;font-weight:600;cursor:pointer}
+  .cvresult{margin-top:16px}
+  .cvdet{font-size:13px;color:var(--muted);margin-bottom:9px}
+  .cvchips{display:flex;gap:8px;flex-wrap:wrap}
+  .cvchip{background:var(--field,#f7f8fb);border:1px solid var(--line,#e7e9f0);color:#333a4a;font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;transition:border-color .12s,color .12s,background .12s}
+  .cvchip:hover{border-color:var(--gold-2);color:var(--gold-2);background:#fff}
+  .cvchip.none{cursor:default;color:var(--muted);font-weight:400;background:none;border:0;padding-left:0}
+</style>
+
+<section class="cvsec">
+  <div class="cvwrap">
+    <div class="cvhead">
+      <h2 data-i18n="cv_title">Find jobs for your profile</h2>
+      <p data-i18n="cv_sub">Paste your CV — Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored; it runs entirely in your browser.</p>
+    </div>
+    <textarea id="cvtext" rows="5" data-i18n-ph="cv_ph" placeholder="Paste your CV / résumé text here…" maxlength="20000"></textarea>
+    <div class="cvrow">
+      <button type="button" class="cvgo" id="cvgo" data-i18n="cv_analyze">Analyse my CV</button>
+      <label class="cvupload"><span data-i18n="cv_upload">…or upload a .txt file</span><input type="file" id="cvfile" accept=".txt,text/plain" hidden></label>
+    </div>
+    <div class="cvresult" id="cvresult" hidden>
+      <div class="cvdet" data-i18n="cv_detected">Your top skills — tap one to see matching jobs:</div>
+      <div class="cvchips" id="cvchips"></div>
+    </div>
+  </div>
+</section>
+
 <div class="main">
   <aside class="side" id="side"></aside>
   <section>
@@ -289,6 +326,7 @@ const I18N={
     g_workplace:"Workplace",g_jobtype:"Job type",g_domain:"Domain",g_found:"Found on",g_country:"Country",
     n_keyword:"Keyword",n_location:"Location",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"On-site",
     d_today:"Today",d_week:"This week",d_month:"This month",d_earlier:"Earlier",
+    cv_title:"Find jobs for your profile",cv_sub:"Paste your CV — Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored; it runs entirely in your browser.",cv_ph:"Paste your CV / résumé text here…",cv_analyze:"Analyse my CV",cv_upload:"…or upload a .txt file",cv_detected:"Your top skills — tap one to see matching jobs:",cv_none:"No clear skills detected — try pasting more of your CV.",
     fb_title:"Your feedback",fb_sub:"How was your job search? Found a role, or just want to rate Jobmesh? We'd love to hear it.",
     fb_ph:"Tell us about your experience — did the search work well, did you find a job?…",fb_name:"Your name (optional)",fb_send:"Send feedback",
     fb_thanks:"Thanks — your feedback was sent!",fb_empty:"No feedback yet. Be the first to share.",fb_anon:"Anonymous",fb_sending:"Sending…"},
@@ -306,6 +344,7 @@ const I18N={
     g_workplace:"Arbeitsmodell",g_jobtype:"Anstellungsart",g_domain:"Bereich",g_found:"Gefunden auf",g_country:"Land",
     n_keyword:"Stichwort",n_location:"Ort",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"Vor Ort",
     d_today:"Heute",d_week:"Diese Woche",d_month:"Diesen Monat",d_earlier:"Früher",
+    cv_title:"Jobs für dein Profil finden",cv_sub:"Füge deinen Lebenslauf ein — Jobmesh liest deine Skills und zeigt passende Stellen aus allen Branchen und Ländern. Nichts wird hochgeladen oder gespeichert; alles läuft in deinem Browser.",cv_ph:"Füge hier den Text deines Lebenslaufs ein…",cv_analyze:"Lebenslauf analysieren",cv_upload:"…oder .txt-Datei hochladen",cv_detected:"Deine wichtigsten Skills — tippe auf einen, um passende Jobs zu sehen:",cv_none:"Keine klaren Skills erkannt — füge mehr von deinem Lebenslauf ein.",
     fb_title:"Dein Feedback",fb_sub:"Wie war deine Jobsuche? Eine Stelle gefunden oder Jobmesh bewerten? Wir freuen uns auf dein Feedback.",
     fb_ph:"Erzähl uns von deiner Erfahrung — hat die Suche gut funktioniert, hast du einen Job gefunden?…",fb_name:"Dein Name (optional)",fb_send:"Feedback senden",
     fb_thanks:"Danke — dein Feedback wurde gesendet!",fb_empty:"Noch kein Feedback. Sei die erste Person.",fb_anon:"Anonym",fb_sending:"Wird gesendet…"},
@@ -323,6 +362,7 @@ const I18N={
     g_workplace:"Mode de travail",g_jobtype:"Type de contrat",g_domain:"Domaine",g_found:"Trouvé sur",g_country:"Pays",
     n_keyword:"Mot-clé",n_location:"Lieu",wp_remote:"Télétravail",wp_hybrid:"Hybride",wp_onsite:"Sur site",
     d_today:"Aujourd'hui",d_week:"Cette semaine",d_month:"Ce mois-ci",d_earlier:"Plus tôt",
+    cv_title:"Trouve des jobs pour ton profil",cv_sub:"Colle ton CV — Jobmesh lit tes compétences et affiche les offres qui correspondent, tous secteurs et tous pays. Rien n'est envoyé ni stocké ; tout se passe dans ton navigateur.",cv_ph:"Colle ici le texte de ton CV…",cv_analyze:"Analyser mon CV",cv_upload:"…ou charge un fichier .txt",cv_detected:"Tes compétences clés — clique sur l'une pour voir les offres :",cv_none:"Aucune compétence claire détectée — colle plus de ton CV.",
     fb_title:"Ton avis",fb_sub:"Comment s'est passée ta recherche ? Tu as trouvé un job, ou envie de noter Jobmesh ? On t'écoute.",
     fb_ph:"Dis-nous comment s'est passée ton expérience — la recherche a-t-elle bien marché, as-tu trouvé un job ?…",fb_name:"Ton nom (optionnel)",fb_send:"Envoyer",
     fb_thanks:"Merci — ton avis a été envoyé !",fb_empty:"Pas encore d'avis. Sois la première personne à partager.",fb_anon:"Anonyme",fb_sending:"Envoi…"},
@@ -710,6 +750,53 @@ async function submitFeedback(e){
   }catch(e){}
   btn.disabled=false;btn.textContent=t("fb_send");
 }
+
+/* ---- CV → suggestions (runs 100% in the browser; nothing uploaded) ---- */
+const CV_VOCAB=[
+  "data engineer","data scientist","data analyst","machine learning","ai engineer","software engineer","software developer","backend","frontend","full stack","devops","cloud engineer","mobile developer","qa engineer","security engineer","python","java","javascript","typescript","sql","react","node","aws","azure","gcp","docker","kubernetes","terraform","spark","airflow","power bi","tableau","etl",
+  "product manager","project manager","program manager","scrum master","ux designer","ui designer","graphic designer","product designer","marketing manager","digital marketing","seo","social media","growth","sales","account manager","business development","account executive",
+  "accountant","accounting","finance","financial analyst","controller","auditor","bookkeeper","human resources","recruiter","office manager","administrative assistant","executive assistant","operations","business analyst","data entry","customer service","customer support","call center","receptionist",
+  "nurse","registered nurse","caregiver","medical assistant","physician","pharmacist","dentist","physiotherapist","therapist","lab technician","healthcare",
+  "electrician","plumber","welder","mechanic","technician","machinist","hvac","carpenter","construction","maintenance","production","assembly","quality control","forklift",
+  "driver","truck driver","delivery","warehouse","logistics","supply chain","dispatcher","courier","picker","packer","inventory",
+  "chef","cook","waiter","bartender","barista","housekeeping","hotel","restaurant","retail","cashier","sales associate","store manager","teacher","tutor","lecturer","trainer","translator","cleaner","security guard",
+  "infirmier","infirmière","comptable","commercial","vendeur","vendeuse","chauffeur","cuisinier","cuisinière","serveur","serveuse","caissier","caissière","électricien","soudeur","développeur","développeuse","ingénieur","ingénieure","analyste","logistique","magasinier","assistante","secrétaire","aide-soignant","aide-soignante","agent d'entretien","gestion de projet","chef de projet",
+  "krankenpfleger","buchhalter","vertrieb","verkäufer","fahrer","koch","elektriker","entwickler","ingenieur","lager","logistik","pflege","reinigung"
+];
+const CV_STOP=new Set("the and for with your you our are was have has from this that will work experience years team skills using used based role job jobs company companies responsible including www http https com gmail email phone des les une pour avec dans vous nous und der die das mit für von den ein eine".split(/\s+/));
+function cvExtract(text){
+  const low=" "+text.toLowerCase().replace(/[^\p{L}\p{N}+#]+/gu," ").replace(/\s+/g," ")+" ";
+  const scored=[];
+  for(const term of CV_VOCAB){
+    const needle=" "+term.toLowerCase()+" ";
+    let c=0,i=0;
+    while((i=low.indexOf(needle,i))!==-1){c++;i+=Math.max(1,needle.length-1);}
+    if(c>0)scored.push([term,c*(term.includes(" ")?2:1)]);
+  }
+  scored.sort((a,b)=>b[1]-a[1]);
+  const seen=new Set();let top=[];
+  for(const[term]of scored){const k=term.toLowerCase();if(!seen.has(k)){seen.add(k);top.push(term);}if(top.length>=8)break;}
+  if(top.length<3){
+    const freq={};
+    for(const w of low.split(" ")){if(w.length>=4&&!CV_STOP.has(w)&&!/^\d+$/.test(w))freq[w]=(freq[w]||0)+1;}
+    for(const[w]of Object.entries(freq).sort((a,b)=>b[1]-a[1])){if(!top.map(x=>x.toLowerCase()).includes(w))top.push(w);if(top.length>=8)break;}
+  }
+  return top;
+}
+function cvRender(terms){
+  const box=$("cvresult"),chips=$("cvchips");box.hidden=false;chips.innerHTML="";
+  if(!terms.length){chips.innerHTML=`<span class="cvchip none">${esc(t("cv_none"))}</span>`;return;}
+  terms.forEach(term=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="cvchip";b.textContent=term;
+    b.addEventListener("click",()=>{$("keyword").value=term;scrollToResults();runSearch();});
+    chips.appendChild(b);
+  });
+  $("keyword").value=terms[0];runSearch();
+}
+function cvAnalyze(){const txt=($("cvtext").value||"").trim();if(!txt)return;cvRender(cvExtract(txt));}
+$("cvgo").addEventListener("click",cvAnalyze);
+$("cvfile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("cvtext").value=String(r.result||"").slice(0,20000);cvAnalyze();};r.readAsText(f);});
 
 $("form").addEventListener("submit",e=>{e.preventDefault();scrollToResults();runSearch()});
 $("fbform").addEventListener("submit",submitFeedback);
