@@ -103,6 +103,14 @@ pinpoint:        # ATS (find token at {company}.pinpointhq.com) — best-effort,
 # softgarden — ATS very common in Germany/DACH. Public career feed at
 # https://{slug}.career.softgarden.de/jobs.feed.json — slug is the employer's
 # softgarden career subdomain. Great for German non-tech employers.
+# Oracle Recruiting Cloud — enterprise ATS behind many large NON-TECH
+# employers (hospitality, retail, banking, healthcare). Public, keyless.
+# Token packs the host and site code (find both in a company's Oracle
+# careers URL, e.g. https://{host}/hcmUI/CandidateExperience/.../sites/{site}):
+#   {host}:{site}[:CompanyLabel]
+oracle:
+  - ejwl.fa.us2.oraclecloud.com:CX:Marriott   # Marriott — hospitality
+
 softgarden:
   - home24          # furniture e-commerce (non-tech)
   # Add German employers by their softgarden slug (from a job URL like

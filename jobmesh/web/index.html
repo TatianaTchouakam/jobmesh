@@ -25,7 +25,13 @@
   .hwrap{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
   .brand{font-weight:800;font-size:23px;letter-spacing:-.02em}
   .brand .g{background:linear-gradient(92deg,var(--gold-1),var(--gold-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hbar{display:flex;align-items:center;gap:18px}
+  .langsel{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+  .langsel button{border:0;background:none;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--soft);padding:5px 11px;cursor:pointer}
+  .langsel button+button{border-left:1px solid var(--line)}
+  .langsel button.on{background:var(--text);color:#fff}
   .live{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);font-weight:500}
+  @media(max-width:620px){.live{display:none}}
   .live .dot{width:8px;height:8px;border-radius:50%;background:var(--new);box-shadow:0 0 0 0 rgba(47,158,101,.5);animation:ping 2s infinite}
   @keyframes ping{0%{box-shadow:0 0 0 0 rgba(47,158,101,.45)}70%{box-shadow:0 0 0 7px rgba(47,158,101,0)}100%{box-shadow:0 0 0 0 rgba(47,158,101,0)}}
 
@@ -147,26 +153,31 @@
 <header>
   <div class="hwrap">
     <div class="brand">Job<span class="g">mesh</span></div>
-    <div class="live"><span class="dot"></span> Live index · refreshed continuously</div>
+    <div class="hbar">
+      <div class="langsel" id="langsel">
+        <button data-lang="en">EN</button><button data-lang="de">DE</button><button data-lang="fr">FR</button>
+      </div>
+      <div class="live"><span class="dot"></span> <span data-i18n="live">Live index · refreshed continuously</span></div>
+    </div>
   </div>
 </header>
 
 <section class="hero">
   <div class="herowrap">
     <div>
-      <div class="eyebrow"><span class="d"></span> One index · many sources</div>
-      <h1>Every job, from every source — one <span class="g">mesh</span>.</h1>
-      <p class="lead">Jobmesh pulls live openings straight from company career pages and job boards, deduplicates them, and links every role back to its source. No reposts, no dead links.</p>
+      <div class="eyebrow"><span class="d"></span> <span data-i18n="eyebrow">One index · many sources</span></div>
+      <h1 data-i18n-html="h1">Every job, from every source — one <span class="g">mesh</span>.</h1>
+      <p class="lead" data-i18n="lead">Jobmesh pulls live openings straight from company career pages and job boards, deduplicates them, and links every role back to its source. No reposts, no dead links.</p>
       <form class="search" id="form" autocomplete="off">
-        <input type="text" id="keyword" placeholder="Role or skill — data engineer, python, sales…" />
-        <input type="text" id="location" placeholder="Location" />
-        <button class="go" type="submit">Search</button>
+        <input type="text" id="keyword" data-i18n-ph="ph_keyword" placeholder="Role or skill — data engineer, python, sales…" />
+        <input type="text" id="location" data-i18n-ph="ph_location" placeholder="Location" />
+        <button class="go" type="submit" data-i18n="search">Search</button>
       </form>
       <div class="herochips" id="herochips"></div>
     </div>
     <div class="globewrap">
       <canvas id="globe" width="440" height="440" aria-label="Interactive globe of open roles by country"></canvas>
-      <div class="ghint">drag to spin</div>
+      <div class="ghint" data-i18n="drag">drag to spin</div>
       <div class="gcard" id="gcard" hidden>
         <div class="cc" id="gcard-cc">Open roles</div>
         <div class="cn" id="gcard-cn">—</div>
@@ -176,15 +187,15 @@
   </div>
   <div class="band">
     <div class="bandwrap" id="band">
-      <div class="stat"><span class="v" data-k="open_postings">—</span><span class="k">open jobs</span></div>
-      <div class="stat"><span class="v" data-k="companies">—</span><span class="k">companies</span></div>
-      <div class="stat"><span class="v" data-k="boards_indexed">—</span><span class="k">sources connected</span></div>
-      <div class="stat"><span class="v" data-k="platforms">—</span><span class="k">ATS & job-board platforms</span></div>
-      <div class="stat"><span class="v" data-k="countries">—</span><span class="k">countries</span></div>
+      <div class="stat"><span class="v" data-k="open_postings">—</span><span class="k" data-i18n="s_jobs">open jobs</span></div>
+      <div class="stat"><span class="v" data-k="companies">—</span><span class="k" data-i18n="s_companies">companies</span></div>
+      <div class="stat"><span class="v" data-k="boards_indexed">—</span><span class="k" data-i18n="s_sources">sources connected</span></div>
+      <div class="stat"><span class="v" data-k="platforms">—</span><span class="k" data-i18n="s_platforms">ATS &amp; job-board platforms</span></div>
+      <div class="stat"><span class="v" data-k="countries">—</span><span class="k" data-i18n="s_countries">countries</span></div>
       <div class="bandnote" id="bandnote"></div>
     </div>
   </div>
-  <div class="pstrip" id="pstrip"><span class="lbl">Pulling from</span></div>
+  <div class="pstrip" id="pstrip"><span class="lbl" data-i18n="pulling">Pulling from</span></div>
 </section>
 
 <div class="tip gtip" id="gtip"></div>
@@ -201,21 +212,86 @@
   </section>
 </div>
 
-<footer>jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source</footer>
+<footer data-i18n="footer">jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source</footer>
 
 <script>
 const PCOL={greenhouse:"#2f9e65",lever:"#5a6cf0",ashby:"#b65cff",workable:"#e0567a",smartrecruiters:"#2aa7c7",recruitee:"#e0864f",breezy:"#1fae8f",personio:"#3b5bdb",bamboohr:"#6aae3c",pinpoint:"#e6484d",remotive:"#1f7a8c",arbeitnow:"#d1495b",themuse:"#7b6cf6",remoteok:"#ff6b6b",jobicy:"#20a4f3",himalayas:"#8a63d2",workingnomads:"#e08a3c",weworkremotely:"#2d7dd2",workday:"#1f6feb",teamtailor:"#ff5a5f",fourdayweek:"#0ea5a0",jobspresso:"#16a34a",pythonjobs:"#3b6fb6",joinrise:"#7c3aed",rippling:"#111827",hirehive:"#e0864f",manatal:"#2563eb",softgarden:"#64b32c"};
 const WP={remote:"Remote",hybrid:"Hybrid",onsite:"On-site"};
 const AVC=["#5d50e6","#108a6c","#d1495b","#2aa7c7","#e0864f","#7b6cf6","#2f9e65","#c4871a","#e0567a","#20a4f3"];
 const FGROUPS=[
-  {key:"workplace_type",param:"workplace_type",title:"Workplace",labels:WP},
-  {key:"employment_type",param:"employment_type",title:"Job type"},
-  {key:"category",param:"category",title:"Domain"},
-  {key:"source_platform",param:"platform",title:"Found on"},
+  {key:"workplace_type",param:"workplace_type",titleKey:"g_workplace",wp:true},
+  {key:"employment_type",param:"employment_type",titleKey:"g_jobtype"},
+  {key:"category",param:"category",titleKey:"g_domain",cat:true},
+  {key:"source_platform",param:"platform",titleKey:"g_found"},
 ];
 const CNAME={US:"United States",GB:"United Kingdom",DE:"Germany",FR:"France",NL:"Netherlands",IE:"Ireland",ES:"Spain",IT:"Italy",PL:"Poland",PT:"Portugal",SE:"Sweden",CH:"Switzerland",AT:"Austria",BE:"Belgium",DK:"Denmark",NO:"Norway",FI:"Finland",CZ:"Czechia",RO:"Romania",HU:"Hungary",GR:"Greece",CA:"Canada",MX:"Mexico",BR:"Brazil",AR:"Argentina",IN:"India",SG:"Singapore",AU:"Australia",NZ:"New Zealand",JP:"Japan",CN:"China",HK:"Hong Kong",KR:"South Korea",IL:"Israel",AE:"United Arab Emirates",ZA:"South Africa",TR:"Turkey",UA:"Ukraine",PH:"Philippines",MY:"Malaysia",VN:"Vietnam",TH:"Thailand",NG:"Nigeria",KE:"Kenya",EG:"Egypt",CO:"Colombia",CL:"Chile",LU:"Luxembourg",BG:"Bulgaria",HR:"Croatia",SK:"Slovakia",SI:"Slovenia",EE:"Estonia",LT:"Lithuania",LV:"Latvia",RS:"Serbia",ID:"Indonesia"};
 const CENTROID={US:[-98,39],GB:[-2,54],DE:[10,51],FR:[2,46],NL:[5.5,52],IE:[-8,53],ES:[-4,40],IT:[12,42],PL:[19,52],PT:[-8,39.5],SE:[15,62],CH:[8,47],AT:[14,47.5],BE:[4.5,50.5],DK:[9.5,56],NO:[9,61],FI:[26,64],CZ:[15.5,49.8],RO:[25,46],HU:[19,47],GR:[22,39],CA:[-106,56],MX:[-102,23],BR:[-51,-10],AR:[-64,-38],IN:[79,22],SG:[103.8,1.35],AU:[134,-25],NZ:[172,-41],JP:[138,36],CN:[104,35],HK:[114.1,22.3],KR:[127.8,36.5],IL:[35,31],AE:[54,24],ZA:[25,-29],TR:[35,39],UA:[31,49],PH:[122,12],MY:[102,4],VN:[106,16],TH:[101,15],NG:[8,10],KE:[38,0],EG:[30,27],CO:[-74,4],CL:[-71,-35],LU:[6.1,49.8],BG:[25,43],HR:[15.5,45],SK:[19.5,48.7],SI:[15,46],EE:[26,58.6],LT:[24,55],LV:[25,57],RS:[21,44],ID:[113,-2]};
 const PAGE=25;
+
+/* ---- i18n (EN / DE / FR) — translates the interface chrome; job postings
+   stay in their original source language ---- */
+const I18N={
+  en:{live:"Live index · refreshed continuously",eyebrow:"One index · many sources",
+    h1:'Every job, from every source — one <span class="g">mesh</span>.',
+    lead:"Jobmesh pulls live openings straight from company career pages and job boards, deduplicates them, and links every role back to its source. No reposts, no dead links.",
+    ph_keyword:"Role or skill — data engineer, python, sales…",ph_location:"Location",search:"Search",
+    drag:"drag to spin",s_jobs:"open jobs",s_companies:"companies",s_sources:"sources connected",
+    s_platforms:"ATS & job-board platforms",s_countries:"countries",pulling:"Pulling from",
+    footer:"jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source",
+    open_roles:"open roles",most_open:"Most open roles",gcard_open:"Open roles",filtering_by:"Filtering by",
+    remote_note:"{n} roles open to remote",apply:"Apply at source ↗",save:"Save",saved:"Saved",
+    load_more:"Load more",more:"more",empty:"No matching jobs. Try a broader search.",clear:"Clear all filters",
+    g_workplace:"Workplace",g_jobtype:"Job type",g_domain:"Domain",g_found:"Found on",g_country:"Country",
+    n_keyword:"Keyword",n_location:"Location",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"On-site",
+    d_today:"Today",d_week:"This week",d_month:"This month",d_earlier:"Earlier"},
+  de:{live:"Live-Index · laufend aktualisiert",eyebrow:"Ein Index · viele Quellen",
+    h1:'Jeder Job, aus jeder Quelle — ein <span class="g">Mesh</span>.',
+    lead:"Jobmesh holt offene Stellen direkt von Karriereseiten und Jobbörsen, entfernt Dubletten und verlinkt jede Stelle zurück zur Quelle. Keine Reposts, keine toten Links.",
+    ph_keyword:"Beruf oder Skill — Data Engineer, Python, Vertrieb…",ph_location:"Ort",search:"Suchen",
+    drag:"zum Drehen ziehen",s_jobs:"offene Jobs",s_companies:"Unternehmen",s_sources:"verbundene Quellen",
+    s_platforms:"ATS- & Jobbörsen-Plattformen",s_countries:"Länder",pulling:"Quellen",
+    footer:"jobmesh · ein vereinter Index von Stellenanzeigen aus vielen ATS und Jobbörsen · jede Stelle verlinkt zurück zur Originalquelle",
+    open_roles:"offene Stellen",most_open:"Meiste offene Stellen",gcard_open:"Offene Stellen",filtering_by:"Gefiltert nach",
+    remote_note:"{n} Stellen remote möglich",apply:"Direkt bewerben ↗",save:"Merken",saved:"Gemerkt",
+    load_more:"Mehr laden",more:"weitere",empty:"Keine passenden Jobs. Versuche eine breitere Suche.",clear:"Alle Filter löschen",
+    g_workplace:"Arbeitsmodell",g_jobtype:"Anstellungsart",g_domain:"Bereich",g_found:"Gefunden auf",g_country:"Land",
+    n_keyword:"Stichwort",n_location:"Ort",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"Vor Ort",
+    d_today:"Heute",d_week:"Diese Woche",d_month:"Diesen Monat",d_earlier:"Früher"},
+  fr:{live:"Index en direct · actualisé en continu",eyebrow:"Un index · plusieurs sources",
+    h1:'Chaque offre, de chaque source — un seul <span class="g">mesh</span>.',
+    lead:"Jobmesh récupère les offres directement depuis les pages carrière et les job boards, supprime les doublons et relie chaque offre à sa source. Pas de reposts, pas de liens morts.",
+    ph_keyword:"Métier ou compétence — data engineer, python, vente…",ph_location:"Lieu",search:"Rechercher",
+    drag:"faites tourner",s_jobs:"offres ouvertes",s_companies:"entreprises",s_sources:"sources connectées",
+    s_platforms:"plateformes ATS & job boards",s_countries:"pays",pulling:"Sources",
+    footer:"jobmesh · un index unifié des offres d'emploi issues de nombreux ATS et job boards · chaque offre renvoie à sa source d'origine",
+    open_roles:"offres ouvertes",most_open:"Le plus d'offres",gcard_open:"Offres ouvertes",filtering_by:"Filtré par",
+    remote_note:"{n} offres ouvertes au télétravail",apply:"Postuler à la source ↗",save:"Enregistrer",saved:"Enregistré",
+    load_more:"Voir plus",more:"de plus",empty:"Aucune offre. Élargis ta recherche.",clear:"Effacer les filtres",
+    g_workplace:"Mode de travail",g_jobtype:"Type de contrat",g_domain:"Domaine",g_found:"Trouvé sur",g_country:"Pays",
+    n_keyword:"Mot-clé",n_location:"Lieu",wp_remote:"Télétravail",wp_hybrid:"Hybride",wp_onsite:"Sur site",
+    d_today:"Aujourd'hui",d_week:"Cette semaine",d_month:"Ce mois-ci",d_earlier:"Plus tôt"},
+};
+// Category label translations (stored values are English).
+const CATLABEL={
+  de:{"Data & AI":"Data & KI","Engineering":"Engineering","Design":"Design","Product":"Produkt","Sales":"Vertrieb","Marketing":"Marketing","Finance & Accounting":"Finanzen & Buchhaltung","People & HR":"Personal & HR","Operations":"Operations","Customer Support":"Kundenservice","Legal":"Recht","Healthcare":"Gesundheitswesen","Skilled Trades":"Handwerk","Construction":"Bau","Manufacturing & Production":"Produktion","Logistics & Supply Chain":"Logistik","Hospitality & Food":"Gastronomie & Hotellerie","Retail":"Einzelhandel","Education":"Bildung","Science & Research":"Wissenschaft & Forschung","Administration":"Verwaltung","Other":"Sonstige"},
+  fr:{"Data & AI":"Data & IA","Engineering":"Ingénierie","Design":"Design","Product":"Produit","Sales":"Vente","Marketing":"Marketing","Finance & Accounting":"Finance & Comptabilité","People & HR":"RH","Operations":"Opérations","Customer Support":"Support client","Legal":"Juridique","Healthcare":"Santé","Skilled Trades":"Artisanat & Métiers","Construction":"BTP","Manufacturing & Production":"Production","Logistics & Supply Chain":"Logistique","Hospitality & Food":"Hôtellerie & Restauration","Retail":"Commerce de détail","Education":"Éducation","Science & Research":"Science & Recherche","Administration":"Administration","Other":"Autre"},
+};
+let LANG=(()=>{try{const s=localStorage.getItem("jobmesh_lang");if(s)return s;}catch(e){}
+  const n=(navigator.language||"en").slice(0,2).toLowerCase();return ["en","de","fr"].includes(n)?n:"en";})();
+function t(k){return (I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;}
+function tcat(c){return (LANG!=="en"&&CATLABEL[LANG]&&CATLABEL[LANG][c])||c;}
+function wpl(v){return t("wp_"+v)|| (WP[v]||v);}
+function applyI18n(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-html]").forEach(el=>el.innerHTML=t(el.dataset.i18nHtml));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+  document.querySelectorAll("#langsel button").forEach(b=>b.classList.toggle("on",b.dataset.lang===LANG));
+}
+function setLang(l){LANG=l;try{localStorage.setItem("jobmesh_lang",l)}catch(e){}
+  applyI18n();applyBandNote();$("herochips").innerHTML="";loadHeroChips();if(window.__refreshGcard)window.__refreshGcard();runSearch();}
+function applyBandNote(){if(GEO&&GEO.remote)$("bandnote").textContent=t("remote_note").replace("{n}",GEO.remote.toLocaleString());}
+
 let offset=0, saved=loadSaved();
 
 const $=id=>document.getElementById(id);
@@ -233,7 +309,7 @@ function params(extra){
 }
 function hue(s){let h=0;for(const c of (s||"?"))h=(h*31+c.charCodeAt(0))%AVC.length;return AVC[h]}
 function relDate(iso){if(!iso)return null;const d=new Date(iso);if(isNaN(d))return null;const dd=Math.floor((Date.now()-d)/86400000);if(dd<=0)return"today";if(dd===1)return"1d ago";if(dd<7)return dd+"d ago";if(dd<35)return Math.floor(dd/7)+"w ago";return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
-function dayGroup(iso){if(!iso)return"Earlier";const d=new Date(iso);if(isNaN(d))return"Earlier";const dd=Math.floor((Date.now()-d)/86400000);if(dd<=0)return"Today";if(dd<7)return"This week";if(dd<31)return"This month";return"Earlier"}
+function dayGroup(iso){if(!iso)return"earlier";const d=new Date(iso);if(isNaN(d))return"earlier";const dd=Math.floor((Date.now()-d)/86400000);if(dd<=0)return"today";if(dd<7)return"week";if(dd<31)return"month";return"earlier"}
 function isNew(iso){if(!iso)return false;const d=new Date(iso);return !isNaN(d)&&(Date.now()-d)<48*3600*1000}
 function cleanSnippet(t){
   if(!t)return"";
@@ -259,7 +335,7 @@ async function loadBandAndGeo(){
   const ncountries=Object.keys(g.countries||{}).length;
   const vals={open_postings:s.open_postings,companies:s.companies,boards_indexed:s.boards_indexed,platforms:s.platforms,countries:ncountries};
   document.querySelectorAll(".band .v").forEach(el=>{const v=vals[el.dataset.k];if(v!=null)animateCount(el,v)});
-  if(g.remote)$("bandnote").textContent=g.remote.toLocaleString()+" roles open to remote";
+  applyBandNote();
   // platform strip
   const plats=Object.entries(s.open_by_platform||{}).sort((a,b)=>b[1]-a[1]).slice(0,12);
   const strip=$("pstrip");
@@ -276,12 +352,12 @@ async function loadHeroChips(){
     const box=$("herochips");
     for(const [val,n] of cats){
       const c=document.createElement("button");c.className="hchip";
-      c.innerHTML=`${esc(val)} <span class="n">${n.toLocaleString()}</span>`;
+      c.innerHTML=`${esc(tcat(val))} <span class="n">${n.toLocaleString()}</span>`;
       c.onclick=()=>{F.category=F.category===val?"":val;scrollToResults();runSearch()};
       box.appendChild(c);
     }
     if(GEO&&GEO.remote){const c=document.createElement("button");c.className="hchip rem";
-      c.innerHTML=`Remote <span class="n">${GEO.remote.toLocaleString()}</span>`;
+      c.innerHTML=`${esc(t("wp_remote"))} <span class="n">${GEO.remote.toLocaleString()}</span>`;
       c.onclick=()=>{F.workplace_type=F.workplace_type==="remote"?"":"remote";scrollToResults();runSearch()};
       box.appendChild(c);}
   }catch(e){}
@@ -300,7 +376,7 @@ function initGlobe(){
   size();
   const projection=d3.geoOrthographic().translate([W/2,H/2]).clipAngle(90);
   const path=d3.geoPath(projection,ctx);
-  let land=null, borders=null, counts={}, maxc=1, hovered=null, selected=null;
+  let land=null, borders=null, counts={}, maxc=1, hovered=null, selected=null, topCode=null, curCode=null;
   let rotation=[-15,-25], autov=0.18, lastInteract=0, dragging=false;
 
   function fit(){projection.scale(W/2-12).translate([W/2,H/2]);}
@@ -383,13 +459,15 @@ function initGlobe(){
   window.addEventListener("resize",()=>{size();fit();render();});
 
   function showCard(code){
+    curCode=code;
     const card=$("gcard");if(!code){card.hidden=true;return;}
     card.hidden=false;
-    $("gcard-cc").textContent=(code===selected?"Filtering by":"Open roles");
+    $("gcard-cc").textContent=(code===selected?t("filtering_by"):(code===topCode?t("most_open"):t("gcard_open")));
     $("gcard-cn").textContent=CNAME[code]||code;
-    $("gcard-cv").textContent=(counts[code]||0).toLocaleString()+" open roles";
+    $("gcard-cv").textContent=(counts[code]||0).toLocaleString()+" "+t("open_roles");
   }
   window.__selectCountry=function(code){selected=code;showCard(code);render();};
+  window.__refreshGcard=function(){showCard(curCode);};
 
   // load data — dots render from /geo independently of the world map, so the
   // globe still lights up even if the map CDN is slow or blocked.
@@ -397,7 +475,7 @@ function initGlobe(){
   fetch("/geo").then(r=>r.json()).then(geo=>{
     counts=geo.countries||{};maxc=Math.max(1,...Object.values(counts),1);
     const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
-    if(top){showCard(top[0]);$("gcard-cc").textContent="Most open roles";}
+    if(top){topCode=top[0];showCard(topCode);}
     render();
   }).catch(()=>{});
   fetch("/vendor/countries-110m.json").then(r=>r.json()).then(world=>{
@@ -416,22 +494,22 @@ function selectCountry(code){
 async function loadFacets(){
   try{
     const f=await(await fetch("/facets?"+params().toString())).json();
-    $("count").innerHTML=`${(f.total||0).toLocaleString()} <span>open roles</span>`;
+    $("count").innerHTML=`${(f.total||0).toLocaleString()} <span>${t("open_roles")}</span>`;
     let html="";
     const anyActive=Object.values(F).some(Boolean);
     for(const g of FGROUPS){
       const counts=f[g.key]||{};
       const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
       if(!entries.length)continue;
-      html+=`<div class="fgroup"><h4>${g.title}</h4>`;
+      html+=`<div class="fgroup"><h4>${t(g.titleKey)}</h4>`;
       for(const [val,n] of entries){
-        const label=(g.labels&&g.labels[val])||val;
+        const label=g.wp?wpl(val):(g.cat?tcat(val):val);
         const active=F[g.param]===val;
         html+=`<div class="frow${active?" active":""}" data-param="${g.param}" data-val="${esc(val)}"><span>${esc(label)}</span><span class="n">${n.toLocaleString()}</span></div>`;
       }
       html+=`</div>`;
     }
-    if(anyActive)html+=`<button class="clearall" id="clearall">Clear all filters</button>`;
+    if(anyActive)html+=`<button class="clearall" id="clearall">${t("clear")}</button>`;
     $("side").innerHTML=html;
     document.querySelectorAll(".frow").forEach(r=>r.onclick=()=>{
       const p=r.dataset.param,v=r.dataset.val; F[p]=(F[p]===v?"":v); runSearch();
@@ -442,9 +520,9 @@ async function loadFacets(){
 }
 
 function renderActiveChips(){
-  const names={keyword:"Keyword",location:"Location",workplace_type:"Workplace",employment_type:"Job type",category:"Domain",platform:"Found on",country:"Country"};
+  const names={keyword:t("n_keyword"),location:t("n_location"),workplace_type:t("g_workplace"),employment_type:t("g_jobtype"),category:t("g_domain"),platform:t("g_found"),country:t("g_country")};
   const chips=Object.entries(F).filter(([k,v])=>v).map(([k,v])=>{
-    let show=v;if(k==="workplace_type")show=WP[v]||v;if(k==="country")show=CNAME[v]||v;
+    let show=v;if(k==="workplace_type")show=wpl(v);if(k==="country")show=CNAME[v]||v;if(k==="category")show=tcat(v);
     return `<span class="fchip"><b>${names[k]}:</b> ${esc(show)}<button data-k="${k}">×</button></span>`;
   });
   $("active").innerHTML=chips.join("");
@@ -460,8 +538,8 @@ function card(j){
   const letter=esc((j.company||"?").trim().charAt(0).toUpperCase()||"?");
   const chips=[];
   if(j.source_platform)chips.push(`<span class="chip badge" style="background:${col}">${esc(j.source_platform)}</span>`);
-  if(j.category&&j.category!=="Other")chips.push(`<span class="chip cat">${esc(j.category)}</span>`);
-  if(j.workplace_type)chips.push(`<span class="chip remote">${WP[j.workplace_type]||j.workplace_type}</span>`);
+  if(j.category&&j.category!=="Other")chips.push(`<span class="chip cat">${esc(tcat(j.category))}</span>`);
+  if(j.workplace_type)chips.push(`<span class="chip remote">${esc(wpl(j.workplace_type))}</span>`);
   if(j.employment_type)chips.push(`<span class="chip">${esc(j.employment_type)}</span>`);
   if(j.salary)chips.push(`<span class="chip salary">${esc(j.salary)}</span>`);
   const url=j.apply_url||j.source_url||"#";
@@ -470,7 +548,7 @@ function card(j){
   const stext=cleanSnippet(j.description);
   const snip=stext?`<div class="csnip">${esc(stext.slice(0,180))}</div>`:"";
   const on=saved.has(j.uid)?" on":"";
-  const savedTxt=saved.has(j.uid)?"Saved":"Save";
+  const savedTxt=saved.has(j.uid)?t("saved"):t("save");
   return `<div class="card">
     <div class="crow">
       <div class="av" style="background:${av}">${letter}</div>
@@ -482,7 +560,7 @@ function card(j){
           </div>
           <div class="cside">
             ${ago?`<span class="ago">${ago}</span>`:""}
-            <a class="apply" href="${esc(url)}" target="_blank" rel="noopener">Apply at source ↗</a>
+            <a class="apply" href="${esc(url)}" target="_blank" rel="noopener">${t("apply")}</a>
             <button class="save${on}" data-uid="${esc(j.uid)}">${savedTxt}</button>
           </div>
         </div>
@@ -497,19 +575,19 @@ function renderGroups(rows,append){
   let html="",last=append?window.__lastGroup:null;
   for(const j of rows){
     const g=dayGroup(j.posted_at);
-    if(g!==last){html+=`<div class="daygroup">${g}</div>`;last=g;}
+    if(g!==last){html+=`<div class="daygroup">${t("d_"+g)}</div>`;last=g;}
     html+=card(j);
   }
   window.__lastGroup=last;
   if(append)$("results").insertAdjacentHTML("beforeend",html);
-  else $("results").innerHTML=html||`<div class="empty">No matching jobs. Try a broader search.</div>`;
+  else $("results").innerHTML=html||`<div class="empty">${t("empty")}</div>`;
   bindSave();
 }
 function bindSave(){
   document.querySelectorAll(".save").forEach(b=>b.onclick=()=>{
     const u=b.dataset.uid;
-    if(saved.has(u)){saved.delete(u);b.classList.remove("on");b.textContent="Save";}
-    else{saved.add(u);b.classList.add("on");b.textContent="Saved";}
+    if(saved.has(u)){saved.delete(u);b.classList.remove("on");b.textContent=t("save");}
+    else{saved.add(u);b.classList.add("on");b.textContent=t("saved");}
     persistSaved();
   });
 }
@@ -517,9 +595,11 @@ function bindSave(){
 async function fetchJobs(){const p=params();p.set("limit",PAGE);p.set("offset",offset);return(await(await fetch("/jobs?"+p.toString())).json())}
 async function runSearch(){F.keyword=$("keyword").value.trim();F.location=$("location").value.trim();offset=0;window.__lastGroup=null;loadFacets();const d=await fetchJobs();renderGroups(d.results||[],false);renderMore(d)}
 async function loadMore(){offset+=PAGE;const d=await fetchJobs();renderGroups(d.results||[],true);renderMore(d)}
-function renderMore(d){const shown=offset+(d.results||[]).length;$("morewrap").innerHTML=(d.total&&shown<d.total)?`<button class="more" id="mb">Load more (${(d.total-shown).toLocaleString()} more)</button>`:"";const m=$("mb");if(m)m.onclick=loadMore}
+function renderMore(d){const shown=offset+(d.results||[]).length;$("morewrap").innerHTML=(d.total&&shown<d.total)?`<button class="more" id="mb">${t("load_more")} (${(d.total-shown).toLocaleString()} ${t("more")})</button>`:"";const m=$("mb");if(m)m.onclick=loadMore}
 
 $("form").addEventListener("submit",e=>{e.preventDefault();scrollToResults();runSearch()});
+document.querySelectorAll("#langsel button").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+applyI18n();
 loadBandAndGeo().then(loadHeroChips);
 window.addEventListener("load",initGlobe);
 runSearch();
