@@ -161,6 +161,13 @@ pythonjobs:
 devitjobs:
   - all
 
+# ReliefWeb — UN humanitarian / NGO jobs. Disabled: the old v1 API is gone
+# (410) and the new v2 API requires an approved appname (registration), so
+# it's no longer anonymous/keyless. Register an appname and switch the
+# connector to v2 to re-enable.
+# reliefweb:
+#   - all
+
 # Rise (joinrise.io) — cross-employer remote/tech feed (public JSON, no token).
 # Paused: their API currently returns 504 Gateway Timeout. The connector is
 # resilient (retries) — uncomment to re-enable when their service recovers.

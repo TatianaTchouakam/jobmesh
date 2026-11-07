@@ -193,7 +193,7 @@
       <h1 data-i18n-html="h1">Every job, from every source — one <span class="g">mesh</span>.</h1>
       <p class="lead" data-i18n="lead">Jobmesh pulls live openings straight from company career pages and job boards, deduplicates them, and links every role back to its source. No reposts, no dead links.</p>
       <form class="search" id="form" autocomplete="off">
-        <input type="text" id="keyword" data-i18n-ph="ph_keyword" placeholder="Role or skill — data engineer, python, sales…" />
+        <input type="text" id="keyword" placeholder="Role or skill —" />
         <input type="text" id="location" data-i18n-ph="ph_location" placeholder="Location" />
         <button class="go" type="submit" data-i18n="search">Search</button>
       </form>
@@ -276,7 +276,8 @@ const I18N={
   en:{live:"Live index · refreshed continuously",eyebrow:"One index · many sources",
     h1:'Every job, from every source — one <span class="g">mesh</span>.',
     lead:"Jobmesh pulls live openings straight from company career pages and job boards, deduplicates them, and links every role back to its source. No reposts, no dead links.",
-    ph_keyword:"Role or skill — data engineer, python, sales…",ph_location:"Location",search:"Search",
+    ph_keyword:"Role or skill",ph_location:"Location",search:"Search",
+    ph_prefix:"Role or skill — ",ph_examples:["data engineer","software developer","nurse","sales manager","logistics","chef","accountant","electrician","designer","marketing manager"],
     drag:"drag to spin",s_jobs:"open jobs",s_companies:"companies",s_sources:"sources connected",
     s_platforms:"ATS & job-board platforms",s_countries:"countries",pulling:"Pulling from",
     footer:"jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source",
@@ -292,7 +293,8 @@ const I18N={
   de:{live:"Live-Index · laufend aktualisiert",eyebrow:"Ein Index · viele Quellen",
     h1:'Jeder Job, aus jeder Quelle — ein <span class="g">Mesh</span>.',
     lead:"Jobmesh holt offene Stellen direkt von Karriereseiten und Jobbörsen, entfernt Dubletten und verlinkt jede Stelle zurück zur Quelle. Keine Reposts, keine toten Links.",
-    ph_keyword:"Beruf oder Skill — Data Engineer, Python, Vertrieb…",ph_location:"Ort",search:"Suchen",
+    ph_keyword:"Beruf oder Skill",ph_location:"Ort",search:"Suchen",
+    ph_prefix:"Beruf oder Skill — ",ph_examples:["Data Engineer","Softwareentwickler","Krankenpfleger","Vertriebsleiter","Logistik","Koch","Buchhalter","Elektriker","Designer","Marketing"],
     drag:"zum Drehen ziehen",s_jobs:"offene Jobs",s_companies:"Unternehmen",s_sources:"verbundene Quellen",
     s_platforms:"ATS- & Jobbörsen-Plattformen",s_countries:"Länder",pulling:"Quellen",
     footer:"jobmesh · ein vereinter Index von Stellenanzeigen aus vielen ATS und Jobbörsen · jede Stelle verlinkt zurück zur Originalquelle",
@@ -308,7 +310,8 @@ const I18N={
   fr:{live:"Index en direct · actualisé en continu",eyebrow:"Un index · plusieurs sources",
     h1:'Chaque offre, de chaque source — un seul <span class="g">mesh</span>.',
     lead:"Jobmesh récupère les offres directement depuis les pages carrière et les job boards, supprime les doublons et relie chaque offre à sa source. Pas de reposts, pas de liens morts.",
-    ph_keyword:"Métier ou compétence — data engineer, python, vente…",ph_location:"Lieu",search:"Rechercher",
+    ph_keyword:"Métier ou compétence",ph_location:"Lieu",search:"Rechercher",
+    ph_prefix:"Métier ou compétence — ",ph_examples:["data engineer","développeur","infirmier","commercial","logistique","cuisinier","comptable","électricien","designer","marketing"],
     drag:"faites tourner",s_jobs:"offres ouvertes",s_companies:"entreprises",s_sources:"sources connectées",
     s_platforms:"plateformes ATS & job boards",s_countries:"pays",pulling:"Sources",
     footer:"jobmesh · un index unifié des offres d'emploi issues de nombreux ATS et job boards · chaque offre renvoie à sa source d'origine",
@@ -340,7 +343,7 @@ function applyI18n(){
   document.querySelectorAll("#langsel button").forEach(b=>b.classList.toggle("on",b.dataset.lang===LANG));
 }
 function setLang(l){LANG=l;try{localStorage.setItem("jobmesh_lang",l)}catch(e){}
-  applyI18n();applyBandNote();$("herochips").innerHTML="";loadHeroChips();if(window.__refreshGcard)window.__refreshGcard();loadFeedback();runSearch();}
+  applyI18n();startPlaceholder();applyBandNote();$("herochips").innerHTML="";loadHeroChips();if(window.__refreshGcard)window.__refreshGcard();loadFeedback();runSearch();}
 function applyBandNote(){if(GEO&&GEO.remote)$("bandnote").textContent=t("remote_note").replace("{n}",GEO.remote.toLocaleString());}
 
 let offset=0, saved=loadSaved();
@@ -414,6 +417,26 @@ async function loadHeroChips(){
   }catch(e){}
 }
 function scrollToResults(){document.querySelector(".main").scrollIntoView({behavior:"smooth",block:"start"})}
+
+/* animated typewriter placeholder: "Role or skill — data engineer / nurse / …" */
+let _phTimer=null, _phS={ex:0,ch:0,dir:1};
+function startPlaceholder(){
+  stopPlaceholder();
+  const inp=$("keyword");if(!inp)return;
+  const prefix=t("ph_prefix");
+  const ex=(I18N[LANG]&&I18N[LANG].ph_examples)||I18N.en.ph_examples;
+  _phS={ex:0,ch:0,dir:1};
+  (function tick(){
+    if(document.activeElement===inp||inp.value){_phTimer=setTimeout(tick,600);return;}
+    const w=ex[_phS.ex%ex.length];let delay=85;
+    _phS.ch+=_phS.dir;
+    if(_phS.ch>w.length){_phS.ch=w.length;_phS.dir=-1;delay=1500;}
+    else if(_phS.ch<=0){_phS.ch=0;_phS.dir=1;_phS.ex++;delay=300;}
+    inp.placeholder=prefix+w.slice(0,_phS.ch);
+    _phTimer=setTimeout(tick,delay);
+  })();
+}
+function stopPlaceholder(){if(_phTimer){clearTimeout(_phTimer);_phTimer=null;}}
 
 /* ---- interactive globe (canvas, d3 orthographic) ---- */
 function initGlobe(){
@@ -548,6 +571,18 @@ async function loadFacets(){
     $("count").innerHTML=`${(f.total||0).toLocaleString()} <span>${t("open_roles")}</span>`;
     let html="";
     const anyActive=Object.values(F).some(Boolean);
+    // Country group (top) — counts from the global geo index, worldwide.
+    if(GEO&&GEO.countries){
+      const cs=Object.entries(GEO.countries).sort((a,b)=>b[1]-a[1]).slice(0,10);
+      if(cs.length){
+        html+=`<div class="fgroup"><h4>${t("g_country")}</h4>`;
+        for(const [code,n] of cs){
+          const active=F.country===code;
+          html+=`<div class="frow${active?" active":""}" data-param="country" data-val="${esc(code)}"><span>${esc(CNAME[code]||code)}</span><span class="n">${n.toLocaleString()}</span></div>`;
+        }
+        html+=`</div>`;
+      }
+    }
     for(const g of FGROUPS){
       const counts=f[g.key]||{};
       const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
@@ -563,7 +598,9 @@ async function loadFacets(){
     if(anyActive)html+=`<button class="clearall" id="clearall">${t("clear")}</button>`;
     $("side").innerHTML=html;
     document.querySelectorAll(".frow").forEach(r=>r.onclick=()=>{
-      const p=r.dataset.param,v=r.dataset.val; F[p]=(F[p]===v?"":v); runSearch();
+      const p=r.dataset.param,v=r.dataset.val; F[p]=(F[p]===v?"":v);
+      if(p==="country"&&window.__selectCountry)window.__selectCountry(F.country?v:null);
+      runSearch();
     });
     const ca=$("clearall"); if(ca)ca.onclick=()=>{Object.keys(F).forEach(k=>F[k]="");$("keyword").value="";$("location").value="";if(window.__selectCountry)window.__selectCountry(null);runSearch()};
     renderActiveChips();
@@ -676,7 +713,8 @@ $("form").addEventListener("submit",e=>{e.preventDefault();scrollToResults();run
 $("fbform").addEventListener("submit",submitFeedback);
 document.querySelectorAll("#langsel button").forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 applyI18n();
-loadBandAndGeo().then(loadHeroChips);
+startPlaceholder();
+loadBandAndGeo().then(()=>{loadHeroChips();loadFacets();});
 loadFeedback();
 window.addEventListener("load",initGlobe);
 runSearch();

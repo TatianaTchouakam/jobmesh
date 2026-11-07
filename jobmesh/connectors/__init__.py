@@ -41,6 +41,7 @@ from .softgarden import SoftgardenConnector
 from .oracle import OracleConnector
 from .bundesagentur import BundesagenturConnector
 from .devitjobs import DevITjobsConnector
+from .reliefweb import ReliefWebConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -74,6 +75,7 @@ REGISTRY: dict[str, type[Connector]] = {
     OracleConnector.platform: OracleConnector,
     BundesagenturConnector.platform: BundesagenturConnector,
     DevITjobsConnector.platform: DevITjobsConnector,
+    ReliefWebConnector.platform: ReliefWebConnector,
 }
 
 
