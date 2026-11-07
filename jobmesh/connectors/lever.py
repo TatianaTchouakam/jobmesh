@@ -10,6 +10,7 @@ surfaces as a fetch failure (so the pipeline won't close that board).
 
 from __future__ import annotations
 
+import time
 from datetime import datetime, timezone
 
 import requests
@@ -39,11 +40,20 @@ class LeverConnector(Connector):
 
     def _get_jobs(self) -> list[dict]:
         url = f"{API_ROOT}/{self.board}"
-        resp = self._session.get(url, params={"mode": "json"}, timeout=TIMEOUT)
-        resp.raise_for_status()
-        data = resp.json()
-        # Lever returns a bare array of postings.
-        return data if isinstance(data, list) else []
+        # Retry transient timeouts / connection drops a few times; a real
+        # HTTP error (e.g. 404 for an unknown board) is raised immediately.
+        last_exc: Exception | None = None
+        for attempt in range(3):
+            try:
+                resp = self._session.get(
+                    url, params={"mode": "json"}, timeout=TIMEOUT)
+                resp.raise_for_status()
+                data = resp.json()
+                return data if isinstance(data, list) else []
+            except (requests.Timeout, requests.ConnectionError) as exc:
+                last_exc = exc
+                time.sleep(1.5 * (attempt + 1))
+        raise last_exc  # type: ignore[misc]
 
     def _to_job(self, data: dict, company: str, fetched_at: str) -> Job:
         categories = data.get("categories") or {}

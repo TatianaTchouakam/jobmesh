@@ -36,6 +36,9 @@ greenhouse:
   - moniepoint      # 🇳🇬 fintech (EU-region board)
   - jumia           # pan-African e-commerce (EU-region board)
   - wavemm1         # 🇸🇳 Wave — mobile money
+  - pawapay         # pan-African payments (EU-region board)
+  # pulaio / okrainc removed: valid EU boards, but this machine's DNS to the
+  # EU Greenhouse host is flaky — re-add when the network cooperates.
   # paystack removed: its public board isn't served by the Greenhouse API
   # (likely a private board). Re-add if you find the real board token.
 

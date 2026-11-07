@@ -12,6 +12,8 @@ Docs: https://developers.greenhouse.io/job-board.html
 
 from __future__ import annotations
 
+import time
+
 import requests
 
 from ..models import Job, now_iso
@@ -56,23 +58,37 @@ class GreenhouseConnector(Connector):
     # -- HTTP -------------------------------------------------------------
 
     def _get(self, suffix: str) -> requests.Response:
-        """GET `{root}/{board}{suffix}`, trying each region root on 404."""
-        last: requests.Response | None = None
+        """GET `{root}/{board}{suffix}`.
+
+        Tries each region root (US then EU) and falls back on a 404, and
+        retries transient connection/DNS errors a few times — the EU host
+        occasionally fails to resolve on some networks.
+        """
+        last_resp: requests.Response | None = None
+        last_exc: Exception | None = None
         roots = ([self._root] if self._root else list(API_ROOTS))
         for root in roots:
-            resp = self._session.get(
-                f"{root}/{self.board}{suffix}",
-                params={"content": "true"} if suffix.endswith("/jobs") else None,
-                timeout=TIMEOUT,
-            )
-            if resp.status_code == 404:
-                last = resp
-                continue
-            resp.raise_for_status()
-            self._root = root            # remember the region that worked
-            return resp
-        if last is not None:
-            last.raise_for_status()
+            for attempt in range(3):
+                try:
+                    resp = self._session.get(
+                        f"{root}/{self.board}{suffix}",
+                        params={"content": "true"} if suffix.endswith("/jobs") else None,
+                        timeout=TIMEOUT,
+                    )
+                except requests.RequestException as exc:
+                    last_exc = exc
+                    time.sleep(1.5 * (attempt + 1))
+                    continue
+                if resp.status_code == 404:
+                    last_resp = resp
+                    break                 # board not in this region → try next
+                resp.raise_for_status()
+                self._root = root         # remember the region that worked
+                return resp
+        if last_resp is not None:
+            last_resp.raise_for_status()
+        if last_exc is not None:
+            raise last_exc
         raise RuntimeError("no greenhouse region responded")
 
     def _get_jobs(self) -> list[dict]:
