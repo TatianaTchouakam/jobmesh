@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <script src="/vendor/d3.min.js" defer></script>
 <script src="/vendor/topojson-client.min.js" defer></script>
+<script src="/vendor/pdf.min.js" defer></script>
 <style>
   :root{
     --bg:#f6f7f9; --panel:#ffffff; --field:#f1f2f6; --line:#e5e8ee; --line2:#eef0f5;
@@ -243,7 +244,10 @@
   .cvrow{display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap}
   .cvrow .cvgo{border:0;border-radius:11px;padding:11px 22px;font-weight:600;font-size:14.5px;cursor:pointer;background:linear-gradient(92deg,var(--gold-1),var(--gold-2));color:#fff}
   .cvrow .cvgo:hover{filter:brightness(1.06)}
-  .cvupload{color:var(--accent);font-size:13.5px;font-weight:600;cursor:pointer}
+  .cvupbtn{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line,#e7e9f0);border-radius:11px;padding:10px 18px;font-weight:600;font-size:14px;color:var(--text);cursor:pointer;background:#fff}
+  .cvupbtn::before{content:"📎";font-size:14px}
+  .cvupbtn:hover{border-color:var(--gold-2);color:var(--gold-2)}
+  .cvstatus{font-size:13px;color:var(--muted)}
   .cvresult{margin-top:16px}
   .cvdet{font-size:13px;color:var(--muted);margin-bottom:9px}
   .cvchips{display:flex;gap:8px;flex-wrap:wrap}
@@ -260,7 +264,8 @@
       <textarea id="cvtext" rows="5" data-i18n-ph="cv_ph" placeholder="Paste your CV / résumé text here…" maxlength="20000"></textarea>
       <div class="cvrow">
         <button type="button" class="cvgo" id="cvgo" data-i18n="cv_analyze">Analyse my CV</button>
-        <label class="cvupload"><span data-i18n="cv_upload">…or upload a .txt file</span><input type="file" id="cvfile" accept=".txt,text/plain" hidden></label>
+        <label class="cvupbtn"><span data-i18n="cv_upload">Upload my CV (PDF, txt)</span><input type="file" id="cvfile" accept=".txt,.pdf,text/plain,application/pdf" hidden></label>
+        <span class="cvstatus" id="cvstatus" hidden></span>
       </div>
       <div class="cvresult" id="cvresult" hidden>
         <div class="cvdet" data-i18n="cv_detected">Your top skills — tap one to see matching jobs:</div>
@@ -334,7 +339,7 @@ const I18N={
     g_workplace:"Workplace",g_level:"Level",g_jobtype:"Job type",g_domain:"Domain",g_found:"Found on",g_country:"Country",
     n_keyword:"Keyword",n_location:"Location",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"On-site",
     d_today:"Today",d_week:"This week",d_month:"This month",d_earlier:"Earlier",
-    cv_title:"Find jobs for your profile",cv_sub:"Paste your CV — Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored; it runs entirely in your browser.",cv_ph:"Paste your CV / résumé text here…",cv_analyze:"Analyse my CV",cv_upload:"…or upload a .txt file",cv_detected:"Your top skills — tap one to see matching jobs:",cv_none:"No clear skills detected — try pasting more of your CV.",
+    cv_title:"Analyse your CV — find your jobs",cv_sub:"Paste your CV text, or upload it (PDF or .txt). Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored — it all runs in your browser.",cv_ph:"Paste your CV text here (from Word, PDF, LinkedIn…)",cv_analyze:"Analyse my CV",cv_upload:"Upload my CV (PDF, txt)",cv_reading:"Reading your CV…",cv_readerr:"Couldn't read that file — paste the text instead.",cv_detected:"Your top skills — tap one to see matching jobs:",cv_none:"No clear skills detected — try pasting more of your CV.",
     fb_title:"Your feedback",fb_sub:"How was your job search? Found a role, or just want to rate Jobmesh? We'd love to hear it.",
     fb_ph:"Tell us about your experience — did the search work well, did you find a job?…",fb_name:"Your name (optional)",fb_send:"Send feedback",
     fb_thanks:"Thanks — your feedback was sent!",fb_empty:"No feedback yet. Be the first to share.",fb_anon:"Anonymous",fb_sending:"Sending…"},
@@ -352,7 +357,7 @@ const I18N={
     g_workplace:"Arbeitsmodell",g_level:"Level",g_jobtype:"Anstellungsart",g_domain:"Bereich",g_found:"Gefunden auf",g_country:"Land",
     n_keyword:"Stichwort",n_location:"Ort",wp_remote:"Remote",wp_hybrid:"Hybrid",wp_onsite:"Vor Ort",
     d_today:"Heute",d_week:"Diese Woche",d_month:"Diesen Monat",d_earlier:"Früher",
-    cv_title:"Jobs für dein Profil finden",cv_sub:"Füge deinen Lebenslauf ein — Jobmesh liest deine Skills und zeigt passende Stellen aus allen Branchen und Ländern. Nichts wird hochgeladen oder gespeichert; alles läuft in deinem Browser.",cv_ph:"Füge hier den Text deines Lebenslaufs ein…",cv_analyze:"Lebenslauf analysieren",cv_upload:"…oder .txt-Datei hochladen",cv_detected:"Deine wichtigsten Skills — tippe auf einen, um passende Jobs zu sehen:",cv_none:"Keine klaren Skills erkannt — füge mehr von deinem Lebenslauf ein.",
+    cv_title:"Lebenslauf analysieren — Jobs finden",cv_sub:"Füge den Text deines Lebenslaufs ein oder lade ihn hoch (PDF oder .txt). Jobmesh liest deine Skills und zeigt passende Stellen aus allen Branchen und Ländern. Nichts wird hochgeladen oder gespeichert — alles läuft in deinem Browser.",cv_ph:"Füge hier den Text deines Lebenslaufs ein (aus Word, PDF, LinkedIn…)",cv_analyze:"Lebenslauf analysieren",cv_upload:"Lebenslauf hochladen (PDF, txt)",cv_reading:"Lebenslauf wird gelesen…",cv_readerr:"Datei konnte nicht gelesen werden — füge den Text ein.",cv_detected:"Deine wichtigsten Skills — tippe auf einen, um passende Jobs zu sehen:",cv_none:"Keine klaren Skills erkannt — füge mehr von deinem Lebenslauf ein.",
     fb_title:"Dein Feedback",fb_sub:"Wie war deine Jobsuche? Eine Stelle gefunden oder Jobmesh bewerten? Wir freuen uns auf dein Feedback.",
     fb_ph:"Erzähl uns von deiner Erfahrung — hat die Suche gut funktioniert, hast du einen Job gefunden?…",fb_name:"Dein Name (optional)",fb_send:"Feedback senden",
     fb_thanks:"Danke — dein Feedback wurde gesendet!",fb_empty:"Noch kein Feedback. Sei die erste Person.",fb_anon:"Anonym",fb_sending:"Wird gesendet…"},
@@ -370,7 +375,7 @@ const I18N={
     g_workplace:"Mode de travail",g_level:"Niveau",g_jobtype:"Type de contrat",g_domain:"Domaine",g_found:"Trouvé sur",g_country:"Pays",
     n_keyword:"Mot-clé",n_location:"Lieu",wp_remote:"Télétravail",wp_hybrid:"Hybride",wp_onsite:"Sur site",
     d_today:"Aujourd'hui",d_week:"Cette semaine",d_month:"Ce mois-ci",d_earlier:"Plus tôt",
-    cv_title:"Trouve des jobs pour ton profil",cv_sub:"Colle ton CV — Jobmesh lit tes compétences et affiche les offres qui correspondent, tous secteurs et tous pays. Rien n'est envoyé ni stocké ; tout se passe dans ton navigateur.",cv_ph:"Colle ici le texte de ton CV…",cv_analyze:"Analyser mon CV",cv_upload:"…ou charge un fichier .txt",cv_detected:"Tes compétences clés — clique sur l'une pour voir les offres :",cv_none:"Aucune compétence claire détectée — colle plus de ton CV.",
+    cv_title:"Analyse ton CV — trouve tes jobs",cv_sub:"Colle le texte de ton CV, ou télécharge-le (PDF ou .txt). Jobmesh lit tes compétences et affiche les offres qui correspondent, tous secteurs et tous pays. Rien n'est envoyé ni stocké — tout se passe dans ton navigateur.",cv_ph:"Colle ici le texte de ton CV (depuis Word, PDF, LinkedIn…)",cv_analyze:"Analyser mon CV",cv_upload:"Télécharger mon CV (PDF, txt)",cv_reading:"Lecture de ton CV…",cv_readerr:"Impossible de lire ce fichier — colle le texte à la place.",cv_detected:"Tes compétences clés — clique sur l'une pour voir les offres :",cv_none:"Aucune compétence claire détectée — colle plus de ton CV.",
     fb_title:"Ton avis",fb_sub:"Comment s'est passée ta recherche ? Tu as trouvé un job, ou envie de noter Jobmesh ? On t'écoute.",
     fb_ph:"Dis-nous comment s'est passée ton expérience — la recherche a-t-elle bien marché, as-tu trouvé un job ?…",fb_name:"Ton nom (optionnel)",fb_send:"Envoyer",
     fb_thanks:"Merci — ton avis a été envoyé !",fb_empty:"Pas encore d'avis. Sois la première personne à partager.",fb_anon:"Anonyme",fb_sending:"Envoi…"},
@@ -811,8 +816,35 @@ function cvRender(terms){
   $("keyword").value=terms[0];runSearch();
 }
 function cvAnalyze(){const txt=($("cvtext").value||"").trim();if(!txt)return;cvRender(cvExtract(txt));}
+function cvStatus(msg){const s=$("cvstatus");if(!s)return;if(msg){s.textContent=msg;s.hidden=false;}else{s.hidden=true;s.textContent="";}}
+async function cvReadPdf(file){
+  const lib=window.pdfjsLib;
+  if(!lib)throw new Error("pdfjs not loaded");
+  lib.GlobalWorkerOptions.workerSrc="/vendor/pdf.worker.min.js";
+  const buf=await file.arrayBuffer();
+  const doc=await lib.getDocument({data:buf}).promise;
+  const pages=Math.min(doc.numPages,8);
+  let text="";
+  for(let i=1;i<=pages;i++){
+    const page=await doc.getPage(i);
+    const c=await page.getTextContent();
+    text+=c.items.map(it=>it.str).join(" ")+"\n";
+  }
+  return text;
+}
 $("cvgo").addEventListener("click",cvAnalyze);
-$("cvfile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("cvtext").value=String(r.result||"").slice(0,20000);cvAnalyze();};r.readAsText(f);});
+$("cvfile").addEventListener("change",async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const isPdf=/\.pdf$/i.test(f.name)||f.type==="application/pdf";
+  try{
+    let txt;
+    if(isPdf){ cvStatus(t("cv_reading")); txt=await cvReadPdf(f); cvStatus(""); }
+    else { txt=await f.text(); }
+    $("cvtext").value=String(txt||"").slice(0,20000);
+    cvAnalyze();
+  }catch(err){ cvStatus(t("cv_readerr")); }
+  finally{ e.target.value=""; }
+});
 
 $("form").addEventListener("submit",e=>{e.preventDefault();scrollToResults();runSearch()});
 $("fbform").addEventListener("submit",submitFeedback);
