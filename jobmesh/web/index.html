@@ -85,6 +85,7 @@
   .pstrip{max-width:1180px;margin:0 auto;padding:16px 24px 2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .pstrip .lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin-right:4px}
   .ptag{font-size:12.5px;font-weight:600;color:#fff;padding:4px 10px;border-radius:999px;opacity:.92}
+  .pstrip .ptag.more{background:transparent;color:var(--soft);border:1px solid var(--line,#e7e9f0);opacity:1}
 
   /* Search bar (results section) */
   .main{max-width:1180px;margin:0 auto;padding:22px 24px 60px;display:grid;grid-template-columns:248px 1fr;gap:28px;align-items:start}
@@ -227,10 +228,16 @@
 <div class="tip gtip" id="gtip"></div>
 
 <style>
-  .cvsec{max-width:980px;margin:34px auto 0;padding:0 16px}
-  .cvwrap{background:#fff;border:1px solid var(--line,#e7e9f0);border-radius:16px;padding:22px 22px 24px;box-shadow:0 1px 2px rgba(20,24,40,.04)}
-  .cvhead h2{font-size:19px;margin:0 0 4px}
-  .cvhead p{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
+  .cvsec{max-width:1180px;margin:20px auto 0;padding:0 24px}
+  .cvwrap{background:#fff;border:1px solid var(--line,#e7e9f0);border-radius:14px;box-shadow:0 1px 2px rgba(20,24,40,.04);overflow:hidden}
+  .cvsum{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 18px;font-weight:600;font-size:14.5px;color:var(--text)}
+  .cvsum::-webkit-details-marker{display:none}
+  .cvsum .cvicon{font-size:15px}
+  .cvsum .cvchev{margin-left:auto;color:var(--soft);font-size:12px;transition:transform .15s}
+  details[open] .cvsum .cvchev{transform:rotate(180deg)}
+  .cvsum:hover{background:#fafbfe}
+  .cvbody{padding:2px 18px 20px}
+  .cvsub{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
   #cvtext{width:100%;box-sizing:border-box;border:1px solid var(--line,#e7e9f0);border-radius:11px;padding:12px 13px;font:inherit;font-size:14px;resize:vertical;background:var(--field,#f7f8fb)}
   #cvtext:focus{outline:none;box-shadow:0 0 0 2px var(--accent) inset}
   .cvrow{display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap}
@@ -246,21 +253,21 @@
 </style>
 
 <section class="cvsec">
-  <div class="cvwrap">
-    <div class="cvhead">
-      <h2 data-i18n="cv_title">Find jobs for your profile</h2>
-      <p data-i18n="cv_sub">Paste your CV — Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored; it runs entirely in your browser.</p>
+  <details class="cvwrap" id="cvdetails">
+    <summary class="cvsum"><span class="cvicon">🔍</span><span data-i18n="cv_title">Find jobs for your profile</span><span class="cvchev">▾</span></summary>
+    <div class="cvbody">
+      <p class="cvsub" data-i18n="cv_sub">Paste your CV — Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored; it runs entirely in your browser.</p>
+      <textarea id="cvtext" rows="5" data-i18n-ph="cv_ph" placeholder="Paste your CV / résumé text here…" maxlength="20000"></textarea>
+      <div class="cvrow">
+        <button type="button" class="cvgo" id="cvgo" data-i18n="cv_analyze">Analyse my CV</button>
+        <label class="cvupload"><span data-i18n="cv_upload">…or upload a .txt file</span><input type="file" id="cvfile" accept=".txt,text/plain" hidden></label>
+      </div>
+      <div class="cvresult" id="cvresult" hidden>
+        <div class="cvdet" data-i18n="cv_detected">Your top skills — tap one to see matching jobs:</div>
+        <div class="cvchips" id="cvchips"></div>
+      </div>
     </div>
-    <textarea id="cvtext" rows="5" data-i18n-ph="cv_ph" placeholder="Paste your CV / résumé text here…" maxlength="20000"></textarea>
-    <div class="cvrow">
-      <button type="button" class="cvgo" id="cvgo" data-i18n="cv_analyze">Analyse my CV</button>
-      <label class="cvupload"><span data-i18n="cv_upload">…or upload a .txt file</span><input type="file" id="cvfile" accept=".txt,text/plain" hidden></label>
-    </div>
-    <div class="cvresult" id="cvresult" hidden>
-      <div class="cvdet" data-i18n="cv_detected">Your top skills — tap one to see matching jobs:</div>
-      <div class="cvchips" id="cvchips"></div>
-    </div>
-  </div>
+  </details>
 </section>
 
 <div class="main">
@@ -439,12 +446,15 @@ async function loadBandAndGeo(){
   document.querySelectorAll(".band .v").forEach(el=>{const v=vals[el.dataset.k];if(v!=null)animateCount(el,v)});
   applyBandNote();
   // platform strip
-  const plats=Object.entries(s.open_by_platform||{}).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const allPlats=Object.entries(s.open_by_platform||{}).sort((a,b)=>b[1]-a[1]);
+  const plats=allPlats.slice(0,7);
   const strip=$("pstrip");
   for(const [p,n] of plats){
-    const t=document.createElement("span");t.className="ptag";t.style.background=PCOL[p]||"#5a6cf0";t.textContent=p;t.title=n.toLocaleString()+" open";
-    strip.appendChild(t);
+    const el=document.createElement("span");el.className="ptag";el.style.background=PCOL[p]||"#5a6cf0";el.textContent=p;el.title=n.toLocaleString()+" open";
+    strip.appendChild(el);
   }
+  const more=allPlats.length-plats.length;
+  if(more>0){const m=document.createElement("span");m.className="ptag more";m.textContent="+"+more+" "+t("more");strip.appendChild(m);}
 }
 
 async function loadHeroChips(){
