@@ -16,9 +16,16 @@ from typing import Optional
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
 from . import storage
 from . import geo
+
+
+class FeedbackIn(BaseModel):
+    message: str = Field(..., min_length=1, max_length=2000)
+    name: Optional[str] = Field(None, max_length=80)
+    lang: Optional[str] = Field(None, max_length=5)
 
 app = FastAPI(
     title="jobmesh API",
@@ -90,6 +97,21 @@ def list_jobs(
         "offset": offset,
         "results": rows,
     }
+
+
+@app.get("/feedback")
+def get_feedback(limit: int = Query(30, ge=1, le=100)) -> dict:
+    """Most recent visitor feedback."""
+    with storage.session(DB_PATH) as conn:
+        return {"results": storage.list_feedback(conn, limit=limit)}
+
+
+@app.post("/feedback")
+def post_feedback(body: FeedbackIn) -> dict:
+    """Store one visitor feedback entry."""
+    with storage.session(DB_PATH) as conn:
+        entry = storage.add_feedback(conn, body.message, body.name, body.lang)
+    return {"ok": True, "entry": entry}
 
 
 @app.get("/geo")

@@ -82,6 +82,11 @@ personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.
   - circus
   - wandelbots
   - 1komma5grad
+# Bundesagentur für Arbeit — Germany's federal job board, ALL sectors.
+# Paused: the API returned 403 "No match found" with our request shape —
+# needs live debugging of the exact params/key. Re-enable once confirmed.
+# bundesagentur:
+#   - all
 remotive:
   - all
 arbeitnow:     # Germany / EU

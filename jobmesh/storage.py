@@ -66,6 +66,14 @@ CREATE TABLE IF NOT EXISTS fetch_log (
     error      TEXT,
     ran_at     TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS feedback (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT,
+    message    TEXT NOT NULL,
+    lang       TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 
@@ -282,6 +290,27 @@ def facets(conn: sqlite3.Connection, **filters) -> dict:
         ).fetchall()
         out[field] = {r["v"]: r["n"] for r in rows}
     return out
+
+
+def add_feedback(conn: sqlite3.Connection, message: str,
+                 name: Optional[str] = None, lang: Optional[str] = None) -> dict:
+    """Store one visitor feedback entry and return it."""
+    msg = (message or "").strip()[:2000]
+    nm = (name or "").strip()[:80] or None
+    now = now_iso()
+    cur = conn.execute(
+        "INSERT INTO feedback (name, message, lang, created_at) "
+        "VALUES (?,?,?,?)", (nm, msg, lang, now))
+    return {"id": cur.lastrowid, "name": nm, "message": msg,
+            "lang": lang, "created_at": now}
+
+
+def list_feedback(conn: sqlite3.Connection, limit: int = 30) -> list[dict]:
+    """Most recent feedback entries."""
+    rows = conn.execute(
+        "SELECT id, name, message, lang, created_at FROM feedback "
+        "ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+    return [dict(r) for r in rows]
 
 
 def location_counts(conn: sqlite3.Connection) -> dict[str, int]:
