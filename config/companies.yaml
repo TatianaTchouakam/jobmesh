@@ -151,6 +151,10 @@ jobspresso:
 pythonjobs:
   - all
 
+# DevITjobs — UK IT job board (public XML feed, no key).
+devitjobs:
+  - all
+
 # Rise (joinrise.io) — cross-employer remote/tech feed (public JSON, no token).
 # Paused: their API currently returns 504 Gateway Timeout. The connector is
 # resilient (retries) — uncomment to re-enable when their service recovers.

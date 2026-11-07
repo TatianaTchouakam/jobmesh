@@ -40,6 +40,7 @@ from .manatal import ManatalConnector
 from .softgarden import SoftgardenConnector
 from .oracle import OracleConnector
 from .bundesagentur import BundesagenturConnector
+from .devitjobs import DevITjobsConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
@@ -72,6 +73,7 @@ REGISTRY: dict[str, type[Connector]] = {
     SoftgardenConnector.platform: SoftgardenConnector,
     OracleConnector.platform: OracleConnector,
     BundesagenturConnector.platform: BundesagenturConnector,
+    DevITjobsConnector.platform: DevITjobsConnector,
 }
 
 
