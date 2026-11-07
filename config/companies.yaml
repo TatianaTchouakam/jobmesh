@@ -32,6 +32,12 @@ greenhouse:
   - cloudflare
   - mongodb
   - instacart
+  # --- Africa (African employers on Greenhouse) ---
+  - moniepoint      # 🇳🇬 fintech (EU-region board)
+  - jumia           # pan-African e-commerce (EU-region board)
+  - wavemm1         # 🇸🇳 Wave — mobile money
+  # paystack removed: its public board isn't served by the Greenhouse API
+  # (likely a private board). Re-add if you find the real board token.
 
 lever:
   - leverdemo

@@ -18,7 +18,13 @@ from ..models import Job, now_iso
 from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
-API_ROOT = "https://boards-api.greenhouse.io/v1/boards"
+# Greenhouse serves US-region boards from boards-api.greenhouse.io and
+# EU data-residency boards from boards-api.eu.greenhouse.io. We try the US
+# root first and fall back to EU on a 404, so boards in either region work.
+API_ROOTS = (
+    "https://boards-api.greenhouse.io/v1/boards",
+    "https://boards-api.eu.greenhouse.io/v1/boards",
+)
 # A descriptive User-Agent is good API etiquette.
 USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
 TIMEOUT = 20  # seconds
@@ -37,32 +43,45 @@ class GreenhouseConnector(Connector):
         super().__init__(board)
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
+        self._root: str | None = None   # cached working region root
 
     # -- public API -------------------------------------------------------
 
     def fetch(self) -> list[Job]:
-        company = self._company_name()
         raw_jobs = self._get_jobs()
+        company = self._company_name()
         fetched_at = now_iso()
         return [self._to_job(j, company, fetched_at) for j in raw_jobs]
 
     # -- HTTP -------------------------------------------------------------
 
+    def _get(self, suffix: str) -> requests.Response:
+        """GET `{root}/{board}{suffix}`, trying each region root on 404."""
+        last: requests.Response | None = None
+        roots = ([self._root] if self._root else list(API_ROOTS))
+        for root in roots:
+            resp = self._session.get(
+                f"{root}/{self.board}{suffix}",
+                params={"content": "true"} if suffix.endswith("/jobs") else None,
+                timeout=TIMEOUT,
+            )
+            if resp.status_code == 404:
+                last = resp
+                continue
+            resp.raise_for_status()
+            self._root = root            # remember the region that worked
+            return resp
+        if last is not None:
+            last.raise_for_status()
+        raise RuntimeError("no greenhouse region responded")
+
     def _get_jobs(self) -> list[dict]:
-        url = f"{API_ROOT}/{self.board}/jobs"
-        resp = self._session.get(
-            url, params={"content": "true"}, timeout=TIMEOUT
-        )
-        resp.raise_for_status()
-        return resp.json().get("jobs", [])
+        return self._get("/jobs").json().get("jobs", [])
 
     def _company_name(self) -> str:
         """Fetch the board's display name; fall back to the token."""
         try:
-            url = f"{API_ROOT}/{self.board}"
-            resp = self._session.get(url, timeout=TIMEOUT)
-            resp.raise_for_status()
-            return resp.json().get("name") or self.board
+            return self._get("").json().get("name") or self.board
         except requests.RequestException:
             return self.board
 
