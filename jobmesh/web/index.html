@@ -142,6 +142,12 @@
 
   .more{display:block;margin:10px auto 0;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:12px 28px;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
   .more:hover{border-color:var(--accent);color:var(--accent)}
+  .pager{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin:14px auto 0}
+  .pg{min-width:38px;height:38px;padding:0 10px;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+  .pg:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .pg:disabled{opacity:.4;cursor:default}
+  .pgcur{background:var(--accent);border-color:var(--accent);color:#1a1205;cursor:default}
+  .pgdots{color:var(--soft);padding:0 2px}
   .empty{color:var(--muted);text-align:center;padding:50px 0}
 
   /* Feedback */
@@ -321,7 +327,7 @@ const FGROUPS=[
 ];
 const CNAME={US:"United States",GB:"United Kingdom",DE:"Germany",FR:"France",NL:"Netherlands",IE:"Ireland",ES:"Spain",IT:"Italy",PL:"Poland",PT:"Portugal",SE:"Sweden",CH:"Switzerland",AT:"Austria",BE:"Belgium",DK:"Denmark",NO:"Norway",FI:"Finland",CZ:"Czechia",RO:"Romania",HU:"Hungary",GR:"Greece",CA:"Canada",MX:"Mexico",BR:"Brazil",AR:"Argentina",IN:"India",SG:"Singapore",AU:"Australia",NZ:"New Zealand",JP:"Japan",CN:"China",HK:"Hong Kong",KR:"South Korea",IL:"Israel",AE:"United Arab Emirates",ZA:"South Africa",TR:"Turkey",UA:"Ukraine",PH:"Philippines",MY:"Malaysia",VN:"Vietnam",TH:"Thailand",NG:"Nigeria",KE:"Kenya",EG:"Egypt",CO:"Colombia",CL:"Chile",LU:"Luxembourg",BG:"Bulgaria",HR:"Croatia",SK:"Slovakia",SI:"Slovenia",EE:"Estonia",LT:"Lithuania",LV:"Latvia",RS:"Serbia",ID:"Indonesia"};
 const CENTROID={US:[-98,39],GB:[-2,54],DE:[10,51],FR:[2,46],NL:[5.5,52],IE:[-8,53],ES:[-4,40],IT:[12,42],PL:[19,52],PT:[-8,39.5],SE:[15,62],CH:[8,47],AT:[14,47.5],BE:[4.5,50.5],DK:[9.5,56],NO:[9,61],FI:[26,64],CZ:[15.5,49.8],RO:[25,46],HU:[19,47],GR:[22,39],CA:[-106,56],MX:[-102,23],BR:[-51,-10],AR:[-64,-38],IN:[79,22],SG:[103.8,1.35],AU:[134,-25],NZ:[172,-41],JP:[138,36],CN:[104,35],HK:[114.1,22.3],KR:[127.8,36.5],IL:[35,31],AE:[54,24],ZA:[25,-29],TR:[35,39],UA:[31,49],PH:[122,12],MY:[102,4],VN:[106,16],TH:[101,15],NG:[8,10],KE:[38,0],EG:[30,27],CO:[-74,4],CL:[-71,-35],LU:[6.1,49.8],BG:[25,43],HR:[15.5,45],SK:[19.5,48.7],SI:[15,46],EE:[26,58.6],LT:[24,55],LV:[25,57],RS:[21,44],ID:[113,-2]};
-const PAGE=25;
+const PAGE=15;
 
 /* ---- i18n (EN / DE / FR) — translates the interface chrome; job postings
    stay in their original source language ---- */
@@ -751,9 +757,10 @@ function bindSave(){
 }
 
 async function fetchJobs(){const p=params();p.set("limit",PAGE);p.set("offset",offset);return(await(await fetch("/jobs?"+p.toString())).json())}
-async function runSearch(){F.keyword=$("keyword").value.trim();F.location=$("location").value.trim();offset=0;window.__lastGroup=null;loadFacets();const d=await fetchJobs();renderGroups(d.results||[],false);renderMore(d)}
-async function loadMore(){offset+=PAGE;const d=await fetchJobs();renderGroups(d.results||[],true);renderMore(d)}
-function renderMore(d){const shown=offset+(d.results||[]).length;$("morewrap").innerHTML=(d.total&&shown<d.total)?`<button class="more" id="mb">${t("load_more")} (${(d.total-shown).toLocaleString()} ${t("more")})</button>`:"";const m=$("mb");if(m)m.onclick=loadMore}
+async function runSearch(){F.keyword=$("keyword").value.trim();F.location=$("location").value.trim();offset=0;window.__lastGroup=null;loadFacets();const d=await fetchJobs();renderGroups(d.results||[],false);renderPager(d)}
+function gotoPage(n){offset=Math.max(0,(n-1)*PAGE);window.__lastGroup=null;fetchJobs().then(d=>{renderGroups(d.results||[],false);renderPager(d);const el=$("results");if(el){const y=el.getBoundingClientRect().top+window.scrollY-16;window.scrollTo({top:y,behavior:"smooth"})}})}
+function _pgBtn(n,label,disabled,current){return `<button class="pg${current?' pgcur':''}" data-p="${n}"${disabled?' disabled':''}${current?' aria-current="page"':''}>${label}</button>`}
+function renderPager(d){const w=$("morewrap");if(!w)return;const total=d.total||0,pages=Math.max(1,Math.ceil(total/PAGE)),cur=Math.min(pages,Math.floor(offset/PAGE)+1);if(pages<=1){w.innerHTML="";return}const set=new Set([1,pages,cur-1,cur,cur+1]);const nums=[...set].filter(n=>n>=1&&n<=pages).sort((a,b)=>a-b);let html=_pgBtn(cur-1,"‹",cur<=1,false),prev=0;for(const n of nums){if(n-prev>1)html+='<span class="pgdots">…</span>';html+=_pgBtn(n,n.toLocaleString(),false,n===cur);prev=n}html+=_pgBtn(cur+1,"›",cur>=pages,false);w.innerHTML=`<nav class="pager" aria-label="Pages">${html}</nav>`;w.querySelectorAll(".pg").forEach(b=>{b.onclick=()=>{if(!b.disabled)gotoPage(+b.dataset.p)}})}
 
 /* ---- feedback ---- */
 function fbDate(iso){const d=new Date(iso);if(isNaN(d))return"";return d.toLocaleDateString(LANG,{year:"numeric",month:"short",day:"numeric"});}
