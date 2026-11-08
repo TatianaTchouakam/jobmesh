@@ -1,64 +1,49 @@
 #!/usr/bin/env python3
-"""Quick, local check of candidate ATS tokens before adding them to config.
-
-Your machine has network access to the job APIs (the build container does
-not), so run this HERE, then paste the output back. We'll add to
-config/companies.yaml ONLY the tokens that come back ✅ with jobs — so the
-fetch_log stays 100% clean.
-
-Usage:
-    cd ~/projects/Vaya/jobmesh
-    python verify_new_sources.py
-
-Edit CANDIDATES below to try your own tokens too. For BambooHR / HireHive,
-a token is the subdomain in a company's careers URL, e.g.
-    https://acme.bamboohr.com/careers   -> acme      (bamboohr)
-    https://acme.hirehive.com           -> acme      (hirehive)
-    https://careers-page.com/acme       -> acme      (manatal)
-"""
-
+"""Local check of candidate ATS tokens before adding them to config."""
 from __future__ import annotations
-
 import sys
 
-# platform -> list of candidate tokens to test
+# Africa-focused batch: fintech, agritech & NGOs on clean public ATS.
+# Several slugs confirmed from live job-board URLs; the rest are best guesses.
 CANDIDATES = {
-    "ashby": ["corma","cogna","carrum-health","ahead-nutrition","quo","quadrature",
-              "pairs","infinite","evermore","empathy","earth","credo","cint","alloy",
-              "adc","square-enix","revyl","plot-pointe","mozilla","legorafi"],
-    "smartrecruiters": ["HenryFordHealthSystem","2SistersFoodGroup","GreinerAG","Greiner",
-                        "BradyCorporation","NuSkin","NuSkinEnterprises","AlliedHealthcare"],
-    "greenhouse": [],
-    "recruitee": [],
+    "greenhouse": [
+        "paystack", "moniepoint", "pulaio",        # confirmed (Nigeria/Africa)
+        "flutterwave", "chippercash", "kuda", "fairmoney", "carbon",
+        "interswitch", "jumia",                     # African fintech/e-commerce
+        "mkopa", "m-kopa", "apolloagriculture", "sunculture",
+        "wasoko", "twigafoods", "komaza",           # agritech / off-grid
+        "sama", "mpharma", "yoco", "andela", "tala", "branch",
+    ],
+    "lever": [
+        "andela", "yassir", "sama", "flutterwave",
+    ],
+    "workable": [
+        "evidence-action", "bracinternational",
+    ],
+    "smartrecruiters": [
+        "AmrefHealthAfrica4",                       # confirmed (Amref, Africa health)
+    ],
 }
 
 
 def main() -> int:
     try:
         from jobmesh.connectors import build_connector
-    except Exception as exc:  # pragma: no cover
+    except Exception as exc:
         print(f"Could not import connectors (run from the repo root): {exc}")
         return 1
-
-    clean: list[tuple[str, str, int]] = []
-    print("Testing candidate tokens (live)…\n")
+    clean = []
+    print("Testing Africa-focused candidate tokens (live)…\n")
     for platform, tokens in CANDIDATES.items():
-        if not tokens:
-            print(f"· {platform}: (no candidate token set — skipped)")
-            continue
         for token in tokens:
             try:
-                jobs = build_connector(platform, token).fetch()
-                n = len(jobs)
+                n = len(build_connector(platform, token).fetch())
                 if n > 0:
-                    print(f"  ✅ {platform}/{token}: {n} jobs")
-                    clean.append((platform, token, n))
+                    print(f"  OK  {platform}/{token}: {n} jobs"); clean.append((platform, token, n))
                 else:
-                    print(f"  ⚠️  {platform}/{token}: 0 jobs (valid but empty — skip)")
+                    print(f"  --  {platform}/{token}: 0 jobs (valid but empty — skip)")
             except Exception as exc:
-                msg = str(exc).splitlines()[0][:90]
-                print(f"  ❌ {platform}/{token}: {msg}")
-
+                print(f"  XX  {platform}/{token}: {str(exc).splitlines()[0][:90]}")
     print("\n--- KEEP THESE (paste this whole output back) ---")
     if clean:
         for platform, token, n in clean:

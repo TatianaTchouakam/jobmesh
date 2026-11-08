@@ -15,6 +15,14 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  - givedirectly   # NGO · cash transfers, Africa (34)
+  - oneacrefund   # NGO · smallholder farmers, E. Africa (52)
+  - wikimedia   # nonprofit · Wikipedia (15)
+  - humanrightswatch   # NGO · human rights (7)
+  - educate   # NGO · youth, Uganda (6)
+  - acumen   # NGO · impact investing, Africa/Asia (5)
+  - propublica   # nonprofit · journalism (4)
+  - dimagi   # social enterprise · tech4good, India/Africa (1)
   - thekrazycouponlady
   - opendoorlegal
   - omdegypt
@@ -68,6 +76,7 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  - thetrevorproject   # nonprofit · youth mental health (5)
   - wolverineconstruction   # construction (11)
   - stevens-construction   # construction (1)
   - petdesk   # (10)
