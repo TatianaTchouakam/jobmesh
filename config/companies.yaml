@@ -58,6 +58,23 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  - wolverineconstruction   # construction (11)
+  - stevens-construction   # construction (1)
+  - petdesk   # (10)
+  - athletetoathlete   # (3)
+  - networkconnex   # telecom infra (66)
+  - tali-ai   # (7)
+  - safran-ai   # (23)
+  - sfgiants   # MLB / sports (6)
+  - ableserve   # ABM facilities (65)
+  - paytm   # fintech (201)
+  - meesho   # e-commerce (53)
+  - linkedin   # (23)
+  - GoToGroup   # (41)
+  - theathletic   # sports media (10)
+  - binance   # (4)
+  - trendyol   # e-commerce (48)
+  - rover   # pet services (31)
   - leverdemo
   - spotify
   - palantir
@@ -208,6 +225,7 @@ workday:
 # Teamtailor — ATS (strong in the Nordics/Europe). Token = company subdomain
 # from {company}.teamtailor.com. A public RSS feed is served at /jobs.rss.
 teamtailor:
+  - tantor   # (100)
   - career          # Teamtailor's own careers board (demo of the connector)
 
 # 4 Day Week — curated four-day-week / remote roles (public JSON API v2).

@@ -23,15 +23,14 @@ import sys
 
 # platform -> list of candidate tokens to test
 CANDIDATES = {
-    "greenhouse": ["prolific","prolificacademic","pulsehealthcare","anduril",
-                   "andurilindustries","bayada","veterinaryemergencygroup","veg",
-                   "carvana","liquidpersonnel","aloyoga","speechify","wppmedia",
-                   "coupang","capco","rocketlab","hellofresh","trivago",
-                   "accenturefederalservices","privateequityinsights"],
-    "smartrecruiters": ["Nestle","IKEA","Siemens","Visa","Vodafone","Nike",
-                        "Decathlon","Kering"],
-    "ashby": [],
-    "workable": [],
+    "lever": ["ideasunited","wolverineconstruction","stevens-construction","petdesk",
+              "athletetoathlete","networkconnex","tali-ai","safran-ai","sfgiants",
+              "ableserve","paytm","meesho","linkedin","GoToGroup","firstam",
+              "theathletic","binance","mazars","trendyol","rover"],
+    "teamtailor": ["lovisa","teachmeto","tantor","exio","nexflow","andromeda",
+                   "healthylife","urbanridge"],
+    "greenhouse": [],
+    "smartrecruiters": [],
 }
 
 
