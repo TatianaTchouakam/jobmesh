@@ -30,9 +30,18 @@ class PersonioConnector(Connector):
         self._session.headers.setdefault("User-Agent", USER_AGENT)
 
     def fetch(self) -> list[Job]:
-        url = f"https://{self.board}.jobs.personio.de/xml"
-        resp = self._session.get(url, timeout=TIMEOUT)
-        resp.raise_for_status()
+        resp = None
+        for _tld in ("de", "com"):
+            r = self._session.get(
+                f"https://{self.board}.jobs.personio.{_tld}/xml", timeout=TIMEOUT)
+            if r.status_code == 404:
+                continue
+            r.raise_for_status()
+            resp = r
+            break
+        if resp is None:
+            r.raise_for_status()   # surface the last 404 as a clean failure
+            return []
         root = ET.fromstring(resp.content)
         company = self.board.replace("-", " ").title()
         at = now_iso()

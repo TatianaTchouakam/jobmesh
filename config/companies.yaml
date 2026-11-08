@@ -103,6 +103,12 @@ personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.
   - circus
   - wandelbots
   - 1komma5grad
+  - apelos               # therapy / healthcare (151)
+  - hwp                  # Handwerkspartner — trades (128)
+  - thermondo            # heating/energy installers (196)
+  - pmx                  # pmX Group (101)
+  - tierarztpluspartner  # veterinary (114)
+  - pepco                # retail (84)
 # Bundesagentur für Arbeit — Germany's federal job board, ALL sectors.
 # Paused: the API returned 403 "No match found" with our request shape —
 # needs live debugging of the exact params/key. Re-enable once confirmed.
