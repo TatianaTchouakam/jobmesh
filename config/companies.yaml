@@ -70,6 +70,10 @@ ashby:
   - clerk
 
 workable:
+  - fuku   # (745)
+  - pavago   # recruitment (2607)
+  - cxg   # customer experience (1479)
+  - huzzle   # (2323)
   - huggingface
 
 smartrecruiters:
@@ -80,6 +84,10 @@ smartrecruiters:
   - Oetker          # Dr. Oetker — food / FMCG (Bielefeld) — verify live
 
 breezy:
+  - hawkhiring   # recruitment (405)
+  - everstar   # (388)
+  - crimsonblu   # (160)
+  - rinvio   # (313)
   - vetsez
 
 recruitee:   # ATS — subdomain from {company}.recruitee.com — all verified live
@@ -199,6 +207,14 @@ devitjobs:
 # the company name lowercased), from an ats.rippling.com careers link. A wrong
 # slug just 404s and is logged. Add real slugs you confirm live:
 rippling:
+  - carbon-health   # healthcare (314)
+  - vulcanforms   # advanced manufacturing (116)
+  - dlb-associates   # engineering consulting (78)
+  - beehive-industries   # manufacturing (90)
+  - aalo-atomics   # nuclear energy (91)
+  - contour-education   # education (272)
+  - perle   # (152)
+  - cintal   # (13)
   - rippling
   - ravensdown
   - cullen-jewellery

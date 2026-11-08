@@ -23,14 +23,17 @@ import sys
 
 # platform -> list of candidate tokens to test
 CANDIDATES = {
-    "personio": ["11komma5","skalbach","apelos","sungrow","sungroweurope","hwp",
-                 "handwerkspartner","thermondo","vivafitness","zahneins","pmx",
-                 "tierarztpluspartner","optikerbode","pepco","vitronet","tms",
-                 "ferronordic","brightconsulting","denzel","denzelgruppe",
-                 "fischbach","fischbachgruppe"],
+    "rippling": ["sunshine-enterprise","teso-life","carbon-health","vulcanforms",
+                 "dlb-associates","nexplore","bethel-university","beehive-industries",
+                 "aalo-atomics","momentum-engineering","contour-education","perle",
+                 "princess-polly","doen","cintal","sfr3"],
+    "breezy": ["hawkhiring","delanassociates","everstar","surgestaffing","hikinex",
+               "kimmelassociates","vanguardip","sagehaus","kmgprestige","crimsonblu",
+               "rinvio","truckinggrouputah","saltcitytrucking","transportinglogistics","clfc"],
+    "workable": ["fuku","belmond","rentokil","pavago","cxg","huzzle","eramtalent",
+                 "qiddiya","mercierconsultancy","weekday","d2b","two95"],
     "recruitee": [],
-    "hirehive": [],
-    "rippling": [],
+    "personio": [],
 }
 
 
