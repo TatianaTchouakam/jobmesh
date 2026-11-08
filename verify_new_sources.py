@@ -23,13 +23,15 @@ import sys
 
 # platform -> list of candidate tokens to test
 CANDIDATES = {
-    "hirehive": ["amcsgroup","catalyx","misch","mischgroup","byron","byronrecruitment",
-                 "haworth","levelgroup","nalanda","mhc","creativefoam","kiaeurope","kia",
-                 "iss","issrecruitment","roughanodonovan","redo","brighton","nvd"],
+    "recruitee": ["transperfect","ggzcentraal","asvz","duravermeer","cordaan","hanos",
+                  "werkenbijhanos","angeheuert","vdk","vdkgroep","spar","vigo","vigogroep",
+                  "kws","kwsinfra","kwintes","decircle","maximizd","mooremkw","basgroup",
+                  "hudson","boulangerieange","ange","friday","sterkinmatches"],
+    "hirehive": ["bankofgeorgia","bog","haworthinternational","thelevelgroup",
+                 "masonhayescurran","chanelle","fishawackhealth","focus"],
     "rippling": [],
     "bamboohr": [],
     "manatal": [],
-    "joinrise": [],
 }
 
 

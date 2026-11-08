@@ -82,9 +82,21 @@ smartrecruiters:
 breezy:
   - vetsez
 
-recruitee:   # ATS — subdomain from https://{company}.recruitee.com
-  - vandebron        # Dutch energy company (verified live)
-  # Add more: find the subdomain in a company's Recruitee careers URL.
+recruitee:   # ATS — subdomain from {company}.recruitee.com — all verified live
+  - vandebron            # Dutch energy
+  - transperfect         # translation services (676)
+  - ggzcentraal          # mental-health care (273)
+  - asvz                 # disability care (230)
+  - duravermeer          # construction (381)
+  - cordaan              # healthcare (165)
+  - hanos                # food wholesale (226)
+  - vdkgroep             # (708)
+  - vigogroep            # healthcare (103)
+  - kws                  # infrastructure / construction (169)
+  - mooremkw             # accounting (132)
+  - basgroup             # (103)
+  - boulangerieange      # bakery / retail (308)
+  - sterkinmatches       # recruitment (723)
 
 # --- Job boards (one public feed each, many companies; "all" = whole feed) ---
 personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.personio.de)
