@@ -180,12 +180,33 @@ devitjobs:
 # Rippling — ATS. Keyless board API. Token = the company's board slug (usually
 # the company name lowercased), from an ats.rippling.com careers link. A wrong
 # slug just 404s and is logged. Add real slugs you confirm live:
-# rippling:
-#   - <company-slug>
+rippling:
+  - rippling
+  - ravensdown
+  - cullen-jewellery
+  - secretome-therapeutics
+  - syenex
+  - cariskpartners
+  - alder-property-management
+  - dtiq-careers
+  - encore-auctions
+  - jitsu
+  - processunity
+  - widewail
+  - blackwood-solutions
+  - auris-practice-solutions
+  - arcadiacareers
+  - ppmw
+  - adapt
+  - good-feet-west
+  - omari-construction
 
 # HireHive — ATS. Token = company subdomain from {company}.hirehive.com.
-# hirehive:
-#   - <company-subdomain>
+hirehive:
+  - amcsgroup       # AMCS Group — environmental tech/ops (300)
+  - catalyx         # Catalyx — life sciences / pharma ops (240)
+  - brighton        # (220)
+  - redo            # (150)
 
 # Manatal — ATS. Token = the public career-page slug (careers-page.com).
 # manatal:
