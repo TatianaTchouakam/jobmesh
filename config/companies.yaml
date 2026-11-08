@@ -15,6 +15,7 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  - branch   # fintech · Africa/Asia (2)
   - givedirectly   # NGO · cash transfers, Africa (34)
   - oneacrefund   # NGO · smallholder farmers, E. Africa (52)
   - wikimedia   # nonprofit · Wikipedia (15)
@@ -139,6 +140,7 @@ ashby:
   - clerk
 
 workable:
+  - evidence-action   # NGO · Africa/Asia dev (42)
   - aliprofessional   # recruitment (812)
   - fuku   # (745)
   - pavago   # recruitment (2607)
@@ -147,6 +149,7 @@ workable:
   - huggingface
 
 smartrecruiters:
+  - AmrefHealthAfrica4   # NGO · health, Africa (13)
   - 2SistersFoodGroup
   - GreinerAG
   - Dominos   # pizza/food (≤500)
