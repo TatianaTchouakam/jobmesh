@@ -23,17 +23,15 @@ import sys
 
 # platform -> list of candidate tokens to test
 CANDIDATES = {
-    "smartrecruiters": ["Dominos","DominosPizza","AccorHotel","Accor","BoschGroup",
-                        "AECOM","JYSK","SGS","TurnerTownsend","Eurofins","Veolia",
-                        "VeoliaEnvironnement","SopraSteria","HMGroup","AbbVie","Egis",
-                        "ALTEN","Inetum","METRO","GroupementMousquetaires","Starbucks",
-                        "McDonalds","HenryFordHealth"],
-    "ashby": ["airwallex","crusoe","harvey","appliedintuition","mistral","saronic",
-              "iceye","wayve","halter","neurarobotics","fluidstack","horizon3"],
-    "workable": ["aliprofessional","solutionsft","nextjobabroad","commonwealthmedicalservices",
-                 "rebelconveniencestores","lvpetroleum"],
-    "rippling": [],
-    "breezy": [],
+    "greenhouse": ["prolific","prolificacademic","pulsehealthcare","anduril",
+                   "andurilindustries","bayada","veterinaryemergencygroup","veg",
+                   "carvana","liquidpersonnel","aloyoga","speechify","wppmedia",
+                   "coupang","capco","rocketlab","hellofresh","trivago",
+                   "accenturefederalservices","privateequityinsights"],
+    "smartrecruiters": ["Nestle","IKEA","Siemens","Visa","Vodafone","Nike",
+                        "Decathlon","Kering"],
+    "ashby": [],
+    "workable": [],
 }
 
 

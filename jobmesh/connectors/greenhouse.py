@@ -30,6 +30,7 @@ API_ROOTS = (
 # A descriptive User-Agent is good API etiquette.
 USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
 TIMEOUT = 20  # seconds
+MAX_JOBS = 800  # cap per board — keeps the index deployable on free hosting
 
 # Metadata field names that commonly carry these attributes. Greenhouse
 # boards are free to name custom fields anything, so we match loosely.
@@ -50,7 +51,7 @@ class GreenhouseConnector(Connector):
     # -- public API -------------------------------------------------------
 
     def fetch(self) -> list[Job]:
-        raw_jobs = self._get_jobs()
+        raw_jobs = self._get_jobs()[:MAX_JOBS]
         company = self._company_name()
         fetched_at = now_iso()
         return [self._to_job(j, company, fetched_at) for j in raw_jobs]

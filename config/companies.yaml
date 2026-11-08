@@ -15,6 +15,21 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  - prolific   # research (28)
+  - andurilindustries   # defense (≤800)
+  - bayada   # home healthcare
+  - carvana   # auto retail
+  - liquidpersonnel   # healthcare staffing
+  - aloyoga   # apparel retail
+  - speechify   # (738)
+  - wppmedia   # media
+  - coupang   # e-commerce
+  - capco   # consulting
+  - rocketlab   # aerospace
+  - hellofresh   # food (380)
+  - trivago   # (15)
+  - accenturefederalservices   # consulting
+  - privateequityinsights   # (≤800)
   - gitlab
   - airbnb
   - stripe
