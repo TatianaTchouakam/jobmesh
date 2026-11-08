@@ -247,6 +247,16 @@ def _build_where(f: dict, exclude: Optional[str] = None):
         if pats:
             clauses.append("(" + " OR ".join("location LIKE ?" for _ in pats) + ")")
             params += pats
+    if f.get("since") and exclude != "since":
+        try:
+            _days = int(f["since"])
+        except (TypeError, ValueError):
+            _days = 0
+        if _days > 0:
+            from datetime import datetime, timezone, timedelta
+            _cut = (datetime.now(timezone.utc) - timedelta(days=_days)).strftime("%Y-%m-%d")
+            clauses.append("substr(COALESCE(posted_at, first_seen),1,10) >= ?")
+            params.append(_cut)
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     return where, params
 

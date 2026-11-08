@@ -228,7 +228,6 @@
       <div class="stat"><span class="v" data-k="open_postings">—</span><span class="k" data-i18n="s_jobs">open jobs</span></div>
       <div class="stat"><span class="v" data-k="companies">—</span><span class="k" data-i18n="s_companies">companies</span></div>
       <div class="stat"><span class="v" data-k="boards_indexed">—</span><span class="k" data-i18n="s_sources">sources connected</span></div>
-      <div class="stat"><span class="v" data-k="platforms">—</span><span class="k" data-i18n="s_platforms">ATS &amp; job-board platforms</span></div>
       <div class="stat"><span class="v" data-k="countries">—</span><span class="k" data-i18n="s_countries">countries</span></div>
       <button type="button" class="cvtoggle" id="cvtoggle"><span class="cvicon">🔍</span><span data-i18n="cv_title">Find jobs for your profile</span><span class="cvchev">▾</span></button>
     </div>
@@ -338,7 +337,7 @@ const I18N={
     ph_keyword:"Role or skill",ph_location:"Location",search:"Search",
     ph_prefix:"Role or skill — ",ph_examples:["data engineer","software developer","nurse","driver","sales manager","logistics","chef","accountant","electrician","teacher","warehouse operative","marketing","customer support","designer"],ph_loc_prefix:"Location — ",ph_loc_examples:["Berlin","London","remote","Amsterdam","New York","Munich","Paris","Lagos","Madrid","anywhere"],
     drag:"drag to spin",s_jobs:"open jobs",s_companies:"companies",s_sources:"sources connected",
-    s_platforms:"ATS & job-board platforms",s_countries:"countries",pulling:"Pulling from",
+    s_platforms:"ATS & job-board platforms",s_countries:"countries",g_date:"Date posted",since_today:"Today",since_7:"Last 7 days",since_30:"Last 30 days",pulling:"Pulling from",
     footer:"jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source",
     mcp_label:"Search Jobmesh from your AI agent — connect over MCP:",mcp_copy:"Copy",mcp_copied:"Copied!",
     open_roles:"open roles",most_open:"Most open roles",gcard_open:"Open roles",filtering_by:"Filtering by",
@@ -357,7 +356,7 @@ const I18N={
     ph_keyword:"Beruf oder Skill",ph_location:"Ort",search:"Suchen",
     ph_prefix:"Beruf oder Skill — ",ph_examples:["Data Engineer","Softwareentwickler","Krankenpfleger","Fahrer","Vertrieb","Logistik","Koch","Buchhalter","Elektriker","Lehrer","Lagerist","Marketing","Kundenservice","Designer"],ph_loc_prefix:"Ort — ",ph_loc_examples:["Berlin","München","Remote","Hamburg","Köln","Wien","Zürich","Frankfurt","überall"],
     drag:"zum Drehen ziehen",s_jobs:"offene Jobs",s_companies:"Unternehmen",s_sources:"verbundene Quellen",
-    s_platforms:"ATS- & Jobbörsen-Plattformen",s_countries:"Länder",pulling:"Quellen",
+    s_platforms:"ATS- & Jobbörsen-Plattformen",s_countries:"Länder",g_date:"Veröffentlicht",since_today:"Heute",since_7:"Letzte 7 Tage",since_30:"Letzte 30 Tage",pulling:"Quellen",
     footer:"jobmesh · ein vereinter Index von Stellenanzeigen aus vielen ATS und Jobbörsen · jede Stelle verlinkt zurück zur Originalquelle",
     mcp_label:"Durchsuche Jobmesh aus deinem KI-Agenten — per MCP verbinden:",mcp_copy:"Kopieren",mcp_copied:"Kopiert!",
     open_roles:"offene Stellen",most_open:"Meiste offene Stellen",gcard_open:"Offene Stellen",filtering_by:"Gefiltert nach",
@@ -376,7 +375,7 @@ const I18N={
     ph_keyword:"Métier ou compétence",ph_location:"Lieu",search:"Rechercher",
     ph_prefix:"Métier ou compétence — ",ph_examples:["data engineer","développeur","infirmier","chauffeur","commercial","transport & logistique","cuisinier","comptable","électricien","enseignant","magasinier","marketing","support client","designer"],ph_loc_prefix:"Lieu — ",ph_loc_examples:["Berlin","Paris","télétravail","Amsterdam","Londres","Lyon","Bruxelles","Lagos","partout"],
     drag:"faites tourner",s_jobs:"offres ouvertes",s_companies:"entreprises",s_sources:"sources connectées",
-    s_platforms:"plateformes ATS & job boards",s_countries:"pays",pulling:"Sources",
+    s_platforms:"plateformes ATS & job boards",s_countries:"pays",g_date:"Date de publication",since_today:"Aujourd'hui",since_7:"7 derniers jours",since_30:"30 derniers jours",pulling:"Sources",
     footer:"jobmesh · un index unifié des offres d'emploi issues de nombreux ATS et job boards · chaque offre renvoie à sa source d'origine",
     mcp_label:"Interroge Jobmesh depuis ton agent IA — connecte-toi en MCP :",mcp_copy:"Copier",mcp_copied:"Copié !",
     open_roles:"offres ouvertes",most_open:"Le plus d'offres",gcard_open:"Offres ouvertes",filtering_by:"Filtré par",
@@ -423,7 +422,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 function loadSaved(){try{return new Set(JSON.parse(localStorage.getItem("jobmesh_saved")||"[]"))}catch(e){return new Set()}}
 function persistSaved(){try{localStorage.setItem("jobmesh_saved",JSON.stringify([...saved]))}catch(e){}}
 
-const F={keyword:"",location:"",workplace_type:"",employment_type:"",category:"",level:"",platform:"",country:""};
+const F={keyword:"",location:"",workplace_type:"",employment_type:"",category:"",level:"",platform:"",country:"",since:""};
 
 function params(extra){
   const p=new URLSearchParams();
@@ -646,6 +645,10 @@ async function loadFacets(){
     const f=await(await fetch("/facets?"+params().toString())).json();
     {const cel=$("count");if(cel)cel.innerHTML=`${(f.total||0).toLocaleString()} <span>${t("open_roles")}</span>`;}
     let html="";
+    const DOPTS=[["1","since_today"],["7","since_7"],["30","since_30"]];
+    html+=`<div class="fgroup"><h4>${t("g_date")}</h4>`;
+    for(const [dv,lk] of DOPTS){const da=F.since===dv;html+=`<div class="frow${da?" active":""}" data-param="since" data-val="${dv}"><span>${t(lk)}</span><span class="n"></span></div>`;}
+    html+=`</div>`;
     const anyActive=Object.values(F).some(Boolean);
     // Country group (top) — counts from the global geo index, worldwide.
     if(GEO&&GEO.countries){
@@ -684,9 +687,9 @@ async function loadFacets(){
 }
 
 function renderActiveChips(){
-  const names={keyword:t("n_keyword"),location:t("n_location"),workplace_type:t("g_workplace"),employment_type:t("g_jobtype"),category:t("g_domain"),platform:t("g_found"),country:t("g_country")};
+  const names={keyword:t("n_keyword"),location:t("n_location"),workplace_type:t("g_workplace"),employment_type:t("g_jobtype"),category:t("g_domain"),platform:t("g_found"),country:t("g_country"),since:t("g_date")};
   const chips=Object.entries(F).filter(([k,v])=>v).map(([k,v])=>{
-    let show=v;if(k==="workplace_type")show=wpl(v);if(k==="country")show=CNAME[v]||v;if(k==="category")show=tcat(v);if(k==="level")show=tlvl(v);
+    let show=v;if(k==="workplace_type")show=wpl(v);if(k==="country")show=CNAME[v]||v;if(k==="category")show=tcat(v);if(k==="level")show=tlvl(v);if(k==="since")show=t(v==="1"?"since_today":v==="7"?"since_7":"since_30");
     return `<span class="fchip"><b>${names[k]}:</b> ${esc(show)}<button data-k="${k}">×</button></span>`;
   });
   $("active").innerHTML=chips.join("");

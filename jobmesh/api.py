@@ -70,12 +70,12 @@ def get_stats() -> dict:
 
 
 def _filters(keyword, company, location, platform, workplace_type,
-             employment_type, category, country=None, level=None) -> dict:
+             employment_type, category, country=None, level=None, since=None) -> dict:
     return {
         "keyword": keyword, "company": company, "location": location,
         "platform": platform, "workplace_type": workplace_type,
         "employment_type": employment_type, "category": category,
-        "country": country, "level": level,
+        "country": country, "level": level, "since": since,
     }
 
 
@@ -90,12 +90,13 @@ def list_jobs(
     category: Optional[str] = Query(None, description="broad domain, e.g. Engineering"),
     country: Optional[str] = Query(None, description="ISO-2 country, e.g. DE"),
     level: Optional[str] = Query(None, description="seniority, e.g. Internship, Junior / Entry, Senior"),
+    since: Optional[str] = Query(None, description="only jobs posted within the last N days"),
     limit: int = Query(30, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ) -> dict:
     """Search the index with filters and pagination."""
     f = _filters(keyword, company, location, platform, workplace_type,
-                 employment_type, category, country, level)
+                 employment_type, category, country, level, since)
     with storage.session(DB_PATH) as conn:
         rows = storage.search(conn, limit=limit, offset=offset, **f)
         total = storage.count(conn, **f)
@@ -142,9 +143,10 @@ def get_facets(
     category: Optional[str] = Query(None),
     country: Optional[str] = Query(None),
     level: Optional[str] = Query(None),
+    since: Optional[str] = Query(None),
 ) -> dict:
     """Total plus per-value counts for each filter, given the other filters."""
     f = _filters(keyword, company, location, platform, workplace_type,
-                 employment_type, category, country, level)
+                 employment_type, category, country, level, since)
     with storage.session(DB_PATH) as conn:
         return storage.facets(conn, **f)
