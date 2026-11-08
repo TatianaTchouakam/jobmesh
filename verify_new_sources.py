@@ -23,17 +23,13 @@ import sys
 
 # platform -> list of candidate tokens to test
 CANDIDATES = {
-    "greenhouse": ["traveledgenetwork","threeflow","thekrazycouponlady","opendoorlegal",
-                   "omdegypt","conifersaicareers","noventiq","methodsandmastery","meruhealth",
-                   "kernagency","jdpower","ergeon","destinus","centerforeldersindependence",
-                   "c4analytics","centerforartificialintelligencesafetyinc","21shares","zengrc","vetto"],
-    "recruitee": ["univeit","mittwaldcmservicegmbhcokg","formofoodsgmbh","terrascan",
-                  "eintrachtfrankfurtfussballag","rudolfweber","goedemiddag","vifsoftware",
-                  "pfahlerruhlgmbh","energiemissie","bahranlagenbaugmbh","mobilae1",
-                  "harmonyinsurance","differential","adae62","normecsunl","kortingingenieuregmbh",
-                  "phw","doccheckgroup","preciamolen"],
-    "lever": [],
-    "teamtailor": [],
+    "ashby": ["corma","cogna","carrum-health","ahead-nutrition","quo","quadrature",
+              "pairs","infinite","evermore","empathy","earth","credo","cint","alloy",
+              "adc","square-enix","revyl","plot-pointe","mozilla","legorafi"],
+    "smartrecruiters": ["HenryFordHealthSystem","2SistersFoodGroup","GreinerAG","Greiner",
+                        "BradyCorporation","NuSkin","NuSkinEnterprises","AlliedHealthcare"],
+    "greenhouse": [],
+    "recruitee": [],
 }
 
 

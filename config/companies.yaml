@@ -95,6 +95,16 @@ lever:
   - entrata
 
 ashby:
+  - quo
+  - quadrature
+  - pairs
+  - infinite
+  - evermore
+  - earth
+  - cint
+  - alloy
+  - adc
+  - plot-pointe
   - airwallex   # fintech
   - crusoe   # energy/compute
   - harvey   # legal AI
@@ -128,6 +138,8 @@ workable:
   - huggingface
 
 smartrecruiters:
+  - 2SistersFoodGroup
+  - GreinerAG
   - Dominos   # pizza/food (≤500)
   - AccorHotel   # hospitality
   - Accor   # hospitality
