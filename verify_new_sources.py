@@ -23,17 +23,17 @@ import sys
 
 # platform -> list of candidate tokens to test
 CANDIDATES = {
-    "rippling": ["sunshine-enterprise","teso-life","carbon-health","vulcanforms",
-                 "dlb-associates","nexplore","bethel-university","beehive-industries",
-                 "aalo-atomics","momentum-engineering","contour-education","perle",
-                 "princess-polly","doen","cintal","sfr3"],
-    "breezy": ["hawkhiring","delanassociates","everstar","surgestaffing","hikinex",
-               "kimmelassociates","vanguardip","sagehaus","kmgprestige","crimsonblu",
-               "rinvio","truckinggrouputah","saltcitytrucking","transportinglogistics","clfc"],
-    "workable": ["fuku","belmond","rentokil","pavago","cxg","huzzle","eramtalent",
-                 "qiddiya","mercierconsultancy","weekday","d2b","two95"],
-    "recruitee": [],
-    "personio": [],
+    "smartrecruiters": ["Dominos","DominosPizza","AccorHotel","Accor","BoschGroup",
+                        "AECOM","JYSK","SGS","TurnerTownsend","Eurofins","Veolia",
+                        "VeoliaEnvironnement","SopraSteria","HMGroup","AbbVie","Egis",
+                        "ALTEN","Inetum","METRO","GroupementMousquetaires","Starbucks",
+                        "McDonalds","HenryFordHealth"],
+    "ashby": ["airwallex","crusoe","harvey","appliedintuition","mistral","saronic",
+              "iceye","wayve","halter","neurarobotics","fluidstack","horizon3"],
+    "workable": ["aliprofessional","solutionsft","nextjobabroad","commonwealthmedicalservices",
+                 "rebelconveniencestores","lvpetroleum"],
+    "rippling": [],
+    "breezy": [],
 }
 
 
