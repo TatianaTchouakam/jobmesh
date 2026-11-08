@@ -43,7 +43,7 @@
       radial-gradient(1100px 520px at 82% -8%, #efeafe 0%, rgba(239,234,254,0) 60%),
       radial-gradient(900px 480px at 10% 0%, #fff6e3 0%, rgba(255,246,227,0) 55%),
       var(--bg)}
-  .herowrap{max-width:1180px;margin:0 auto;padding:50px 24px 26px;display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center}
+  .herowrap{max-width:1180px;margin:0 auto;padding:24px 24px 18px;display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center}
   .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-2);margin-bottom:16px}
   .eyebrow .d{width:6px;height:6px;border-radius:50%;background:var(--gold-1)}
   h1{font-size:clamp(30px,3.6vw,44px);line-height:1.05;letter-spacing:-.03em;font-weight:900;margin:0 0 14px}
@@ -76,10 +76,14 @@
 
   /* Stat band */
   .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.55)}
-  .bandwrap{max-width:1180px;margin:0 auto;padding:22px 24px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-  .stat{display:flex;flex-direction:column;gap:2px}
-  .stat .v{font-size:clamp(24px,3vw,34px);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-  .stat .k{font-size:12.5px;color:var(--muted)}
+  .bandwrap{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .stat{display:flex;flex-direction:column;gap:1px}
+  .stat .v{font-size:clamp(20px,2.3vw,27px);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .stat .k{font-size:12px;color:var(--muted)}
+  .bandwrap .cvtoggle{margin-left:auto;display:inline-flex;align-items:center;gap:9px;background:linear-gradient(180deg,#fffdf5,#fff);border:1.5px solid rgba(227,166,0,.45);color:var(--gold-2);font-weight:700;font-size:14px;border-radius:12px;padding:10px 16px;cursor:pointer}
+  .bandwrap .cvtoggle:hover{background:#fffaef}
+  .bandwrap .cvtoggle .cvchev{font-size:11px;transition:transform .15s}
+  .bandwrap .cvtoggle.open .cvchev{transform:rotate(180deg)}
   .bandnote{font-size:12px;color:var(--soft);margin-left:auto}
 
   /* Platform strip */
@@ -190,20 +194,6 @@
   </div>
 </header>
 
-<style>
-  .mcpbar{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;background:linear-gradient(90deg,#fff7e6,#fffdf5);border-bottom:1px solid rgba(227,166,0,.25);color:#5a4a1f;font-size:13px;padding:8px 16px}
-  .mcpbar .mcpico{font-size:14px}
-  .mcpbar code{background:#fff;border:1px solid rgba(227,166,0,.3);color:var(--gold-2);padding:2px 8px;border-radius:6px;font-size:12.5px}
-  .mcpbar .mcpcopy{background:linear-gradient(92deg,var(--gold-1),var(--gold-2));color:#fff;border:0;border-radius:7px;padding:4px 12px;font-weight:700;font-size:12.5px;cursor:pointer}
-  .mcpbar .mcpcopy:hover{filter:brightness(1.05)}
-</style>
-<div class="mcpbar">
-  <span class="mcpico">🤖</span>
-  <span data-i18n="mcp_label">Search Jobmesh from your AI agent — connect over MCP:</span>
-  <code id="mcpurl">/mcp</code>
-  <button type="button" class="mcpcopy" id="mcpcopy" data-i18n="mcp_copy">Copy</button>
-</div>
-
 <section class="hero">
   <div class="herowrap">
     <div>
@@ -234,6 +224,7 @@
       <div class="stat"><span class="v" data-k="boards_indexed">—</span><span class="k" data-i18n="s_sources">sources connected</span></div>
       <div class="stat"><span class="v" data-k="platforms">—</span><span class="k" data-i18n="s_platforms">ATS &amp; job-board platforms</span></div>
       <div class="stat"><span class="v" data-k="countries">—</span><span class="k" data-i18n="s_countries">countries</span></div>
+      <button type="button" class="cvtoggle" id="cvtoggle"><span class="cvicon">🔍</span><span data-i18n="cv_title">Find jobs for your profile</span><span class="cvchev">▾</span></button>
     </div>
   </div>
 </section>
@@ -241,7 +232,7 @@
 <div class="tip gtip" id="gtip"></div>
 
 <style>
-  .cvsec{max-width:1180px;margin:20px auto 0;padding:0 24px}
+  .cvsec{max-width:1180px;margin:12px auto 0;padding:0 24px}
   .cvwrap{background:linear-gradient(180deg,#fffdf5,#fff);border:1px solid rgba(227,166,0,.38);border-radius:14px;box-shadow:0 1px 3px rgba(196,135,26,.10);overflow:hidden}
   .cvsum{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 18px;font-weight:700;font-size:15px;color:var(--gold-2)}
   .cvsum::-webkit-details-marker{display:none}
@@ -268,9 +259,8 @@
   .cvchip.none{cursor:default;color:var(--muted);font-weight:400;background:none;border:0;padding-left:0}
 </style>
 
-<section class="cvsec">
-  <details class="cvwrap" id="cvdetails">
-    <summary class="cvsum"><span class="cvicon">🔍</span><span data-i18n="cv_title">Find jobs for your profile</span><span class="cvchev">▾</span></summary>
+<section class="cvsec" id="cvpanel" hidden>
+  <div class="cvwrap">
     <div class="cvbody">
       <p class="cvsub" data-i18n="cv_sub">Paste your CV — Jobmesh reads your skills and shows matching roles across every sector and country. Nothing is uploaded or stored; it runs entirely in your browser.</p>
       <textarea id="cvtext" rows="5" data-i18n-ph="cv_ph" placeholder="Paste your CV / résumé text here…" maxlength="20000"></textarea>
@@ -284,22 +274,19 @@
         <div class="cvchips" id="cvchips"></div>
       </div>
     </div>
-  </details>
+  </div>
 </section>
-
-<div class="pstrip" id="pstrip"><span class="lbl" data-i18n="pulling">Pulling from</span></div>
 
 <div class="main">
   <aside class="side" id="side"></aside>
   <section>
-    <div class="rbar">
-      <div class="cnt" id="count"></div>
-    </div>
     <div class="active-chips" id="active"></div>
     <div id="results"></div>
     <div id="morewrap"></div>
   </section>
 </div>
+
+<div class="pstrip" id="pstrip"><span class="lbl" data-i18n="pulling">Pulling from</span></div>
 
 <section class="fbsec">
   <div class="fbwrap">
@@ -648,7 +635,7 @@ function selectCountry(code){
 async function loadFacets(){
   try{
     const f=await(await fetch("/facets?"+params().toString())).json();
-    $("count").innerHTML=`${(f.total||0).toLocaleString()} <span>${t("open_roles")}</span>`;
+    {const cel=$("count");if(cel)cel.innerHTML=`${(f.total||0).toLocaleString()} <span>${t("open_roles")}</span>`;}
     let html="";
     const anyActive=Object.values(F).some(Boolean);
     // Country group (top) — counts from the global geo index, worldwide.
@@ -849,6 +836,14 @@ async function cvReadPdf(file){
   }
   return text;
 }
+/* CV panel is opened by the gold button in the stats band. */
+(function(){
+  const bt=$("cvtoggle"), pn=$("cvpanel");
+  if(bt&&pn)bt.addEventListener("click",()=>{
+    const show=pn.hidden; pn.hidden=!show; bt.classList.toggle("open",show);
+    if(show)pn.scrollIntoView({behavior:"smooth",block:"nearest"});
+  });
+})();
 $("cvgo").addEventListener("click",cvAnalyze);
 $("cvfile").addEventListener("change",async e=>{
   const f=e.target.files[0]; if(!f)return;
@@ -862,18 +857,6 @@ $("cvfile").addEventListener("change",async e=>{
   }catch(err){ cvStatus(t("cv_readerr")); }
   finally{ e.target.value=""; }
 });
-
-/* MCP banner: show this site's live /mcp URL and let visitors copy it. */
-(function(){
-  const url=(location.origin||"")+"/mcp";
-  const u=$("mcpurl"); if(u)u.textContent=url;
-  const b=$("mcpcopy");
-  if(b)b.addEventListener("click",()=>{
-    try{const p=navigator.clipboard&&navigator.clipboard.writeText(url);if(p&&p.catch)p.catch(()=>{});}catch(e){}
-    b.textContent=t("mcp_copied");
-    setTimeout(()=>{b.textContent=t("mcp_copy");},1500);
-  });
-})();
 
 $("form").addEventListener("submit",e=>{e.preventDefault();scrollToResults();runSearch()});
 $("fbform").addEventListener("submit",submitFeedback);
