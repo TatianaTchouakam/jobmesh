@@ -23,14 +23,17 @@ import sys
 
 # platform -> list of candidate tokens to test
 CANDIDATES = {
-    "lever": ["ideasunited","wolverineconstruction","stevens-construction","petdesk",
-              "athletetoathlete","networkconnex","tali-ai","safran-ai","sfgiants",
-              "ableserve","paytm","meesho","linkedin","GoToGroup","firstam",
-              "theathletic","binance","mazars","trendyol","rover"],
-    "teamtailor": ["lovisa","teachmeto","tantor","exio","nexflow","andromeda",
-                   "healthylife","urbanridge"],
-    "greenhouse": [],
-    "smartrecruiters": [],
+    "greenhouse": ["traveledgenetwork","threeflow","thekrazycouponlady","opendoorlegal",
+                   "omdegypt","conifersaicareers","noventiq","methodsandmastery","meruhealth",
+                   "kernagency","jdpower","ergeon","destinus","centerforeldersindependence",
+                   "c4analytics","centerforartificialintelligencesafetyinc","21shares","zengrc","vetto"],
+    "recruitee": ["univeit","mittwaldcmservicegmbhcokg","formofoodsgmbh","terrascan",
+                  "eintrachtfrankfurtfussballag","rudolfweber","goedemiddag","vifsoftware",
+                  "pfahlerruhlgmbh","energiemissie","bahranlagenbaugmbh","mobilae1",
+                  "harmonyinsurance","differential","adae62","normecsunl","kortingingenieuregmbh",
+                  "phw","doccheckgroup","preciamolen"],
+    "lever": [],
+    "teamtailor": [],
 }
 
 
