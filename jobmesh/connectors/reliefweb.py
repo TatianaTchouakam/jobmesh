@@ -17,14 +17,20 @@ Docs: https://apidoc.reliefweb.int/
 
 from __future__ import annotations
 
+import os
+
 import requests
 
 from ..models import Job, now_iso
 from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
-API = "https://api.reliefweb.int/v1/jobs"
-APPNAME = "jobmesh-jobindex"
+API = "https://api.reliefweb.int/v2/jobs"
+# ReliefWeb now requires a PRE-APPROVED appname on every request (free; request
+# one at https://apidoc.reliefweb.int/). Set it as an env var so we never ship a
+# shared/guessable name. Until it is set, this connector stays out of config.
+def _appname() -> str:
+    return (os.environ.get("RELIEFWEB_APPNAME") or "").strip()
 USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
 TIMEOUT = 30
 LIMIT = 100
@@ -57,12 +63,17 @@ class ReliefWebConnector(Connector):
         self._session.headers.setdefault("Accept", "application/json")
 
     def fetch(self) -> list[Job]:
+        appname = _appname()
+        if not appname:
+            raise RuntimeError(
+                "RELIEFWEB_APPNAME is not set. Request a free appname at "
+                "https://apidoc.reliefweb.int/ and set it as an env var.")
         at = now_iso()
         jobs: list[Job] = []
         for page in range(MAX_PAGES):
             resp = self._session.get(
                 API,
-                params={"appname": APPNAME, "profile": "full",
+                params={"appname": appname, "profile": "full",
                         "limit": LIMIT, "offset": page * LIMIT,
                         "sort[]": "date.created:desc"},
                 timeout=TIMEOUT,

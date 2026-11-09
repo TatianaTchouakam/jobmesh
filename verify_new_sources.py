@@ -1,27 +1,28 @@
 #!/usr/bin/env python3
-"""Local check of candidate ATS tokens before adding them to config."""
+"""Worldwide batch — North/South America, South Africa, Russia-adjacent."""
 from __future__ import annotations
 import sys
 
-# Africa-focused batch: fintech, agritech & NGOs on clean public ATS.
-# Several slugs confirmed from live job-board URLs; the rest are best guesses.
 CANDIDATES = {
     "greenhouse": [
-        "paystack", "moniepoint", "pulaio",        # confirmed (Nigeria/Africa)
-        "flutterwave", "chippercash", "kuda", "fairmoney", "carbon",
-        "interswitch", "jumia",                     # African fintech/e-commerce
-        "mkopa", "m-kopa", "apolloagriculture", "sunculture",
-        "wasoko", "twigafoods", "komaza",           # agritech / off-grid
-        "sama", "mpharma", "yoco", "andela", "tala", "branch",
+        "nubank",        # confirmed — Brazil fintech (huge)
+        "quintoandar",   # confirmed — Brazil proptech
+        "jobber",        # confirmed — Canada
+        "openphone",     # confirmed — US/Canada
+        "shakepay",      # confirmed — Canada crypto
+        "rootstrap",     # confirmed — Uruguay/LatAm
+        "takealotcom",   # confirmed — South Africa e-commerce
+        "takealotgroup", # confirmed variant — South Africa
+        "rappi", "globant", "luno", "nebius",   # guesses: Colombia / Argentina / S.Africa / ex-Russia
     ],
     "lever": [
-        "andela", "yassir", "sama", "flutterwave",
+        "kavak",         # confirmed — Mexico
+        "dlocal",        # confirmed — Uruguay payments
+        "rappi", "globant",
     ],
-    "workable": [
-        "evidence-action", "bracinternational",
-    ],
-    "smartrecruiters": [
-        "AmrefHealthAfrica4",                       # confirmed (Amref, Africa health)
+    "ashby": [
+        "wealthsimple",  # confirmed — Canada fintech
+        "ramp", "mercury", "vanta", "deel", "notion",   # big US (likely Ashby)
     ],
 }
 
@@ -33,7 +34,7 @@ def main() -> int:
         print(f"Could not import connectors (run from the repo root): {exc}")
         return 1
     clean = []
-    print("Testing Africa-focused candidate tokens (live)…\n")
+    print("Testing worldwide candidate tokens (live)…\n")
     for platform, tokens in CANDIDATES.items():
         for token in tokens:
             try:

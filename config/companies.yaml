@@ -15,6 +15,12 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  - quintoandar   # proptech · Brazil (95)
+  - nebius   # AI cloud · NL/ex-Yandex (382)
+  - takealotcom   # e-commerce · South Africa (65)
+  - takealotgroup   # group · South Africa (21)
+  - shakepay   # crypto · Canada (9)
+  - luno   # crypto · South Africa (2)
   - branch   # fintech · Africa/Asia (2)
   - givedirectly   # NGO · cash transfers, Africa (34)
   - oneacrefund   # NGO · smallholder farmers, E. Africa (52)
@@ -77,6 +83,7 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  - kavak   # used cars · Mexico (5)
   - thetrevorproject   # nonprofit · youth mental health (5)
   - wolverineconstruction   # construction (11)
   - stevens-construction   # construction (1)
@@ -105,6 +112,8 @@ lever:
   - entrata
 
 ashby:
+  - vanta   # security · US (82)
+  - wealthsimple   # fintech · Canada (42)
   - quo
   - quadrature
   - pairs
@@ -365,13 +374,14 @@ hirehive:
 #   Note: in Africa, Adzuna covers South Africa (za) only — for Nigeria,
 #   Kenya, Ghana etc. use Jooble below.
 #   Env: ADZUNA_APP_ID, ADZUNA_APP_KEY   (https://developer.adzuna.com)
-# adzuna:
-#   - za            # 🇿🇦 South Africa
-#   - de            # 🇩🇪 Germany
-#   - gb            # 🇬🇧 United Kingdom
-#   - us            # 🇺🇸 United States
-#   - fr            # 🇫🇷 France
-#   - in            # 🇮🇳 India
+adzuna:
+  - za            # South Africa (Adzuna's only African market)
+  - in            # India
+  - sg            # Singapore
+  - de            # Germany
+  - fr            # France
+  - gb            # United Kingdom
+  - us            # United States
 
 # Jooble — 70+ countries (many African markets), all sectors.
 #   One entry per location string; "all" = no location filter. FREE key
@@ -383,6 +393,12 @@ jooble:
   - South Africa
   - Kenya
   - Ghana
+  - Senegal
+  - Morocco
+  - Egypt
+  - India
+  - Philippines
+  - Indonesia
   - Germany
 
 # USAJobs — US federal jobs, all sectors (health, admin, logistics...).
