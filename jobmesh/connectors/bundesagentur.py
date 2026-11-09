@@ -5,7 +5,7 @@ an official REST API. It covers EVERY sector across Germany — healthcare,
 trades, logistics, retail, hospitality, administration, industry — so it is
 the single best source of non-tech German roles.
 
-    GET https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobs
+    GET https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs
         ?size=100&page=1
     Header: X-API-Key: jobboerse-jobsuche
 
@@ -25,7 +25,7 @@ from ..models import Job, now_iso
 from ..normalize import make_dedup_key
 from .base import Connector
 
-API = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobs"
+API = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs"
 # Documented public client id, used as the API key by the official site.
 API_KEY = "jobboerse-jobsuche"
 USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
@@ -61,7 +61,7 @@ class BundesagenturConnector(Connector):
                 API, params={"size": SIZE, "page": page}, timeout=TIMEOUT)
             resp.raise_for_status()
             data = resp.json()
-            batch = data.get("stellenangebote") or data.get("jobs") or []
+            batch = data.get("ergebnisliste") or data.get("stellenangebote") or data.get("jobs") or []
             if not batch:
                 break
             for d in batch:
@@ -75,15 +75,15 @@ class BundesagenturConnector(Connector):
         return jobs
 
     def _to_job(self, d: dict, at: str) -> Job:
-        title = _first(d, "titel", "stellenangebotsTitel", "beruf") or "(untitled)"
-        company = _first(d, "arbeitgeber", "arbeitgeberName") or "Unbekannt"
-        location = _format_location(d.get("arbeitsort"))
-        ref = _first(d, "refnr", "referenznummer", "hashId") or title
+        title = _first(d, "stellenangebotsTitel", "titel", "beruf") or "(untitled)"
+        company = _first(d, "firma", "arbeitgeber", "arbeitgeberName") or "Unbekannt"
+        location = _bund_location(d.get("stellenlokationen")) or _format_location(d.get("arbeitsort"))
+        ref = _first(d, "referenznummer", "refnr", "hashId") or title
         ext = d.get("externeUrl")
         url = ext or f"https://www.arbeitsagentur.de/jobsuche/jobdetail/{ref}"
         # `beruf` (occupation) is a strong category signal; feed it to the
         # categoriser alongside the title.
-        beruf = d.get("beruf")
+        beruf = _first(d, "hauptberuf", "beruf")
         return Job(
             source_platform=self.platform, source_board=self.board,
             source_job_id=str(ref),
@@ -91,11 +91,11 @@ class BundesagenturConnector(Connector):
             description=None,
             source_url=url, apply_url=url,
             salary=None,
-            employment_type=_first(d, "arbeitszeit", "angebotsart"),
+            employment_type=_first(d, "stellenangebotsart", "arbeitszeit", "angebotsart"),
             category=beruf,
             remote=None,
-            posted_at=_first(d, "aktuelleVeroeffentlichungsdatum",
-                             "eintrittsdatum", "modifikationsTimestamp"),
+            posted_at=_first(d, "datumErsteVeroeffentlichung", "aenderungsdatum",
+                             "aktuelleVeroeffentlichungsdatum", "eintrittsdatum"),
             dedup_key=make_dedup_key(title, company, location),
             first_seen=at, last_checked=at, is_open=True,
         )
@@ -114,3 +114,14 @@ def _format_location(ort) -> str | None:
             loc = (loc + ", " + land) if loc else land
         return loc or None
     return None
+
+
+def _bund_location(locs) -> "str | None":
+    """v6: stellenlokationen is a list of dicts; every posting is in Germany."""
+    if isinstance(locs, list) and locs and isinstance(locs[0], dict):
+        o = locs[0]
+        parts = [o.get("ort") or o.get("plz"), o.get("region")]
+        loc = ", ".join(p for p in parts if p)
+        if loc:
+            return loc if "deutschland" in loc.lower() else loc + ", Deutschland"
+    return "Deutschland"
