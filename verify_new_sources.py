@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
-"""Worldwide batch — North/South America, South Africa, Russia-adjacent."""
+"""Worldwide batch 2 — India, SE Asia, Middle East, Eastern Europe."""
 from __future__ import annotations
 import sys
 
 CANDIDATES = {
     "greenhouse": [
-        "nubank",        # confirmed — Brazil fintech (huge)
-        "quintoandar",   # confirmed — Brazil proptech
-        "jobber",        # confirmed — Canada
-        "openphone",     # confirmed — US/Canada
-        "shakepay",      # confirmed — Canada crypto
-        "rootstrap",     # confirmed — Uruguay/LatAm
-        "takealotcom",   # confirmed — South Africa e-commerce
-        "takealotgroup", # confirmed variant — South Africa
-        "rappi", "globant", "luno", "nebius",   # guesses: Colombia / Argentina / S.Africa / ex-Russia
+        "razorpaysoftwareprivatelimited",  # confirmed — India fintech
+        "careem", "ziina",                 # confirmed — UAE / Middle East
+        "freenow", "showpad",              # confirmed — Europe
+        "bolteu", "bolt",                  # Estonia (mobility)
+        "cred", "postman", "browserstack", "chargebee", "zeta",   # India
+        "vinted", "veriff", "preply",      # Eastern Europe
+        "tabby", "tamara",                 # Middle East fintech
     ],
     "lever": [
-        "kavak",         # confirmed — Mexico
-        "dlocal",        # confirmed — Uruguay payments
-        "rappi", "globant",
+        "zartis",                          # confirmed — Ireland/EU
+        "bitpanda", "groww",
     ],
     "ashby": [
-        "wealthsimple",  # confirmed — Canada fintech
-        "ramp", "mercury", "vanta", "deel", "notion",   # big US (likely Ashby)
+        "pipedrive", "groww", "cred",
+    ],
+    "smartrecruiters": [
+        "Grab",                            # confirmed — SE Asia super-app
+        "Shopee",
     ],
 }
 
@@ -34,7 +34,7 @@ def main() -> int:
         print(f"Could not import connectors (run from the repo root): {exc}")
         return 1
     clean = []
-    print("Testing worldwide candidate tokens (live)…\n")
+    print("Testing worldwide batch 2 (live)…\n")
     for platform, tokens in CANDIDATES.items():
         for token in tokens:
             try:

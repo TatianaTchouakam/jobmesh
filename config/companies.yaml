@@ -15,6 +15,12 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  - razorpaysoftwareprivatelimited   # fintech · India (23)
+  - careem   # super-app · UAE/Middle East (15)
+  - tamara   # fintech · Saudi Arabia (39)
+  - showpad   # software · Belgium (24)
+  - freenow   # mobility · Europe (12)
+  - veriff   # identity · Estonia (11)
   - quintoandar   # proptech · Brazil (95)
   - nebius   # AI cloud · NL/ex-Yandex (382)
   - takealotcom   # e-commerce · South Africa (65)
@@ -83,6 +89,7 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  - zartis   # software · Ireland (9)
   - kavak   # used cars · Mexico (5)
   - thetrevorproject   # nonprofit · youth mental health (5)
   - wolverineconstruction   # construction (11)
@@ -158,6 +165,7 @@ workable:
   - huggingface
 
 smartrecruiters:
+  - Grab   # super-app · Southeast Asia (446)
   - AmrefHealthAfrica4   # NGO · health, Africa (13)
   - 2SistersFoodGroup
   - GreinerAG
