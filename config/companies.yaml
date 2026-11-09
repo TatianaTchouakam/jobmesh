@@ -15,6 +15,11 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  - krafton   # gaming · South Korea (68)
+  - appier   # AI · Taiwan/Japan (64)
+  - cognite   # industrial data · Norway (51)
+  - moloco   # adtech · South Korea/US (47)
+  - truecaller   # tech · Sweden/India (35)
   - razorpaysoftwareprivatelimited   # fintech · India (23)
   - careem   # super-app · UAE/Middle East (15)
   - tamara   # fintech · Saudi Arabia (39)
@@ -89,6 +94,7 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  - deputy   # workforce · Australia (2)
   - zartis   # software · Ireland (9)
   - kavak   # used cars · Mexico (5)
   - thetrevorproject   # nonprofit · youth mental health (5)
@@ -156,6 +162,7 @@ ashby:
   - clerk
 
 workable:
+  - mercari   # marketplace · Japan (140)
   - evidence-action   # NGO · Africa/Asia dev (42)
   - aliprofessional   # recruitment (812)
   - fuku   # (745)

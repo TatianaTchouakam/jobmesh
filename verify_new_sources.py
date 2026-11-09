@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
-"""Worldwide batch 2 — India, SE Asia, Middle East, Eastern Europe."""
+"""Worldwide batch 3 — Japan/Korea, Australia/NZ, Nordics/N. Europe."""
 from __future__ import annotations
 import sys
 
 CANDIDATES = {
     "greenhouse": [
-        "razorpaysoftwareprivatelimited",  # confirmed — India fintech
-        "careem", "ziina",                 # confirmed — UAE / Middle East
-        "freenow", "showpad",              # confirmed — Europe
-        "bolteu", "bolt",                  # Estonia (mobility)
-        "cred", "postman", "browserstack", "chargebee", "zeta",   # India
-        "vinted", "veriff", "preply",      # Eastern Europe
-        "tabby", "tamara",                 # Middle East fintech
+        "mercari", "appier",                       # confirmed — Japan / Taiwan
+        "klarna", "spotify", "pleo", "supermetrics", "cognite", "kahoot",
+        "truecaller", "einride", "northvolt",      # Nordics / N. Europe
+        "canva", "airwallex", "rokt", "immutable", "go1", "employmenthero",  # Australia
+        "coupang", "moloco", "krafton", "smartnews",   # Korea / Japan
     ],
     "lever": [
-        "zartis",                          # confirmed — Ireland/EU
-        "bitpanda", "groww",
+        "canva", "deputy",
     ],
     "ashby": [
-        "pipedrive", "groww", "cred",
+        "sendbird", "moloco",
     ],
-    "smartrecruiters": [
-        "Grab",                            # confirmed — SE Asia super-app
-        "Shopee",
+    "workable": [
+        "mercari",
     ],
 }
 
@@ -34,7 +30,7 @@ def main() -> int:
         print(f"Could not import connectors (run from the repo root): {exc}")
         return 1
     clean = []
-    print("Testing worldwide batch 2 (live)…\n")
+    print("Testing worldwide batch 3 (live)…\n")
     for platform, tokens in CANDIDATES.items():
         for token in tokens:
             try:
