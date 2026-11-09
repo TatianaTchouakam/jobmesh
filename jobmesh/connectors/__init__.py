@@ -42,6 +42,7 @@ from .oracle import OracleConnector
 from .bundesagentur import BundesagenturConnector
 from .devitjobs import DevITjobsConnector
 from .reliefweb import ReliefWebConnector
+from .jobtech import JobTechConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
 from .jooble import JoobleConnector
@@ -80,6 +81,7 @@ REGISTRY: dict[str, type[Connector]] = {
     BundesagenturConnector.platform: BundesagenturConnector,
     DevITjobsConnector.platform: DevITjobsConnector,
     ReliefWebConnector.platform: ReliefWebConnector,
+    JobTechConnector.platform: JobTechConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
     UsaJobsConnector.platform: UsaJobsConnector,

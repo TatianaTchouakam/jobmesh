@@ -252,6 +252,11 @@ personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.
 # strongly non-tech (trades, healthcare, logistics, education, hospitality).
 bundesagentur:
   - all
+# JobTech / Arbetsförmedlingen — Sweden's public employment service
+# (Platsbanken), ALL sectors. Keyless open API.
+jobtech:
+  - all
+
 remotive:
   - all
 arbeitnow:     # Germany / EU
