@@ -11,6 +11,26 @@ roles linger in search results.
 searchable, de-duplicated dataset**, keeps it fresh on a schedule, and serves
 it through a documented API. Each job links back to its original posting.
 
+**Live demo:** [jobmesh-qrq1.onrender.com](https://jobmesh-qrq1.onrender.com)
+
+> 🚧 **Work in progress** – growing towards the goal of **78 platform types**.
+
+### Current status
+
+- 🌍 **~50,000 job postings** across **6 continents**
+- 🔌 **30 platform types**: 15 ATS + 15 job boards
+- 🏛️ **2 national employment agencies live**: 🇩🇪 Bundesagentur für Arbeit · 🇸🇪 Sweden
+- 🏢 **~250 companies** worldwide
+- ✅ **100 % clean data collection – zero scraping**: only official public APIs and feeds
+
+### Features
+
+- Search bar with filters (keyword, location, remote, **posting date**)
+- **CV matching**: rank jobs against your CV
+- **AI endpoint (MCP)** so AI assistants can query the index
+- Interactive globe, **trilingual** interface (EN / DE / FR)
+- Mobile-friendly pagination
+
 ---
 
 ## Why it's built this way
@@ -21,12 +41,12 @@ detection, deduplication, search, API — works on a single normalized `Job`
 model, so it never needs to know which platform a job came from.
 
 ```
-            config/companies.yaml          (which boards to index)
+            config/companies.yaml          (~250 companies, 30 platform types)
                       │
           ┌───────────▼────────────┐
           │       connectors        │   one per platform
-          │  greenhouse · lever ·   │   each returns Job objects
-          │  ashby · workable · ... │
+          │ 15 ATS · 15 job boards ·│   each returns Job objects
+          │ 2 national agencies     │
           └───────────┬────────────┘
                       │  normalize (HTML→text, remote flag, dedup key)
           ┌───────────▼────────────┐
@@ -52,7 +72,7 @@ jobmesh/
 │   ├── normalize.py         # HTML→text, remote detection, dedup key
 │   ├── connectors/
 │   │   ├── base.py          # the Connector contract
-│   │   └── greenhouse.py    # Greenhouse (public API, no key)
+│   │   └── ...              # one small file per platform (30 and growing)
 │   ├── storage.py           # SQLite: upsert, change detection, closing
 │   ├── pipeline.py          # fetch → normalize → store, per board
 │   ├── config.py            # reads config/companies.yaml
@@ -60,6 +80,8 @@ jobmesh/
 │   └── api.py               # FastAPI service with auto docs
 ├── config/companies.yaml    # the boards to index
 ├── tests/                   # offline unit tests
+├── Dockerfile               # container image (planned)
+├── docker-compose.yml       # API + scheduled ingest (planned)
 └── requirements.txt
 ```
 
@@ -120,14 +142,38 @@ Scheduling locally (hourly example):
 
 ## Platform coverage
 
-| Platform | Status |
+| Category | Status |
 |---|---|
-| Greenhouse | ✅ implemented (public Job Board API, no key) |
-| Lever, Ashby, Workable, … | 🔜 roadmap — each is one new connector in `connectors/` |
+| ATS platforms (e.g. Greenhouse, Lever, Workday, Oracle, …) | ✅ 15 implemented |
+| Job boards | ✅ 15 implemented |
+| National employment agencies (🇩🇪 Bundesagentur für Arbeit, 🇸🇪 Sweden) | ✅ 2 live |
+| Further platforms | 🔜 in progress — goal: **78 platform types** |
 
-The target is full coverage across the ATS and job-board platforms the index
-aims to support. The architecture is built so that growth is additive: a new
+All sources are accessed through **official public APIs or feeds — no scraping**. The architecture is built so that growth is additive: a new
 platform is a new `Connector` subclass plus one line in the registry.
+
+## Running with Docker (🚧 in progress)
+
+The API and the ingestion job are being containerised for reproducible local
+runs and deployment:
+
+```bash
+# build the image
+docker build -t jobmesh .
+
+# serve the API on http://127.0.0.1:8000/docs
+docker run -p 8000:8000 -v $(pwd)/data:/app/data jobmesh
+
+# run one ingestion with the same image
+docker run -v $(pwd)/data:/app/data jobmesh python -m jobmesh.cli ingest
+```
+
+Planned setup:
+
+- slim Python base image, non-root user, small image size
+- the SQLite database stored on a mounted volume, so data survives restarts
+- `docker-compose.yml` with two services: `api` (FastAPI) and `ingest` (scheduled refresh)
+- image built and tested automatically in CI (GitHub Actions)
 
 ## Tests
 
@@ -138,3 +184,11 @@ python -m pytest -q
 The included tests cover normalization and the storage logic (change
 detection, closing absent postings, and that a failed fetch never closes
 listings) — all offline, no network required.
+
+## Roadmap
+
+- [ ] **Docker**: Dockerfile and docker-compose (API + ingest)
+- [ ] CI with GitHub Actions: tests and Docker build on every push
+- [ ] Run the ingestion as a scheduled container job
+- [ ] More connectors: from 30 to **78 platform types**
+- [ ] More national employment agencies
