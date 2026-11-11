@@ -1,17 +1,14 @@
 # Python
 __pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
+*.pyc
 .venv/
 venv/
-env/
 
-# jobmesh local data
+# Local database (built at deploy time, never committed)
 *.db
-jobmesh.db
+*.db-journal
+*.db-wal
+*.db-shm
 
-# OS / editor
-.DS_Store
-.idea/
-.vscode/
+# Environment / secrets
+.env
