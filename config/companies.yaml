@@ -394,14 +394,15 @@ hirehive:
 #   Note: in Africa, Adzuna covers South Africa (za) only — for Nigeria,
 #   Kenya, Ghana etc. use Jooble below.
 #   Env: ADZUNA_APP_ID, ADZUNA_APP_KEY   (https://developer.adzuna.com)
-adzuna:
-  - za            # South Africa (Adzuna's only African market)
-  - in            # India
-  - sg            # Singapore
-  - de            # Germany
-  - fr            # France
-  - gb            # United Kingdom
-  - us            # United States
+# adzuna — removed: free tier is only 25 test calls; real access is paid.
+# adzuna:
+#   - za            # South Africa (Adzuna's only African market)
+#   - in            # India
+#   - sg            # Singapore
+#   - de            # Germany
+#   - fr            # France
+#   - gb            # United Kingdom
+#   - us            # United States
 
 # Jooble — 70+ countries (many African markets), all sectors.
 #   One entry per location string; "all" = no location filter. FREE key
