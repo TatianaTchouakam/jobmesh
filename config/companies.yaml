@@ -254,6 +254,11 @@ bundesagentur:
   - all
 # JobTech / Arbetsförmedlingen — Sweden's public employment service
 # (Platsbanken), ALL sectors. Keyless open API.
+# Reed.co.uk — UK's largest job board, ALL sectors. Free API key.
+#   Env: REED_API_KEY  (https://www.reed.co.uk/developers/jobseeker)
+reed:
+  - all
+
 jobtech:
   - all
 
