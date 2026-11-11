@@ -429,8 +429,8 @@ jooble:
 
 # USAJobs — US federal jobs, all sectors (health, admin, logistics...).
 #   Env: USAJOBS_EMAIL, USAJOBS_API_KEY  (https://developer.usajobs.gov/APIRequest)
-# usajobs:
-#   - all
+usajobs:
+  - all
 
 # bamboohr — ATS (find token at {company}.bamboohr.com). Add a company:
 # bamboohr:
