@@ -29,6 +29,10 @@
   .brand{font-weight:800;font-size:23px;letter-spacing:-.02em}
   .brand .g{background:linear-gradient(92deg,var(--gold-1),var(--gold-2));-webkit-background-clip:text;background-clip:text;color:transparent}
   .hbar{display:flex;align-items:center;gap:18px}
+  .topnav{display:flex;align-items:center;gap:22px}
+  .topnav a{font-size:13px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:#3c4457}
+  .topnav a:hover{color:var(--accent)}
+  @media(max-width:900px){.topnav{display:none}}
   .langsel{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
   .langsel button{border:0;background:none;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--soft);padding:5px 11px;cursor:pointer}
   .langsel button+button{border-left:1px solid var(--line)}
@@ -63,8 +67,8 @@
   .hchip.rem{border-color:rgba(16,138,108,.35);color:var(--remote)}
 
   /* Globe */
-  .globewrap{position:relative;display:flex;align-items:center;justify-content:center;min-height:430px}
-  #globe{cursor:grab;touch-action:none;max-width:100%}
+  .globewrap{position:relative;display:flex;align-items:center;justify-content:center;min-height:360px}
+  #globe{cursor:grab;touch-action:none;max-width:330px;width:100%}
   #globe:active{cursor:grabbing}
   .gcard{position:absolute;left:4px;bottom:20px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;padding:13px 16px;box-shadow:0 10px 30px rgba(20,25,40,.1);min-width:190px;pointer-events:none}
   .gcard .cc{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
@@ -192,6 +196,11 @@
   <div class="hwrap">
     <div class="brand">Job<span class="g">mesh</span></div>
     <div class="hbar">
+      <nav class="topnav">
+        <a href="#how" data-i18n="nav_how">How it works</a>
+        <a href="#vision" data-i18n="nav_vision">Vision &amp; API</a>
+        <a href="#vision" data-i18n="nav_partner">For employers</a>
+      </nav>
       <div class="langsel" id="langsel">
         <button data-lang="en">EN</button><button data-lang="de">DE</button><button data-lang="fr">FR</button>
       </div>
@@ -293,6 +302,55 @@
 
 <div class="pstrip" id="pstrip"><span class="lbl" data-i18n="pulling">Pulling from</span></div>
 
+<style>
+  .mkt{max-width:1180px;margin:0 auto;padding:54px 24px 8px;text-align:center}
+  .mkt .eyebrow{justify-content:center}
+  .mkt h2{font-size:clamp(23px,2.6vw,33px);line-height:1.1;letter-spacing:-.02em;font-weight:900;margin:12px 0 10px}
+  .mkt .sub{font-size:16px;color:#4a5262;max-width:40em;margin:0 auto 32px}
+  .hiw{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:left}
+  .hiw .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+  .hiw .num{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--gold-1),var(--gold-2));margin-bottom:16px}
+  .hiw h3{font-size:17px;font-weight:800;margin:0 0 7px;letter-spacing:-.01em}
+  .hiw p{font-size:14.5px;color:var(--muted);margin:0}
+  .vision{max-width:1180px;margin:46px auto 0;padding:0 24px}
+  .visioninner{background:radial-gradient(900px 420px at 88% -20%,#efeafe 0,rgba(239,234,254,0) 60%),radial-gradient(700px 360px at 6% 120%,#fff6e3 0,rgba(255,246,227,0) 55%),var(--panel);border:1px solid var(--line);border-radius:22px;padding:42px 38px;box-shadow:0 10px 30px rgba(20,25,40,.05);text-align:center}
+  .visioninner h2{font-size:clamp(22px,2.4vw,30px);font-weight:900;letter-spacing:-.02em;margin:12px 0 10px}
+  .visioninner .sub{font-size:15.5px;color:#4a5262;max-width:40em;margin:0 auto 28px}
+  .vrow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:left}
+  .vcard{background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .vcard h4{font-size:15px;font-weight:800;margin:0 0 6px}
+  .vcard p{font-size:13.5px;color:var(--muted);margin:0}
+  .vcard .vtag{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+  .vtag.now{background:rgba(47,158,101,.12);color:var(--new)}
+  .vtag.soon{background:rgba(93,80,230,.1);color:var(--accent)}
+  .vic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--field);margin-bottom:14px;font-size:20px}
+  @media(max-width:760px){.hiw,.vrow{grid-template-columns:1fr}}
+</style>
+
+<section class="mkt" id="how">
+  <div class="eyebrow"><span class="d"></span> <span data-i18n="how_eyebrow">How it works</span></div>
+  <h2><span data-i18n="how_h2a">Three steps,</span> <span class="g" data-i18n="how_h2b">zero noise.</span></h2>
+  <p class="sub" data-i18n="how_sub">From search to application, Jobmesh does the sorting for you.</p>
+  <div class="hiw">
+    <div class="card"><div class="num">1</div><h3 data-i18n="how1_t">Search once</h3><p data-i18n="how1_p">One role, one place, remote. A single search across every source at the same time.</p></div>
+    <div class="card"><div class="num">2</div><h3 data-i18n="how2_t">A clean index</h3><p data-i18n="how2_p">Duplicates merged, expired roles removed. Real postings from around the world — nothing but signal.</p></div>
+    <div class="card"><div class="num">3</div><h3 data-i18n="how3_t">Apply at the source</h3><p data-i18n="how3_p">The link takes you straight to the employer or their official tool. No middleman, ever.</p></div>
+  </div>
+</section>
+
+<section class="vision" id="vision">
+  <div class="visioninner">
+    <div class="eyebrow"><span class="d"></span> <span data-i18n="vis_eyebrow">Vision &amp; API</span></div>
+    <h2><span data-i18n="vis_h2a">Free for candidates.</span> <span class="g" data-i18n="vis_h2b">Always.</span></h2>
+    <p class="sub" data-i18n="vis_sub">Jobmesh stays open and honest. Here's where it's going — what already runs, and what's next.</p>
+    <div class="vrow">
+      <div class="vcard"><div class="vic">🔍</div><h4 data-i18n="vis1_t">Candidate search</h4><p data-i18n="vis1_p">Search, filter and apply at the source. No required account, no fees.</p><span class="vtag now" data-i18n="vis_now">Live</span></div>
+      <div class="vcard"><div class="vic">🤖</div><h4 data-i18n="vis2_t">AI / API access</h4><p data-i18n="vis2_p">An endpoint for agents and tools, to query the index in natural language.</p><span class="vtag now" data-i18n="vis_now">Live</span></div>
+      <div class="vcard"><div class="vic">🏢</div><h4 data-i18n="vis3_t">Employer space</h4><p data-i18n="vis3_p">Companies will feature their roles — the planned source of revenue.</p><span class="vtag soon" data-i18n="vis_soon">Coming soon</span></div>
+    </div>
+  </div>
+</section>
+
 <section class="fbsec">
   <div class="fbwrap">
     <div class="fbhead">
@@ -311,7 +369,45 @@
   </div>
 </section>
 
-<footer data-i18n="footer">jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source</footer>
+<style>
+  .bigfoot{margin-top:56px;border-top:1px solid var(--line);background:var(--panel)}
+  .bigfoot .cols{max-width:1180px;margin:0 auto;padding:40px 24px 26px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:28px}
+  .bigfoot .fbrand{font-weight:800;font-size:22px;letter-spacing:-.02em;margin-bottom:10px}
+  .bigfoot .fbrand .g{background:linear-gradient(92deg,var(--gold-1),var(--gold-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .bigfoot .ftag{font-size:13.5px;color:var(--muted);max-width:24em;margin:0}
+  .bigfoot h5{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 12px;color:var(--text)}
+  .bigfoot a{display:block;font-size:13.5px;color:var(--muted);margin-bottom:8px}
+  .bigfoot a:hover{color:var(--accent)}
+  .bigfoot .fbottom{border-top:1px solid var(--line);text-align:center;font-size:12.5px;color:var(--soft);padding:16px}
+  @media(max-width:760px){.bigfoot .cols{grid-template-columns:1fr 1fr}}
+</style>
+<footer class="bigfoot">
+  <div class="cols">
+    <div>
+      <div class="fbrand">Job<span class="g">mesh</span></div>
+      <p class="ftag" data-i18n="foot_tag">The world's job index, cleaned up. One place, real roles, at the source.</p>
+    </div>
+    <div>
+      <h5 data-i18n="f_product">Product</h5>
+      <a href="#how" data-i18n="f_how">How it works</a>
+      <a href="#results" data-i18n="f_search">Search jobs</a>
+      <a href="#results" data-i18n="f_recent">Recent roles</a>
+    </div>
+    <div>
+      <h5 data-i18n="f_data">Data &amp; API</h5>
+      <a href="#vision" data-i18n="f_mcp">MCP endpoint</a>
+      <a href="#vision" data-i18n="f_docs">Documentation</a>
+      <a href="#vision" data-i18n="f_partner">For employers</a>
+    </div>
+    <div>
+      <h5 data-i18n="f_legal">Legal</h5>
+      <a href="#vision" data-i18n="f_about">About</a>
+      <a href="#" data-i18n="f_privacy">Privacy</a>
+      <a href="mailto:contact@jobmesh.world" data-i18n="f_contact">Contact</a>
+    </div>
+  </div>
+  <div class="fbottom" data-i18n="foot_copy">© 2026 Jobmesh · jobmesh.world</div>
+</footer>
 
 <script>
 const PCOL={greenhouse:"#2f9e65",lever:"#5a6cf0",ashby:"#b65cff",workable:"#e0567a",smartrecruiters:"#2aa7c7",recruitee:"#e0864f",breezy:"#1fae8f",personio:"#3b5bdb",bamboohr:"#6aae3c",pinpoint:"#e6484d",remotive:"#1f7a8c",arbeitnow:"#d1495b",themuse:"#7b6cf6",remoteok:"#ff6b6b",jobicy:"#20a4f3",himalayas:"#8a63d2",workingnomads:"#e08a3c",weworkremotely:"#2d7dd2",workday:"#1f6feb",teamtailor:"#ff5a5f",fourdayweek:"#0ea5a0",jobspresso:"#16a34a",pythonjobs:"#3b6fb6",joinrise:"#7c3aed",rippling:"#111827",hirehive:"#e0864f",manatal:"#2563eb",softgarden:"#64b32c"};
@@ -339,6 +435,21 @@ const I18N={
     drag:"drag to spin",s_jobs:"open jobs",s_companies:"companies",s_sources:"sources connected",
     s_platforms:"ATS & job-board platforms",s_countries:"countries",g_date:"Date posted",since_today:"Today",since_7:"Last 7 days",since_30:"Last 30 days",pulling:"Pulling from",
     footer:"jobmesh · a unified index of job postings across many ATS and job boards · every role links back to its original source",
+    nav_how:"How it works",nav_vision:"Vision & API",nav_partner:"For employers",
+    how_eyebrow:"How it works",how_h2a:"Three steps,",how_h2b:"zero noise.",how_sub:"From search to application, Jobmesh does the sorting for you.",
+    how1_t:"Search once",how1_p:"One role, one place, remote. A single search across every source at the same time.",
+    how2_t:"A clean index",how2_p:"Duplicates merged, expired roles removed. Real postings from around the world — nothing but signal.",
+    how3_t:"Apply at the source",how3_p:"The link takes you straight to the employer or their official tool. No middleman, ever.",
+    vis_eyebrow:"Vision & API",vis_h2a:"Free for candidates.",vis_h2b:"Always.",vis_sub:"Jobmesh stays open and honest. Here's where it's going — what already runs, and what's next.",
+    vis1_t:"Candidate search",vis1_p:"Search, filter and apply at the source. No required account, no fees.",
+    vis2_t:"AI / API access",vis2_p:"An endpoint for agents and tools, to query the index in natural language.",
+    vis3_t:"Employer space",vis3_p:"Companies will feature their roles — the planned source of revenue.",
+    vis_now:"Live",vis_soon:"Coming soon",
+    foot_tag:"The world's job index, cleaned up. One place, real roles, at the source.",
+    f_product:"Product",f_how:"How it works",f_search:"Search jobs",f_recent:"Recent roles",
+    f_data:"Data & API",f_mcp:"MCP endpoint",f_docs:"Documentation",f_partner:"For employers",
+    f_legal:"Legal",f_about:"About",f_privacy:"Privacy",f_contact:"Contact",
+    foot_copy:"© 2026 Jobmesh · jobmesh.world — the world's job index, cleaned up.",
     mcp_label:"Search Jobmesh from your AI agent — connect over MCP:",mcp_copy:"Copy",mcp_copied:"Copied!",
     open_roles:"open roles",most_open:"Most open roles",gcard_open:"Open roles",filtering_by:"Filtering by",
     remote_note:"{n} roles open to remote",apply:"Apply at source ↗",save:"Save",saved:"Saved",
@@ -358,6 +469,21 @@ const I18N={
     drag:"zum Drehen ziehen",s_jobs:"offene Jobs",s_companies:"Unternehmen",s_sources:"verbundene Quellen",
     s_platforms:"ATS- & Jobbörsen-Plattformen",s_countries:"Länder",g_date:"Veröffentlicht",since_today:"Heute",since_7:"Letzte 7 Tage",since_30:"Letzte 30 Tage",pulling:"Quellen",
     footer:"jobmesh · ein vereinter Index von Stellenanzeigen aus vielen ATS und Jobbörsen · jede Stelle verlinkt zurück zur Originalquelle",
+    nav_how:"So funktioniert's",nav_vision:"Vision & API",nav_partner:"Für Arbeitgeber",
+    how_eyebrow:"So funktioniert's",how_h2a:"Drei Schritte,",how_h2b:"null Rauschen.",how_sub:"Von der Suche bis zur Bewerbung übernimmt Jobmesh das Sortieren für dich.",
+    how1_t:"Einmal suchen",how1_p:"Ein Beruf, ein Ort, Remote. Eine Suche über alle Quellen gleichzeitig.",
+    how2_t:"Ein sauberer Index",how2_p:"Dubletten zusammengeführt, abgelaufene Stellen entfernt. Echte Anzeigen aus aller Welt — nur Signal.",
+    how3_t:"An der Quelle bewerben",how3_p:"Der Link führt dich direkt zum Arbeitgeber oder seinem offiziellen Tool. Kein Zwischenhändler, nie.",
+    vis_eyebrow:"Vision & API",vis_h2a:"Kostenlos für Bewerber.",vis_h2b:"Für immer.",vis_sub:"Jobmesh bleibt offen und ehrlich. Hier geht es hin — was schon läuft und was kommt.",
+    vis1_t:"Bewerbersuche",vis1_p:"Suchen, filtern und an der Quelle bewerben. Kein Pflichtkonto, keine Gebühren.",
+    vis2_t:"KI- / API-Zugang",vis2_p:"Ein Endpoint für Agenten und Tools, um den Index in natürlicher Sprache abzufragen.",
+    vis3_t:"Arbeitgeberbereich",vis3_p:"Unternehmen heben ihre Stellen hervor — die geplante Einnahmequelle.",
+    vis_now:"Live",vis_soon:"Bald",
+    foot_tag:"Der weltweite Jobindex, aufgeräumt. Ein Ort, echte Stellen, an der Quelle.",
+    f_product:"Produkt",f_how:"So funktioniert's",f_search:"Jobs suchen",f_recent:"Neueste Stellen",
+    f_data:"Daten & API",f_mcp:"MCP-Endpoint",f_docs:"Dokumentation",f_partner:"Für Arbeitgeber",
+    f_legal:"Rechtliches",f_about:"Über uns",f_privacy:"Datenschutz",f_contact:"Kontakt",
+    foot_copy:"© 2026 Jobmesh · jobmesh.world — der weltweite Jobindex, aufgeräumt.",
     mcp_label:"Durchsuche Jobmesh aus deinem KI-Agenten — per MCP verbinden:",mcp_copy:"Kopieren",mcp_copied:"Kopiert!",
     open_roles:"offene Stellen",most_open:"Meiste offene Stellen",gcard_open:"Offene Stellen",filtering_by:"Gefiltert nach",
     remote_note:"{n} Stellen remote möglich",apply:"Direkt bewerben ↗",save:"Merken",saved:"Gemerkt",
@@ -377,6 +503,21 @@ const I18N={
     drag:"faites tourner",s_jobs:"offres ouvertes",s_companies:"entreprises",s_sources:"sources connectées",
     s_platforms:"plateformes ATS & job boards",s_countries:"pays",g_date:"Date de publication",since_today:"Aujourd'hui",since_7:"7 derniers jours",since_30:"30 derniers jours",pulling:"Sources",
     footer:"jobmesh · un index unifié des offres d'emploi issues de nombreux ATS et job boards · chaque offre renvoie à sa source d'origine",
+    nav_how:"Comment ça marche",nav_vision:"Vision & API",nav_partner:"Pour les recruteurs",
+    how_eyebrow:"Comment ça marche",how_h2a:"Trois étapes,",how_h2b:"zéro bruit.",how_sub:"De la recherche à la candidature, Jobmesh fait le tri à ta place.",
+    how1_t:"Tu cherches une fois",how1_p:"Un métier, un lieu, télétravail. Une seule recherche sur toutes les sources en même temps.",
+    how2_t:"Un index propre",how2_p:"Doublons fusionnés, offres expirées retirées. De vraies offres du monde entier — rien que du signal.",
+    how3_t:"Tu postules à la source",how3_p:"Le lien t'emmène directement chez l'employeur ou sur son outil officiel. Jamais d'intermédiaire.",
+    vis_eyebrow:"Vision & API",vis_h2a:"Gratuit pour les candidats.",vis_h2b:"Pour toujours.",vis_sub:"Jobmesh reste ouvert et honnête. Voilà où va le projet — ce qui tourne déjà, et ce qui arrive.",
+    vis1_t:"Recherche candidat",vis1_p:"Chercher, filtrer, postuler à la source. Sans compte obligatoire, sans frais.",
+    vis2_t:"Accès IA / API",vis2_p:"Un endpoint pour agents et outils, afin d'interroger l'index en langage naturel.",
+    vis3_t:"Espace recruteurs",vis3_p:"Les employeurs mettront leurs offres en avant — la source de revenus prévue.",
+    vis_now:"En ligne",vis_soon:"À venir",
+    foot_tag:"L'index mondial de l'emploi, nettoyé. Un seul endroit, les vraies offres, à la source.",
+    f_product:"Produit",f_how:"Comment ça marche",f_search:"Rechercher un job",f_recent:"Offres récentes",
+    f_data:"Data & API",f_mcp:"Endpoint MCP",f_docs:"Documentation",f_partner:"Devenir partenaire",
+    f_legal:"Légal",f_about:"À propos",f_privacy:"Confidentialité",f_contact:"Contact",
+    foot_copy:"© 2026 Jobmesh · jobmesh.world — l'index mondial de l'emploi, nettoyé.",
     mcp_label:"Interroge Jobmesh depuis ton agent IA — connecte-toi en MCP :",mcp_copy:"Copier",mcp_copied:"Copié !",
     open_roles:"offres ouvertes",most_open:"Le plus d'offres",gcard_open:"Offres ouvertes",filtering_by:"Filtré par",
     remote_note:"{n} offres ouvertes au télétravail",apply:"Postuler à la source ↗",save:"Enregistrer",saved:"Enregistré",
