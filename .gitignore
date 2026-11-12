@@ -12,3 +12,9 @@ venv/
 
 # Environment / secrets
 .env
+
+# macOS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/

@@ -335,8 +335,8 @@ devitjobs:
 # (410) and the new v2 API requires an approved appname (registration), so
 # it's no longer anonymous/keyless. Register an appname and switch the
 # connector to v2 to re-enable.
-# reliefweb:
-#   - all
+reliefweb:
+  - all
 
 # Rise (joinrise.io) — cross-employer remote/tech feed (public JSON, no token).
 # Paused: their API currently returns 504 Gateway Timeout. The connector is
