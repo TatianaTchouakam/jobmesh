@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 CREATE INDEX IF NOT EXISTS idx_jobs_board   ON jobs(source_platform, source_board);
 CREATE INDEX IF NOT EXISTS idx_jobs_dedup   ON jobs(dedup_key);
 CREATE INDEX IF NOT EXISTS idx_jobs_open    ON jobs(is_open);
+CREATE INDEX IF NOT EXISTS idx_jobs_sortdate ON jobs(is_open, COALESCE(posted_at, first_seen) DESC);
 
 CREATE TABLE IF NOT EXISTS fetch_log (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
