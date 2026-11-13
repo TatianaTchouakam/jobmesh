@@ -15,6 +15,11 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- Sante / biostatistique (verifie en direct) ---
+  - natera   # sante/biostat (16 postes secteur / 211 total)
+  - abcellera   # sante/biostat (4 secteur / 36 total · Canada)
+  - truveta   # sante/biostat (2 secteur / 34 total)
+  - freenome   # sante/biostat (2 secteur / 29 total)
   # --- Canada (verifie en direct) ---
   - later   # Canada (19 CA / 31 total)
   - faire   # Canada (12 CA / 69 total)
@@ -99,6 +104,8 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- Sante / biostatistique (verifie en direct) ---
+  - veeva   # sante/biostat (13 postes secteur / 400 total)
   # --- Canada (verifie en direct) ---
   - fullscript   # Canada (12 CA / 16 total)
   - waveapps   # Canada (9 CA / 9 total)
