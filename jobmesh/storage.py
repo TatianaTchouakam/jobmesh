@@ -226,8 +226,14 @@ def _build_where(f: dict, exclude: Optional[str] = None):
     if f.get("open_only", True):
         clauses.append("is_open = 1")
     if f.get("keyword") and exclude != "keyword":
-        clauses.append("(title LIKE ? OR description LIKE ?)")
-        params += [f"%{f['keyword']}%", f"%{f['keyword']}%"]
+        # Split the query into words and require EACH word to appear (in the
+        # title or the description). "junior data engineer" then means
+        # junior AND data AND engineer, instead of the exact phrase — which
+        # rarely sits contiguously in a title and otherwise matched senior
+        # roles whose description says "mentor junior data engineers".
+        for tok in str(f["keyword"]).split():
+            clauses.append("(title LIKE ? OR description LIKE ?)")
+            params += [f"%{tok}%", f"%{tok}%"]
     if f.get("company") and exclude != "company":
         clauses.append("company LIKE ?"); params.append(f"%{f['company']}%")
     if f.get("location") and exclude != "location":
@@ -267,10 +273,19 @@ def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
     """Filtered, paginated search. Filters: keyword, company, location,
     platform, workplace_type, employment_type, category, open_only."""
     where, params = _build_where(filters)
-    sql = (
-        f"SELECT * FROM jobs {where} "
-        f"ORDER BY COALESCE(posted_at, first_seen) DESC LIMIT ? OFFSET ?"
-    )
+    date_order = "COALESCE(posted_at, first_seen) DESC"
+    tokens = str(filters.get("keyword") or "").split()
+    if tokens:
+        # Relevance boost: a posting whose TITLE contains the query words
+        # ranks above one that only matches in the description. So
+        # "junior data engineer" surfaces real junior-titled roles first,
+        # not senior roles that merely mention juniors in the body.
+        score = " + ".join("(CASE WHEN title LIKE ? THEN 1 ELSE 0 END)" for _ in tokens)
+        sql = (f"SELECT * FROM jobs {where} "
+               f"ORDER BY ({score}) DESC, {date_order} LIMIT ? OFFSET ?")
+        order_params = [f"%{t}%" for t in tokens]
+        return [dict(r) for r in conn.execute(sql, params + order_params + [limit, offset]).fetchall()]
+    sql = f"SELECT * FROM jobs {where} ORDER BY {date_order} LIMIT ? OFFSET ?"
     return [dict(r) for r in conn.execute(sql, params + [limit, offset]).fetchall()]
 
 
