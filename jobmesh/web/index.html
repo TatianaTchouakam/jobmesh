@@ -414,11 +414,10 @@ const PCOL={greenhouse:"#2f9e65",lever:"#5a6cf0",ashby:"#b65cff",workable:"#e056
 const WP={remote:"Remote",hybrid:"Hybrid",onsite:"On-site"};
 const AVC=["#5d50e6","#108a6c","#d1495b","#2aa7c7","#e0864f","#7b6cf6","#2f9e65","#c4871a","#e0567a","#20a4f3"];
 const FGROUPS=[
-  {key:"workplace_type",param:"workplace_type",titleKey:"g_workplace",wp:true},
   {key:"level",param:"level",titleKey:"g_level",lvl:true},
+  {key:"workplace_type",param:"workplace_type",titleKey:"g_workplace",wp:true},
   {key:"employment_type",param:"employment_type",titleKey:"g_jobtype"},
   {key:"category",param:"category",titleKey:"g_domain",cat:true},
-  {key:"source_platform",param:"platform",titleKey:"g_found"},
 ];
 const CNAME={US:"United States",GB:"United Kingdom",DE:"Germany",FR:"France",NL:"Netherlands",IE:"Ireland",ES:"Spain",IT:"Italy",PL:"Poland",PT:"Portugal",SE:"Sweden",CH:"Switzerland",AT:"Austria",BE:"Belgium",DK:"Denmark",NO:"Norway",FI:"Finland",CZ:"Czechia",RO:"Romania",HU:"Hungary",GR:"Greece",CA:"Canada",MX:"Mexico",BR:"Brazil",AR:"Argentina",IN:"India",SG:"Singapore",AU:"Australia",NZ:"New Zealand",JP:"Japan",CN:"China",HK:"Hong Kong",KR:"South Korea",IL:"Israel",AE:"United Arab Emirates",ZA:"South Africa",TR:"Turkey",UA:"Ukraine",PH:"Philippines",MY:"Malaysia",VN:"Vietnam",TH:"Thailand",NG:"Nigeria",KE:"Kenya",EG:"Egypt",CO:"Colombia",CL:"Chile",LU:"Luxembourg",BG:"Bulgaria",HR:"Croatia",SK:"Slovakia",SI:"Slovenia",EE:"Estonia",LT:"Lithuania",LV:"Latvia",RS:"Serbia",ID:"Indonesia"};
 const CENTROID={US:[-98,39],GB:[-2,54],DE:[10,51],FR:[2,46],NL:[5.5,52],IE:[-8,53],ES:[-4,40],IT:[12,42],PL:[19,52],PT:[-8,39.5],SE:[15,62],CH:[8,47],AT:[14,47.5],BE:[4.5,50.5],DK:[9.5,56],NO:[9,61],FI:[26,64],CZ:[15.5,49.8],RO:[25,46],HU:[19,47],GR:[22,39],CA:[-106,56],MX:[-102,23],BR:[-51,-10],AR:[-64,-38],IN:[79,22],SG:[103.8,1.35],AU:[134,-25],NZ:[172,-41],JP:[138,36],CN:[104,35],HK:[114.1,22.3],KR:[127.8,36.5],IL:[35,31],AE:[54,24],ZA:[25,-29],TR:[35,39],UA:[31,49],PH:[122,12],MY:[102,4],VN:[106,16],TH:[101,15],NG:[8,10],KE:[38,0],EG:[30,27],CO:[-74,4],CL:[-71,-35],LU:[6.1,49.8],BG:[25,43],HR:[15.5,45],SK:[19.5,48.7],SI:[15,46],EE:[26,58.6],LT:[24,55],LV:[25,57],RS:[21,44],ID:[113,-2]};
@@ -971,7 +970,32 @@ function cvRender(terms){
     b.addEventListener("click",()=>{$("keyword").value=term;scrollToResults();runSearch();});
     chips.appendChild(b);
   });
-  $("keyword").value=terms[0];runSearch();
+  cvMatch(terms);
+}
+async function cvMatch(terms){
+  // "Colle ton CV, on te trouve les jobs faits pour toi" : for each top skill
+  // we pull matching jobs, then rank every job by HOW MANY of your skills it
+  // hits (a title hit counts double). Best-fit roles first.
+  const top=terms.slice(0,4); if(!top.length)return;
+  const byId={},score={};
+  const lists=await Promise.all(top.map(sk=>
+    fetch("/jobs?limit=50&keyword="+encodeURIComponent(sk)).then(r=>r.json()).catch(()=>({results:[]}))));
+  lists.forEach((d,idx)=>{(d.results||[]).forEach(j=>{
+    const id=j.uid||j.source_url||j.title;
+    if(!byId[id]){byId[id]=j;score[id]=0;}
+    const term=(top[idx]||"").toLowerCase();
+    score[id]+= String(j.title||"").toLowerCase().includes(term)?2:1;
+  });});
+  const rows=Object.keys(byId)
+    .map(id=>({j:byId[id],s:score[id]}))
+    .sort((a,b)=> b.s-a.s || String(b.j.posted_at||b.j.first_seen||"").localeCompare(String(a.j.posted_at||a.j.first_seen||"")))
+    .slice(0,24).map(x=>x.j);
+  window.__lastGroup=null;
+  $("keyword").value="";
+  const r=$("results"); if(r) r.innerHTML = rows.length ? rows.map(card).join("") : `<div class="empty">${t("empty")}</div>`;
+  const w=$("morewrap"); if(w) w.innerHTML="";
+  const a=$("active"); if(a) a.innerHTML="";
+  bindSave(); scrollToResults();
 }
 function cvAnalyze(){const txt=($("cvtext").value||"").trim();if(!txt)return;cvRender(cvExtract(txt));}
 function cvStatus(msg){const s=$("cvstatus");if(!s)return;if(msg){s.textContent=msg;s.hidden=false;}else{s.hidden=true;s.textContent="";}}
