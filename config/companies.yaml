@@ -473,3 +473,10 @@ usajobs:
 # not run. Add an API key and re-enable if you register for one.
 # themuse:
 #   - all
+
+eightfold:          # ATS — {tenant}.eightfold.ai (gros employeurs)
+  - bayer   # 365 offres (verifie en direct)
+
+bamboohr:           # ATS — {sub}.bamboohr.com/careers
+  - multiplier   # 2 offres (verifie)
+  - posthog   # 1 offre (verifie)

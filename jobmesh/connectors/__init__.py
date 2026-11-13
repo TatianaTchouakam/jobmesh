@@ -37,6 +37,7 @@ from .joinrise import JoinRiseConnector
 from .rippling import RipplingConnector
 from .hirehive import HireHiveConnector
 from .manatal import ManatalConnector
+from .eightfold import EightfoldConnector
 from .softgarden import SoftgardenConnector
 from .oracle import OracleConnector
 from .bundesagentur import BundesagenturConnector
@@ -79,6 +80,7 @@ REGISTRY: dict[str, type[Connector]] = {
     RipplingConnector.platform: RipplingConnector,
     HireHiveConnector.platform: HireHiveConnector,
     ManatalConnector.platform: ManatalConnector,
+    EightfoldConnector.platform: EightfoldConnector,
     SoftgardenConnector.platform: SoftgardenConnector,
     OracleConnector.platform: OracleConnector,
     BundesagenturConnector.platform: BundesagenturConnector,
