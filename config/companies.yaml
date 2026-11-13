@@ -15,6 +15,11 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- Canada (verifie en direct) ---
+  - later   # Canada (19 CA / 31 total)
+  - faire   # Canada (12 CA / 69 total)
+  - pagerduty   # Canada (6 CA / 48 total)
+  - hootsuite   # Canada (6 CA / 14 total)
   - krafton   # gaming · South Korea (68)
   - appier   # AI · Taiwan/Japan (64)
   - cognite   # industrial data · Norway (51)
@@ -94,6 +99,11 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- Canada (verifie en direct) ---
+  - fullscript   # Canada (12 CA / 16 total)
+  - waveapps   # Canada (9 CA / 9 total)
+  - wattpad   # Canada (3 CA / 17 total)
+  - mistplay   # Canada (3 CA / 7 total)
   - deputy   # workforce · Australia (2)
   - zartis   # software · Ireland (9)
   - kavak   # used cars · Mexico (5)
@@ -125,6 +135,23 @@ lever:
   - entrata
 
 ashby:
+  # --- Canada (verifie en direct) ---
+  - lightspeedhq   # Canada (82 CA / 134 total)
+  - 1password   # Canada (53 CA / 80 total)
+  - cohere   # Canada (42 CA / 121 total)
+  - neofinancial   # Canada (33 CA / 59 total)
+  - jobber   # Canada (27 CA / 36 total)
+  - jane   # Canada (25 CA / 27 total)
+  - benevity   # Canada (21 CA / 23 total)
+  - docebo   # Canada (20 CA / 31 total)
+  - trulioo   # Canada (20 CA / 28 total)
+  - float   # Canada (17 CA / 17 total)
+  - hopper   # Canada (11 CA / 23 total)
+  - procurify   # Canada (8 CA / 8 total)
+  - clearco   # Canada (6 CA / 6 total)
+  - klue   # Canada (5 CA / 6 total)
+  - thinkific   # Canada (3 CA / 3 total)
+  - visier   # Canada (2 CA / 2 total)
   - vanta   # security · US (82)
   - wealthsimple   # fintech · Canada (42)
   - quo
