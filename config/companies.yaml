@@ -15,6 +15,9 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- Monde / continents (verifie en direct) ---
+  - groww   # Asie (9)
+  - wildlifestudios   # LatAm (15)
   # --- Sante / biostatistique (verifie en direct) ---
   - natera   # sante/biostat (16 postes secteur / 211 total)
   - abcellera   # sante/biostat (4 secteur / 36 total · Canada)
@@ -104,6 +107,10 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- Monde / continents (verifie en direct) ---
+  - ninjavan   # Asie (50)
+  - cred   # Asie (15)
+  - immutable   # Oceanie (3)
   # --- Sante / biostatistique (verifie en direct) ---
   - veeva   # sante/biostat (13 postes secteur / 400 total)
   # --- Canada (verifie en direct) ---
@@ -142,6 +149,10 @@ lever:
   - entrata
 
 ashby:
+  # --- Monde / continents (verifie en direct) ---
+  - andela   # Afrique (7)
+  - nubank   # LatAm (102)
+  - xero   # Oceanie (98)
   # --- Canada (verifie en direct) ---
   - lightspeedhq   # Canada (82 CA / 134 total)
   - 1password   # Canada (53 CA / 80 total)
@@ -206,6 +217,10 @@ workable:
   - huggingface
 
 smartrecruiters:
+  # --- Monde / continents (verifie en direct) ---
+  - swiggy   # Asie (186)
+  - freshworks   # Asie (123)
+  - canva   # Oceanie (33)
   - Grab   # super-app · Southeast Asia (446)
   - AmrefHealthAfrica4   # NGO · health, Africa (13)
   - 2SistersFoodGroup
