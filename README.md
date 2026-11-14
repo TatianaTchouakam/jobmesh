@@ -11,17 +11,18 @@ roles linger in search results.
 searchable, de-duplicated dataset**, keeps it fresh on a schedule, and serves
 it through a documented API. Each job links back to its original posting.
 
-**Live demo:** [jobmesh-qrq1.onrender.com](https://jobmesh-qrq1.onrender.com)
+**Live demo:** [jobmesh.world](https://jobmesh.world)
 
 > 🚧 **Work in progress** – growing towards the goal of **78 platform types**.
 
 ### Current status
 
-- 🌍 **~50,000 job postings** across **6 continents**
-- 🔌 **30 platform types**: 15 ATS + 15 job boards
-- 🏛️ **2 national employment agencies live**: 🇩🇪 Bundesagentur für Arbeit · 🇸🇪 Sweden
-- 🏢 **~250 companies** worldwide
-- ✅ **100 % clean data collection – zero scraping**: only official public APIs and feeds
+- 🌍 **~69,000 open postings** (83,000+ tracked incl. closed) across 6 continents
+- 🔌 **31 platform types live** · **3,600+ duplicate postings** grouped by deduplication
+- 🏛️ **2 national employment agencies live**: 🇩🇪 Bundesagentur für Arbeit · 🇸🇪 Sweden (JobTech)
+- 🏢 **~2,900 companies / boards** worldwide
+- ✅ **Official public APIs & feeds (REST / RSS / JSON-LD)** — no blind HTML scraping, no login-walled data
+- 📋 Full per-platform status vs the 78 required sources: see **[COVERAGE.md](COVERAGE.md)**
 
 ### Features
 
@@ -41,11 +42,11 @@ detection, deduplication, search, API — works on a single normalized `Job`
 model, so it never needs to know which platform a job came from.
 
 ```
-            config/companies.yaml          (~250 companies, 30 platform types)
+            config/companies.yaml          (~2,900 companies/boards, 31 platform types)
                       │
           ┌───────────▼────────────┐
           │       connectors        │   one per platform
-          │ 15 ATS · 15 job boards ·│   each returns Job objects
+          │ ATS · job boards · feeds│   each returns Job objects
           │ 2 national agencies     │
           └───────────┬────────────┘
                       │  normalize (HTML→text, remote flag, dedup key)
@@ -72,7 +73,7 @@ jobmesh/
 │   ├── normalize.py         # HTML→text, remote detection, dedup key
 │   ├── connectors/
 │   │   ├── base.py          # the Connector contract
-│   │   └── ...              # one small file per platform (30 and growing)
+│   │   └── ...              # one small file per platform (35+ and growing)
 │   ├── storage.py           # SQLite: upsert, change detection, closing
 │   ├── pipeline.py          # fetch → normalize → store, per board
 │   ├── config.py            # reads config/companies.yaml
@@ -144,13 +145,16 @@ Scheduling locally (hourly example):
 
 | Category | Status |
 |---|---|
-| ATS platforms (e.g. Greenhouse, Lever, Workday, Oracle, …) | ✅ 15 implemented |
-| Job boards | ✅ 15 implemented |
-| National employment agencies (🇩🇪 Bundesagentur für Arbeit, 🇸🇪 Sweden) | ✅ 2 live |
-| Further platforms | 🔜 in progress — goal: **78 platform types** |
+| ATS platforms (Greenhouse, SmartRecruiters, Lever, Ashby, Workable, Workday, Oracle, …) | ✅ 16 live of the 58 required |
+| Job board platforms (SmartJobBoard, …) | ✅ 1 live of the 20 required — proven on 14 boards |
+| National employment agencies (🇩🇪 Bundesagentur für Arbeit, 🇸🇪 Sweden JobTech) | ✅ 2 live |
+| Extra sources beyond the required 78 | ✅ 14 (arbeitnow, remote boards, …) |
+| Full checklist vs the 78 required platforms | 📋 see **[COVERAGE.md](COVERAGE.md)** |
 
-All sources are accessed through **official public APIs or feeds — no scraping**. The architecture is built so that growth is additive: a new
-platform is a new `Connector` subclass plus one line in the registry.
+Most sources are official public **APIs or feeds** (REST / RSS); a few read the
+schema.org **JobPosting JSON-LD** that sites publish for Google for Jobs. No blind
+HTML scraping, no login-walled data. Growth is additive: a new platform is a new
+`Connector` subclass plus one line in the registry.
 
 ## Running with Docker (🚧 in progress)
 
@@ -181,14 +185,15 @@ Planned setup:
 python -m pytest -q
 ```
 
-The included tests cover normalization and the storage logic (change
-detection, closing absent postings, and that a failed fetch never closes
-listings) — all offline, no network required.
+40+ offline tests cover normalization, the storage logic (change detection,
+closing absent postings, and that a failed fetch never closes listings), and
+connector field-mapping (Comeet, careersite, jobfeed, SmartJobBoard, …) — all
+offline, no network required.
 
 ## Roadmap
 
 - [ ] **Docker**: Dockerfile and docker-compose (API + ingest)
 - [ ] CI with GitHub Actions: tests and Docker build on every push
 - [ ] Run the ingestion as a scheduled container job
-- [ ] More connectors: from 30 to **78 platform types**
+- [ ] More connectors toward the **78 required platform types** (status in COVERAGE.md)
 - [ ] More national employment agencies
