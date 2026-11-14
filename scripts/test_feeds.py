@@ -34,6 +34,12 @@ CANDIDATES: list[tuple[str, str]] = [
     ("jobfeed", "https://newimmigrantjobs.ca/rss"),
     ("jobfeed", "https://www.datacareer.de/rss"),
     ("jobfeed", "https://www.jobsinchildcare.com/rss"),
+    # --- Nouveaux boards SmartJobBoard confirmes (communiques 2025-2026) ---
+    ("jobfeed", "https://jobs.wibf.org.uk/rss"),            # Women in Banking & Finance (UK)
+    ("jobfeed", "https://jobs.coloradochiropractic.org/rss"),
+    ("jobfeed", "https://jobs.rentalhousingjournal.com/rss"),
+    ("jobfeed", "https://jobs.rspa.net/rss"),               # Racquet Sports Pros
+    ("jobfeed", "https://jobs.njla.org/rss"),               # NJ Library Association
 ]
 
 

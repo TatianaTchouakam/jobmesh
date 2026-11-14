@@ -126,6 +126,11 @@ greenhouse:
   - jumia           # pan-African e-commerce (EU-region board)
   - wavemm1         # 🇸🇳 Wave — mobile money
   - pawapay         # pan-African payments (EU-region board)
+  # --- +4 employeurs mondiaux verifies via API publique (14 nov. 2026) ---
+  - agoda           # Agoda — voyage, Asie (~355)
+  - inmobi          # InMobi — adtech, Inde (~74)
+  - turing          # Turing — remote mondial (~48)
+  - cultureamp      # Culture Amp — HR tech, Oceanie (~33)
   # pulaio / okrainc removed: valid EU boards, but this machine's DNS to the
   # EU Greenhouse host is flaky — re-add when the network cooperates.
   # paystack removed: its public board isn't served by the Greenhouse API
@@ -561,6 +566,11 @@ jobfeed:
   - "https://newimmigrantjobs.ca/rss"                # New Immigrant Jobs Canada (50+)
   - "https://www.datacareer.de/rss"                  # DataCareer DE (50+)
   - "https://www.jobsinchildcare.com/rss"            # Jobs in Childcare (50+)
+  # +4 boards verifies le 14 nov. 2026
+  - "https://jobs.rentalhousingjournal.com/rss"      # Rental Housing Journal (~50)
+  - "https://jobs.njla.org/rss"                      # NJ Library Association (~50)
+  - "https://jobs.rspa.net/rss"                      # Racquet Sports Pros (~43)
+  - "https://jobs.coloradochiropractic.org/rss"      # Colorado Chiropractic (~21)
 
 # --- smartjobboard : crawler sitemap -> pages -> JSON-LD (PROFONDEUR) ---
 # Le board est l'URL de BASE du site (ex. https://academiccareers.com).
