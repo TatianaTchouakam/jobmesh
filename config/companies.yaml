@@ -339,10 +339,6 @@ reed:
 jobtech:
   - all
 
-# NAV (Norvege) — agence nationale pour l'emploi, feed public keyless, tous secteurs.
-navno:
-  - all
-
 remotive:
   - all
 arbeitnow:     # Germany / EU
@@ -501,6 +497,7 @@ jooble:
   - Kenya
   - Ghana
   - Senegal
+  - Cameroon
   - Morocco
   - Egypt
   - India
