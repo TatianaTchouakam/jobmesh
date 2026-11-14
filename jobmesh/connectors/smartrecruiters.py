@@ -23,7 +23,7 @@ PUBLIC_ROOT = "https://jobs.smartrecruiters.com"
 USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
 TIMEOUT = 20
 PAGE_SIZE = 100
-MAX_PAGES = 5  # safety cap (500 postings per board — keeps the index deployable)
+MAX_PAGES = 12  # safety cap (raised 13 nov. 2026: 500 -> 1200 postings/board to unlock capped boards)
 
 
 class SmartRecruitersConnector(Connector):

@@ -15,6 +15,31 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # NB: benchling / warbyparker / niantic / deepmind / grammarly retires le 13 nov. 2026 — 404 sur l'API publique greenhouse (US+EU) au run (slug page carriere != token API).
+  # --- +9 gros employeurs verifies (tokens confirmes sur board public greenhouse, 13 nov. 2026) ---
+  - doordashusa     # DoorDash — livraison / tech, US (~2000)
+  - anthropic       # Anthropic — AI, US/UK (~500)
+  - samsara         # Samsara — IoT / operations, US (~300)
+  - scaleai         # Scale AI — AI data, US (~200)
+  - pinterest       # Pinterest — tech, US (~190)
+  - affirm          # Affirm — fintech / BNPL, US (~160)
+  - flexport        # Flexport — logistique, mondial (~150)
+  - gusto           # Gusto — paie / RH, US (~100)
+  # --- +8 gros employeurs verifies (round 2, tokens confirmes sur board public greenhouse, 13 nov. 2026) ---
+  - toast           # Toast — restaurant tech, mondial (~340)
+  - sofi            # SoFi — fintech, US (~250)
+  - carta           # Carta — equity / private markets, US (~80)
+  - squarespace     # Squarespace — web / SaaS, US (~71)
+  - chime           # Chime — fintech, US (~70)
+  - css             # CloudKitchens — cuisines cloud / ops, mondial (~50)
+  # --- +9 gros employeurs verifies (round 3, tokens confirmes sur board public greenhouse, 13 nov. 2026) ---
+  - datadog         # Datadog — observability / cloud, mondial (~400)
+  - roblox          # Roblox — gaming platform, US (~250)
+  - gongio          # Gong — revenue AI, US/Israel (~60)
+  - webflow         # Webflow — no-code web, US/remote (~45)
+  - peloton         # Peloton — fitness tech, US (~40)
+  - gemini          # Gemini — crypto exchange, US (~20)
+  - glossier        # Glossier — beaute / retail, US (~15)
   # --- Monde / continents (verifie en direct) ---
   - groww   # Asie (9)
   - wildlifestudios   # LatAm (15)
@@ -107,6 +132,7 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # NB: plaid retire — 404 sur l'API lever au run (token a reverifier).
   # --- Monde / continents (verifie en direct) ---
   - ninjavan   # Asie (50)
   - cred   # Asie (15)
@@ -149,6 +175,7 @@ lever:
   - entrata
 
 ashby:
+  - nerdwallet      # NerdWallet — fintech / media, US (~27) [verifie 13 nov. 2026]
   # --- Monde / continents (verifie en direct) ---
   - andela   # Afrique (7)
   - nubank   # LatAm (102)
@@ -217,6 +244,7 @@ workable:
   - huggingface
 
 smartrecruiters:
+  - InterIKEAGroup   # IKEA (Inter IKEA) — retail mondial (verifie, board public SR)
   # --- Monde / continents (verifie en direct) ---
   - swiggy   # Asie (186)
   - freshworks   # Asie (123)

@@ -30,7 +30,7 @@ API_ROOTS = (
 # A descriptive User-Agent is good API etiquette.
 USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
 TIMEOUT = 20  # seconds
-MAX_JOBS = 800  # cap per board — keeps the index deployable on free hosting
+MAX_JOBS = 1500  # cap per board — raised 13 nov. 2026 (800 -> 1500) to unlock capped boards
 
 # Metadata field names that commonly carry these attributes. Greenhouse
 # boards are free to name custom fields anything, so we match loosely.
