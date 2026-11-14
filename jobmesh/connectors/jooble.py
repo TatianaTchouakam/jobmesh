@@ -80,7 +80,7 @@ class JoobleConnector(Connector):
         url = f"{API_ROOT}/{key}"
         payload = {"keywords": "", "location": location, "page": page}
         last_exc: Exception | None = None
-        for attempt in range(5):
+        for attempt in range(3):
             try:
                 resp = self._session.post(url, json=payload, timeout=TIMEOUT)
                 # Jooble throttles free keys hard (HTTP 429). Back off and
@@ -91,8 +91,8 @@ class JoobleConnector(Connector):
                         wait = float(retry_after) if retry_after else 0.0
                     except ValueError:
                         wait = 0.0
-                    wait = max(wait, 5.0 * (attempt + 1))
-                    time.sleep(min(wait, 60.0))
+                    wait = max(wait, 3.0 * (attempt + 1))
+                    time.sleep(min(wait, 10.0))
                     continue
                 resp.raise_for_status()
                 return resp.json().get("jobs", []) or []

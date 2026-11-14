@@ -526,3 +526,56 @@ eightfold:          # ATS — {tenant}.eightfold.ai (gros employeurs)
 bamboohr:           # ATS — {sub}.bamboohr.com/careers
   - multiplier   # 2 offres (verifie)
   - posthog   # 1 offre (verifie)
+
+# --- Comeet (Spark Hire Recruit) : API publique keyless ---
+# Format du board : "uid:token" ou "uid:token:Nom Societe".
+# uid + token sont visibles dans le code source de toute page carriere Comeet
+# (objet COMPANY_DATA). Decommente et ajoute de vraies paires pour indexer.
+comeet: []
+#   - "30.005:LE_TOKEN_PUBLIC:Nom Societe"
+
+# --- careersite : moteur JSON-LD (schema.org JobPosting) ---
+# Le board est l'URL COMPLETE d'une page carriere / liste d'offres rendue
+# cote serveur (Jobvite, Zoho, JazzHR, Recooty, logiciels de job board...).
+# IMPORTANT : valide chaque URL AVANT de l'activer (voir test-eclair), car
+# une page rendue en JS renverra 0 offre. Decommente celles qui renvoient >0.
+careersite: []
+#   - "https://jobs.jobvite.com/nutanix"
+#   - "https://careers.example.com/jobs"
+# --- jobfeed : parseur XML/RSS generique (logiciels de job board) ---
+# Le board est l'URL COMPLETE d'un flux XML/RSS. SmartJobBoard = {domaine}/rss,
+# WP Job Manager = {domaine}/?feed=job_feed. Valides via scripts/test_feeds.py.
+jobfeed:
+  # SmartJobBoard — 14 boards verifies le 14 nov. 2026 (~597 offres ; certains plafonnes a 50)
+  - "https://jobs.flnonprofits.org/rss"              # Florida Nonprofit Alliance (~37)
+  - "https://www.cleantechrecruits.com/rss"          # CleanTech Recruits (~10)
+  - "https://www.christiancareercenter.com/rss"      # Christian Career Center (50+)
+  - "https://www.hireveterans.com/rss"               # Hire Veterans (50+)
+  - "https://academiccareers.com/rss"                # Academic Careers (50+)
+  - "https://apartmentjobs.com/rss"                  # Apartment Jobs (50+)
+  - "https://environmentalcareer.com/rss"            # Environmental Career Center (50+)
+  - "https://jobs.acem.org.au/rss"                   # Australasian College Emergency Medicine (~28)
+  - "https://jobs.psychologicalscience.org/rss"      # Assoc. for Psychological Science (50+)
+  - "https://jobs.thechemicalengineer.com/rss"       # The Chemical Engineer (~22)
+  - "https://jobs.tribalcollegejournal.org/rss"      # Tribal College Journal (50+)
+  - "https://newimmigrantjobs.ca/rss"                # New Immigrant Jobs Canada (50+)
+  - "https://www.datacareer.de/rss"                  # DataCareer DE (50+)
+  - "https://www.jobsinchildcare.com/rss"            # Jobs in Childcare (50+)
+
+# --- smartjobboard : crawler sitemap -> pages -> JSON-LD (PROFONDEUR) ---
+# Le board est l'URL de BASE du site (ex. https://academiccareers.com).
+# Debloque tout le board (pas les 50 du flux rss). Plus lent : regle le
+# plafond avec SMARTJOBBOARD_MAX_JOBS (defaut 400) et SMARTJOBBOARD_WORKERS.
+# Pour l'activer : decommente ci-dessous ET commente les /rss equivalents
+# dans la section jobfeed (sinon double indexation).
+smartjobboard: []
+#   - "https://academiccareers.com"
+#   - "https://apartmentjobs.com"
+#   - "https://environmentalcareer.com"
+#   - "https://www.christiancareercenter.com"
+#   - "https://www.hireveterans.com"
+#   - "https://jobs.psychologicalscience.org"
+#   - "https://jobs.tribalcollegejournal.org"
+#   - "https://newimmigrantjobs.ca"
+#   - "https://www.datacareer.de"
+#   - "https://www.jobsinchildcare.com"
