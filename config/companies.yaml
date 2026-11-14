@@ -354,9 +354,6 @@ workingnomads:
 weworkremotely:
   - all
 
-# The Muse — API publique keyless (www.themuse.com/api/public/jobs). Peut etre 403 (Cloudflare) selon l'IP serveur ; sans risque si echec.
-themuse:
-  - all
 
 pinpoint:        # ATS (find token at {company}.pinpointhq.com) — best-effort, verify live
   - workwithus
@@ -389,6 +386,7 @@ softgarden:
 # wrong token is skipped and logged, never fatal — verify live and add more.
 workday:
   - nvidia:wd5:NVIDIAExternalCareerSite:NVIDIA
+  - mastercard:wd1:CorporateCareers:Mastercard   # Mastercard — paiements, mondial
 
 # Teamtailor — ATS (strong in the Nordics/Europe). Token = company subdomain
 # from {company}.teamtailor.com. A public RSS feed is served at /jobs.rss.

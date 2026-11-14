@@ -20,12 +20,17 @@ so we walk `offset` up to `total`. We index at the listing level (title,
 location, link, req id) and skip the per-job detail request, which would
 mean one extra HTTP call per posting.
 
-Note: the CXS API is not a documented contract and can change; the
-connector is defensive and raises on transport/parse errors so a failure
-is logged rather than mistaken for "no jobs".
+The CXS API often returns an empty / non-JSON body when the request looks
+unlike the careers page's own fetch (missing Origin/Referer) or when a
+burst of requests trips bot-protection. So we send the same headers the
+page sends and retry a few times on an empty/non-JSON response before
+giving up, so a transient block is ridden out rather than logged as a
+parse error.
 """
 
 from __future__ import annotations
+
+import time
 
 import requests
 
@@ -46,11 +51,20 @@ class WorkdayConnector(Connector):
 
     def __init__(self, board: str, session: requests.Session | None = None):
         super().__init__(board)
-        self._session = session or requests.Session()
-        self._session.headers.setdefault("User-Agent", USER_AGENT)
-        self._session.headers.setdefault("Accept", "application/json")
-        self._session.headers.setdefault("Accept-Language", "en-US")
         self.tenant, self.wd, self.site, self.company = _parse_board(board)
+        self._session = session or requests.Session()
+        base = f"https://{self.tenant}.{self.wd}.myworkdayjobs.com"
+        # Send the same headers the careers page sends; the CXS API tends to
+        # return an empty body to requests without a matching Origin/Referer.
+        self._session.headers.update({
+            "User-Agent": USER_AGENT,
+            "Accept": "application/json",
+            "Accept-Language": "en-US",
+            "Content-Type": "application/json",
+            "Origin": base,
+            "Referer": f"{base}/en-US/{self.site}",
+            "X-Requested-With": "XMLHttpRequest",
+        })
 
     @property
     def _base(self) -> str:
@@ -62,14 +76,7 @@ class WorkdayConnector(Connector):
         jobs: list[Job] = []
         offset = 0
         for _ in range(MAX_PAGES):
-            resp = self._session.post(
-                url,
-                json={"appliedFacets": {}, "limit": PAGE,
-                      "offset": offset, "searchText": ""},
-                timeout=TIMEOUT,
-            )
-            resp.raise_for_status()
-            data = resp.json()
+            data = self._post_page(url, offset)
             batch = data.get("jobPostings") or []
             if not batch:
                 break
@@ -78,6 +85,28 @@ class WorkdayConnector(Connector):
             if offset >= (data.get("total") or 0):
                 break
         return jobs
+
+    def _post_page(self, url: str, offset: int) -> dict:
+        """POST one page, retrying on an empty / non-JSON body.
+
+        Workday sometimes answers a 200 with an empty or HTML body (bot
+        protection, or a burst of requests). We back off and retry a few
+        times; only then do we raise, so the pipeline logs a real failure
+        instead of a confusing JSON parse error.
+        """
+        body = {"appliedFacets": {}, "limit": PAGE,
+                "offset": offset, "searchText": ""}
+        for attempt in range(3):
+            resp = self._session.post(url, json=body, timeout=TIMEOUT)
+            resp.raise_for_status()
+            try:
+                return resp.json()
+            except ValueError:
+                # empty / non-JSON body (bot-protection or transient) -> retry
+                time.sleep(2.0 * (attempt + 1))
+        raise RuntimeError(
+            f"Workday returned an empty/non-JSON body after retries: {url}"
+        )
 
     def _to_job(self, d: dict, at: str) -> Job:
         title = d.get("title") or "(untitled)"
