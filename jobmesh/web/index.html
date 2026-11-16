@@ -591,14 +591,13 @@ function animateCount(el,to){
 /* ---- stat band + hero chips + platform strip ---- */
 let GEO=null;
 async function loadBandAndGeo(){
-  let s={},g={countries:{},remote:0};
-  try{s=await(await fetch("/stats")).json()}catch(e){}
-  try{g=await(await fetch("/geo")).json()}catch(e){}
-  GEO=g;
-  const ncountries=Object.keys(g.countries||{}).length;
-  const vals={open_postings:s.open_postings,companies:s.companies,boards_indexed:s.boards_indexed,platforms:s.platforms,countries:ncountries};
-  document.querySelectorAll(".band .v").forEach(el=>{const v=vals[el.dataset.k];if(v!=null)animateCount(el,v)});
-  applyBandNote();
+  // fetch /stats and /geo in parallel so the hero counters aren't blocked on /geo
+  const statsP=fetch("/stats").then(r=>r.json()).catch(()=>({}));
+  const geoP=fetch("/geo").then(r=>r.json()).catch(()=>({countries:{},remote:0}));
+  // apply the stats-driven counters as soon as /stats arrives
+  const s=await statsP;
+  {const sv={open_postings:s.open_postings,companies:s.companies,boards_indexed:s.boards_indexed,platforms:s.platforms};
+   document.querySelectorAll(".band .v").forEach(el=>{const v=sv[el.dataset.k];if(v!=null)animateCount(el,v)});}
   // platform strip
   const allPlats=Object.entries(s.open_by_platform||{}).sort((a,b)=>b[1]-a[1]);
   const plats=allPlats.slice(0,7);
@@ -609,6 +608,12 @@ async function loadBandAndGeo(){
   }
   const more=allPlats.length-plats.length;
   if(more>0){const m=document.createElement("span");m.className="ptag more";m.textContent="+"+more+" "+t("more");strip.appendChild(m);}
+  // countries counter + band note fill in when /geo resolves
+  const g=await geoP;GEO=g;
+  const nc=Object.keys(g.countries||{}).length;
+  const cEl=document.querySelector('.band .v[data-k="countries"]');
+  if(cEl&&nc)animateCount(cEl,nc);
+  applyBandNote();
 }
 
 async function loadHeroChips(){
