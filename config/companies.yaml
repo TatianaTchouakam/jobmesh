@@ -126,6 +126,7 @@ greenhouse:
   - jumia           # pan-African e-commerce (EU-region board)
   - wavemm1         # 🇸🇳 Wave — mobile money
   - pawapay         # pan-African payments (EU-region board)
+  - canonical       # Canonical (Ubuntu) — infra/cloud, remote-friendly Europe (~316)
   # --- +4 employeurs mondiaux verifies via API publique (14 nov. 2026) ---
   - agoda           # Agoda — voyage, Asie (~355)
   - inmobi          # InMobi — adtech, Inde (~74)
