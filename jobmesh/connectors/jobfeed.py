@@ -14,6 +14,8 @@ Both common shapes are handled; XML namespaces and tag case are ignored.
 
 from __future__ import annotations
 
+from urllib.parse import urlparse
+
 import hashlib
 import xml.etree.ElementTree as ET
 
@@ -31,8 +33,8 @@ TIMEOUT = 25
 # candidate child-tag names (lowercased, namespace-stripped) per field
 _FIELD_TAGS = {
     "title": ("title", "jobtitle", "name", "position"),
-    "company": ("company", "companyname", "hiringorganization", "employer",
-                "organization", "advertiser"),
+    "company": ("creator", "company", "companyname", "hiringorganization",
+                "employer", "organization", "advertiser"),
     "location": ("location", "joblocation", "city", "region", "area", "place"),
     "url": ("url", "link", "joburl", "applyurl", "apply_url", "guid",
             "referenceurl"),
@@ -74,6 +76,15 @@ def _first(entry: ET.Element, names: tuple[str, ...]) -> str | None:
     return None
 
 
+def _site_name(url: str) -> str:
+    """Readable source label from a feed URL (host without scheme/www)."""
+    host = urlparse(url).hostname or url
+    for pre in ("www.", "jobs.", "careers."):
+        if host.startswith(pre):
+            host = host[len(pre):]
+    return host
+
+
 class JobFeedConnector(Connector):
     platform = "jobfeed"
 
@@ -104,7 +115,7 @@ class JobFeedConnector(Connector):
         title = g("title")
         if not title:
             return None
-        company = g("company") or self.board
+        company = g("company") or _site_name(self.board)
         location = g("location")
         url = g("url")
         job_id = g("job_id") or url or hashlib.sha1(
