@@ -59,7 +59,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 35 | Paradox | ⬜ | | | |
 | 36 | Paycom | ⬜ | | | |
 | 37 | Paycor | ⬜ | | | |
-| 38 | Paylocity | ⬜ | | | |
+| 38 | Paylocity | ✅ | `paylocity` | | keyless public board; window.pageData JSON at recruiting.paylocity.com/Recruiting/Jobs/All/{companyId} |
 | 39 | Personio | ✅ | `personio` | 1,129 | keyless XML feed |
 | 40 | Phenom People | ⬜ | | | |
 | 41 | Pinpoint | ✅ | `pinpoint` | 3 | keyless API |
