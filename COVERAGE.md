@@ -87,7 +87,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
-| 1 | Niceboard | ⬜ | | | |
+| 1 | Niceboard | ✅ | `niceboard` | live (5 boards) | public keyless /api/jobs per hosted board · niceboard.co |
 | 2 | WP Job Manager | ✅ | `jobfeed` | live | public `?feed=job_feed` feed · verified on jobs.blog |
 | 3 | JobKit | ⬜ | | | |
 | 4 | Jobboardly | ⬜ | | | API key per board |
@@ -127,8 +127,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
 | ATS | 17 | 3 | 58 |
-| Job boards | 2 | 0 | 20 |
-| **Total** | **19** | **4** | **78** |
+| Job boards | 3 | 0 | 20 |
+| **Total** | **20** | **4** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

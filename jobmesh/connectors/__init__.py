@@ -52,6 +52,7 @@ from .careersite import CareerSiteConnector
 from .jobfeed import JobFeedConnector
 from .smartjobboard import SmartJobBoardConnector
 from .join import JoinConnector
+from .niceboard import NiceboardConnector
 from .polymer import PolymerConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
@@ -101,6 +102,7 @@ REGISTRY: dict[str, type[Connector]] = {
     JobFeedConnector.platform: JobFeedConnector,
     SmartJobBoardConnector.platform: SmartJobBoardConnector,
     JoinConnector.platform: JoinConnector,
+    NiceboardConnector.platform: NiceboardConnector,
     PolymerConnector.platform: PolymerConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
