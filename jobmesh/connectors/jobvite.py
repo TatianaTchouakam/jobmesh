@@ -57,23 +57,26 @@ class JobviteConnector(Connector):
 
     def fetch(self) -> list[Job]:
         fetched_at = now_iso()
-        # Jobvite serves two listing shapes with identical markup; use the
-        # first that yields rows (legacy /search, then modern /careers/.../jobs).
-        for listing in (f"{BASE}/{self.board}/search/",
-                        f"{BASE}/careers/{self.board}/jobs"):
+        # Jobvite serves two listing shapes with identical row markup but
+        # different paging: legacy /{slug}/search paginates via ?p=N, while
+        # modern /careers/{slug}/jobs lists everything on one page and returns
+        # nothing if a ?p= param is sent. Try legacy first, then modern.
+        for listing, paginated in ((f"{BASE}/{self.board}/search/", True),
+                                   (f"{BASE}/careers/{self.board}/jobs", False)):
             if not robots_allowed(listing, self._session):
                 continue
-            jobs = self._crawl(listing, fetched_at)
+            jobs = self._crawl(listing, fetched_at, paginated)
             if jobs:
                 return jobs
         return []
 
-    def _crawl(self, listing: str, fetched_at: str) -> list[Job]:
+    def _crawl(self, listing: str, fetched_at: str, paginated: bool) -> list[Job]:
         jobs: list[Job] = []
         seen: set[str] = set()
         page = 1
         while page <= MAX_PAGES:
-            resp = self._session.get(listing, params={"p": page}, timeout=TIMEOUT)
+            params = {"p": page} if paginated else None
+            resp = self._session.get(listing, params=params, timeout=TIMEOUT)
             resp.raise_for_status()
             rows = list(_ROW_RE.finditer(resp.text))
             if not rows:
@@ -86,7 +89,7 @@ class JobviteConnector(Connector):
                 seen.add(job.source_job_id)
                 jobs.append(job)
                 new += 1
-            if len(rows) < PAGE_SIZE or new == 0:
+            if not paginated or len(rows) < PAGE_SIZE or new == 0:
                 break
             page += 1
         return jobs

@@ -32,9 +32,12 @@ class _FakeSession:
     def get(self, url, params=None, timeout=None, **k):
         if url.endswith("/robots.txt"):
             return _Resp("", status=404)          # no robots -> allowed
+        if "/careers/" in url:
+            # modern format must be fetched without a ?p= param
+            assert not params, "careers format must not be paginated with ?p="
+            return _Resp(self._careers.get(1, _page([])))
         p = (params or {}).get("p", 1)
-        pages = self._careers if "/careers/" in url else self._legacy
-        return _Resp(pages.get(p, _page([])))
+        return _Resp(self._legacy.get(p, _page([])))
 
 
 def test_parses_rows():
