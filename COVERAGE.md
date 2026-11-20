@@ -30,7 +30,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 6 | BrassRing | ⬜ | | | |
 | 7 | Breezy HR | ✅ | `breezy` | 1,360 | keyless board API |
 | 8 | CareerPlug | ⬜ | | | |
-| 9 | Comeet | 🟡 | `comeet` | — | keyless careers API; needs each company's public uid:token |
+| 9 | Comeet | ✅ | `comeet` | live (1 board) | keyless hosted page `comeet.com/jobs/{company}/{uid}` (no token); more boards addable |
 | 10 | CSOD (Cornerstone) | ⬜ | | | |
 | 11 | Dayforce | ⬜ | | | |
 | 12 | Deel | ⬜ | | | |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 19 | 3 | 58 |
+| ATS | 20 | 2 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **23** | **4** | **78** |
+| **Total** | **24** | **3** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

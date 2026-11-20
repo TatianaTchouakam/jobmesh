@@ -537,7 +537,8 @@ bamboohr:           # ATS — {sub}.bamboohr.com/careers
 # Format du board : "uid:token" ou "uid:token:Nom Societe".
 # uid + token sont visibles dans le code source de toute page carriere Comeet
 # (objet COMPANY_DATA). Decommente et ajoute de vraies paires pour indexer.
-comeet: []
+comeet:
+  - tripleten/98.008   # TripleTen (~235 jobs) — keyless hosted page; add more as company/uid
 #   - "30.005:LE_TOKEN_PUBLIC:Nom Societe"
 
 # --- careersite : moteur JSON-LD (schema.org JobPosting) ---

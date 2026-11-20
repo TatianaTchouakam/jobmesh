@@ -1,84 +1,80 @@
-"""Offline mapping test for the Comeet (Spark Hire Recruit) connector.
+"""Tests for the Comeet connector (keyless hosted-page + uid:token API)."""
 
-No network: a fake session returns a representative positions payload and
-we assert the mapping to `Job`, board/token parsing, and token stripping.
-"""
+import json
 
-from __future__ import annotations
+from jobmesh.connectors.comeet import ComeetConnector
 
-from jobmesh.connectors.comeet import ComeetConnector, _strip_token
+POSITIONS = [
+    {
+        "uid": "AC.F50",
+        "name": "Account Executive EU",
+        "department": "Sales",
+        "company_name": "TripleTen",
+        "location": {"name": "Poland", "city": "Warszawa", "country": "PL", "is_remote": True},
+        "employment_type": "Full-time",
+        "experience_level": "Intermediate",
+        "workplace_type": "remote",
+        "url_comeet_hosted_page": "https://www.comeet.com/jobs/tripleten/98.008/ae/AC.F50",
+        "time_updated": "2026-11-18T00:00:00Z",
+        "is_internal": False,
+    },
+    {  # internal posting -> must be skipped
+        "uid": "IN.001", "name": "Secret", "company_name": "TripleTen",
+        "location": {"name": "HQ"}, "is_internal": True,
+    },
+]
+
+PAGE = (
+    "<html><head><script>"
+    "var COMPANY_DATA = {\"name\":\"TripleTen\",\"uid\":\"98.008\"};\n"
+    "var COMPANY_POSITIONS_DATA = " + json.dumps(POSITIONS) + ";\n"
+    "</script></head></html>"
+)
 
 
 class _Resp:
-    def __init__(self, *, js=None, status_code=200):
-        self._js, self.status_code = js, status_code
-
+    def __init__(self, text):
+        self.text = text
     def raise_for_status(self):
         pass
 
-    def json(self):
-        return self._js
-
 
 class _FakeSession:
-    def __init__(self, response):
+    def __init__(self, text):
         self.headers = {}
-        self._response = response
-
-    def get(self, *a, **k):
-        return self._response
-
-
-SAMPLE = [
-    {
-        "uid": "87.405",
-        "name": "Backend Engineer",
-        "location": {"name": "Austin, TX", "city": "Austin",
-                     "state": "TX", "country": "US"},
-        "department": "Engineering",
-        "employment_type": "Full-time",
-        "position_url": "https://www.comeet.co/careers-api/2.0/company/30.005/positions/87.405?token=SECRET123",
-        "url_active_page": "https://www.comeet.com/jobs/acme/engineering/87.405",
-        "time_updated": "2026-11-01T00:00:00Z",
-        "details": [
-            {"name": "Description", "value": "<p>Own the pricing platform.</p>"},
-            {"name": "Requirements", "value": "<p>5y Python.</p>"},
-        ],
-    }
-]
+        self._text = text
+        self.calls = []
+    def get(self, url, timeout=None, params=None):
+        self.calls.append(url)
+        return _Resp(self._text)
 
 
-def test_comeet_parses_board_and_maps():
-    conn = ComeetConnector("30.005:TOKENABC:Acme", session=_FakeSession(_Resp(js=SAMPLE)))
-    assert conn.uid == "30.005"
-    assert conn.token == "TOKENABC"
-    assert conn.company_name == "Acme"
-
+def test_comeet_hosted_page_keyless():
+    conn = ComeetConnector("tripleten/98.008", session=_FakeSession(PAGE))
     jobs = conn.fetch()
+    # the internal posting is filtered out -> 1 job
     assert len(jobs) == 1
     j = jobs[0]
     assert j.source_platform == "comeet"
-    assert j.source_board == "30.005"
-    assert j.source_job_id == "87.405"
-    assert j.title == "Backend Engineer"
-    assert j.company == "Acme"
-    assert j.location == "Austin, TX"
-    assert j.employment_type == "Full-time"
-    assert "pricing platform" in (j.description or "")
-    # the public page, not the token-bearing API url
-    assert j.apply_url == "https://www.comeet.com/jobs/acme/engineering/87.405"
-    assert "token" not in (j.source_url or "")
+    assert j.source_board == "tripleten/98.008"  # token-free, matches config board
+    assert j.source_job_id == "AC.F50"
+    assert j.title == "Account Executive EU"
+    assert j.company == "TripleTen"
+    assert j.location == "Poland"
+    assert j.remote is True
+    assert j.workplace_type == "remote"
+    assert j.category == "Sales"
+    assert "tripleten/98.008" in j.source_url
+    # the request hit the keyless hosted page, not the token API
+    assert sess_called_page(conn)
 
 
-def test_comeet_defaults_company_to_uid_when_unnamed():
-    conn = ComeetConnector("30.005:TOKENABC", session=_FakeSession(_Resp(js=SAMPLE)))
-    assert conn.company_name is None
-    jobs = conn.fetch()
-    assert jobs[0].company == "30.005"
+def sess_called_page(conn):
+    return conn._page_path == "tripleten/98.008" and conn.token == ""
 
 
-def test_strip_token_removes_only_the_token():
-    assert _strip_token("https://x/p?token=ABC") == "https://x/p"
-    assert _strip_token("https://x/p?token=ABC&foo=1") == "https://x/p?foo=1"
-    assert _strip_token("https://x/p?foo=1") == "https://x/p?foo=1"
-    assert _strip_token(None) is None
+def test_comeet_board_parsing_token_mode():
+    conn = ComeetConnector("E5.007:TOKEN123:Acme")
+    assert conn.uid == "E5.007"
+    assert conn.token == "TOKEN123"
+    assert conn.company_name == "Acme"
