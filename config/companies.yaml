@@ -3603,3 +3603,10 @@ jobvite:
   - nutanix
   - gigamon
   - kymanox
+
+# Zoho Recruit (zohorecruit.com) — embedded JSON at {tenant}.zohorecruit.com/jobs/Careers; robots allows /jobs/*
+zohorecruit:
+  - thehireboost
+  - remoteoffice
+  - careercentre
+  - tdcgroupltd

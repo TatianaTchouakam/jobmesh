@@ -79,7 +79,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 55 | WeRecruit | ⬜ | | | |
 | 56 | Workable | ✅ | `workable` | 3,848 | keyless widget API |
 | 57 | Workday | ✅ | `workday` | 80 | keyless CXS API (hardened headers) |
-| 58 | Zoho Recruit | ⬜ | | | per-tenant OAuth, region-locked |
+| 58 | Zoho Recruit | ✅ | `zohorecruit` | live (seeded 4 tenants) | embedded JSON at {tenant}.zohorecruit.com/jobs/Careers; robots allows /jobs/* |
 
 ---
 
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 25 | 1 | 58 |
+| ATS | 26 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **29** | **2** | **78** |
+| **Total** | **30** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
