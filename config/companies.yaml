@@ -595,3 +595,8 @@ smartjobboard: []
 #   - "https://newimmigrantjobs.ca"
 #   - "https://www.datacareer.de"
 #   - "https://www.jobsinchildcare.com"
+
+# --- polymer : ATS public keyless (plateforme requise) ---
+# board = slug d'organisation ; GET api.polymer.co/v1/hire/organizations/{slug}/jobs
+polymer:
+  - prospera          # Prospera (~4)

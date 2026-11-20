@@ -18,7 +18,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 16/58 live, 18/58 with a connector
+## Required ATS coverage — 17/58 live, 19/58 with a connector
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -63,7 +63,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 39 | Personio | ✅ | `personio` | 1,129 | keyless XML feed |
 | 40 | Phenom People | ⬜ | | | |
 | 41 | Pinpoint | ✅ | `pinpoint` | 3 | keyless API |
-| 42 | Polymer | ⬜ | | | |
+| 42 | Polymer | ✅ | `polymer` | live | public keyless per-org API · api.polymer.co |
 | 43 | Recooty | ⬜ | | | hosted page / widget only |
 | 44 | Recruitee | ✅ | `recruitee` | 4,653 | keyless offers API |
 | 45 | Rippling | ✅ | `rippling` | 1,344 | keyless board API |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 16 | 2 | 58 |
+| ATS | 17 | 2 | 58 |
 | Job boards | 2 | 0 | 20 |
-| **Total** | **18** | **3** | **78** |
+| **Total** | **19** | **3** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
