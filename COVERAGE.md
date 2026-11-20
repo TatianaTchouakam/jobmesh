@@ -34,7 +34,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 10 | CSOD (Cornerstone) | ⬜ | | | |
 | 11 | Dayforce | ⬜ | | | |
 | 12 | Deel | ⬜ | | | |
-| 13 | Dover | ⬜ | | | |
+| 13 | Dover | ✅ | `dover` | live (self-discovers) | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
 | 14 | Eightfold AI | ✅ | `eightfold` | 50 | keyless API |
 | 15 | FirstStage | ⬜ | | | |
 | 16 | Freshteam | ⬜ | | | per-tenant token; product sunset |
@@ -64,7 +64,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 40 | Phenom People | ⬜ | | | |
 | 41 | Pinpoint | ✅ | `pinpoint` | 3 | keyless API |
 | 42 | Polymer | ⚠️ | `polymer` | built, blocked | connector built & verified; api.polymer.co now 403 (anti-bot) — board disabled |
-| 43 | Recooty | ⬜ | | | hosted page / widget only |
+| 43 | Recooty | ✅ | `recooty` | live (platform-wide) | one public sitemap + schema.org JSON-LD; no per-tenant discovery |
 | 44 | Recruitee | ✅ | `recruitee` | 4,653 | keyless offers API |
 | 45 | Rippling | ✅ | `rippling` | 1,344 | keyless board API |
 | 46 | Rival | ⬜ | | | |
@@ -126,9 +126,11 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 17 | 3 | 58 |
+| ATS | 19 | 3 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **21** | **4** | **78** |
+| **Total** | **23** | **4** | **78** |
+
+_Plus bonus platforms beyond the required 78: **Jobylon** (`jobylon`) — Nordic, platform-wide sitemap + JSON-LD (~9k open jobs)._
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

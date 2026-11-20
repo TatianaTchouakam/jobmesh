@@ -34,6 +34,7 @@ from .fourdayweek import FourDayWeekConnector
 from .jobspresso import JobspressoConnector
 from .pythonjobs import PythonJobsConnector
 from .joinrise import JoinRiseConnector
+from .recooty import RecootyConnector
 from .rippling import RipplingConnector
 from .hirehive import HireHiveConnector
 from .manatal import ManatalConnector
@@ -51,7 +52,9 @@ from .comeet import ComeetConnector
 from .careersite import CareerSiteConnector
 from .jobfeed import JobFeedConnector
 from .smartjobboard import SmartJobBoardConnector
+from .jobylon import JobylonConnector
 from .join import JoinConnector
+from .dover import DoverConnector
 from .niceboard import NiceboardConnector
 from .polymer import PolymerConnector
 # Generalist job boards (free API key, read from the environment)
@@ -101,8 +104,11 @@ REGISTRY: dict[str, type[Connector]] = {
     CareerSiteConnector.platform: CareerSiteConnector,
     JobFeedConnector.platform: JobFeedConnector,
     SmartJobBoardConnector.platform: SmartJobBoardConnector,
+    JobylonConnector.platform: JobylonConnector,
     JoinConnector.platform: JoinConnector,
+    DoverConnector.platform: DoverConnector,
     NiceboardConnector.platform: NiceboardConnector,
+    RecootyConnector.platform: RecootyConnector,
     PolymerConnector.platform: PolymerConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
