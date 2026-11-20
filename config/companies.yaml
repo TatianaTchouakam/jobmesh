@@ -3640,3 +3640,7 @@ avature:
   - koch
   - maximus
   - resourcebank
+
+# PageUp (pageuppeople.com) — JSON-LD JobPosting per job page; board = tenant subdomain
+pageup:
+  - pupcareers
