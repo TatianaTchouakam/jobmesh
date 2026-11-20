@@ -11,9 +11,14 @@ The company's display name comes from ``/api/career-site``. Jobs carry
 rich HTML sections (description / responsibilities / requirements /
 benefits), structured posting locations, workspace type, employment
 type and optional pay-transparency salary. A board is the tenant
-subdomain prefix (e.g. "hibob-fa0ad69d0cb34a"). The careers host has no
-real robots.txt (the SPA serves its shell for unknown paths -> no rules),
-and we still pass every request through the shared robots guard.
+subdomain prefix (e.g. "hibob-fa0ad69d0cb34a").
+
+The endpoint is unauthenticated but returns 401 unless the request
+carries a ``Referer`` from the career site itself, so we send one; the
+job data is public and our User-Agent stays the honest JobmeshBot token.
+The careers host has no real robots.txt (the SPA serves its shell for
+unknown paths -> no rules), and we still pass every request through the
+shared robots guard.
 """
 
 from __future__ import annotations
@@ -36,13 +41,16 @@ class HibobConnector(Connector):
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
         self._base = f"https://{board}.careers.hibob.com"
+        # the careers API returns 401 without a Referer from its own site; the
+        # job data is public and our User-Agent stays the honest JobmeshBot one.
+        self._headers = {"Referer": f"{self._base}/"}
 
     def fetch(self) -> list[Job]:
         if not robots_allowed(f"{self._base}/api/job-ad", self._session):
             return []
         fetched_at = now_iso()
         company = self._company_name()
-        resp = self._session.get(f"{self._base}/api/job-ad", timeout=TIMEOUT)
+        resp = self._session.get(f"{self._base}/api/job-ad", headers=self._headers, timeout=TIMEOUT)
         resp.raise_for_status()
         rows = (resp.json() or {}).get("jobAdDetails") or []
         return [self._to_job(r, company, fetched_at) for r in rows]
@@ -51,7 +59,7 @@ class HibobConnector(Connector):
 
     def _company_name(self) -> str:
         try:
-            cs = self._session.get(f"{self._base}/api/career-site", timeout=TIMEOUT).json()
+            cs = self._session.get(f"{self._base}/api/career-site", headers=self._headers, timeout=TIMEOUT).json()
             name = cs.get("companyName") or cs.get("name") or cs.get("title")
             if name:
                 return str(name)
