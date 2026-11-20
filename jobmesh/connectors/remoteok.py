@@ -20,7 +20,7 @@ from .base import Connector
 
 API = "https://remoteok.com/api"
 # Remote OK rejects empty/unknown clients, so send a descriptive UA.
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 25
 
 

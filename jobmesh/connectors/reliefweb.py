@@ -31,7 +31,7 @@ API = "https://api.reliefweb.int/v2/jobs"
 # shared/guessable name. Until it is set, this connector stays out of config.
 def _appname() -> str:
     return (os.environ.get("RELIEFWEB_APPNAME") or "").strip()
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 LIMIT = 100
 MAX_PAGES = 10     # bounded: up to ~1,000 most-recent jobs per run

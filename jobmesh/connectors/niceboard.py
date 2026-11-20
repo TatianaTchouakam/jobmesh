@@ -21,7 +21,7 @@ from ..models import Job, now_iso
 from ..normalize import detect_remote, html_to_text, make_dedup_key
 from .base import Connector
 
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 25
 PAGE_SIZE = 100
 MAX_PAGES = 50  # safety cap (5,000 jobs/board)

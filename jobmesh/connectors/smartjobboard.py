@@ -25,10 +25,11 @@ import requests
 
 from ..models import Job, now_iso
 from .base import Connector
+from ..robots import allowed as robots_allowed, UA_TOKEN, USER_AGENT
 from .careersite import parse_jobpostings, posting_to_job
 
 USER_AGENT = (
-    "Mozilla/5.0 (compatible; jobmesh/0.1; +https://github.com/; job index)"
+    "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 )
 TIMEOUT = 25
 MAX_JOBS = int(os.environ.get("SMARTJOBBOARD_MAX_JOBS", "400"))
@@ -96,6 +97,8 @@ class SmartJobBoardConnector(Connector):
         return ordered[:MAX_JOBS]
 
     def _fetch_page(self, url: str, fetched_at: str) -> list[Job]:
+        if not robots_allowed(url, self._session):
+            return []
         try:
             r = self._session.get(url, timeout=TIMEOUT)
             r.raise_for_status()

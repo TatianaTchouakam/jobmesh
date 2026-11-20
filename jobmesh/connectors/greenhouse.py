@@ -28,7 +28,7 @@ API_ROOTS = (
     "https://boards-api.eu.greenhouse.io/v1/boards",
 )
 # A descriptive User-Agent is good API etiquette.
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 20  # seconds
 MAX_JOBS = 1500  # cap per board — raised 13 nov. 2026 (800 -> 1500) to unlock capped boards
 

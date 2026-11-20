@@ -18,7 +18,7 @@ from ..normalize import html_to_text, make_dedup_key
 from .base import Connector
 
 API = "https://arbeidsplassen.nav.no/public-feed/api/v1/ads"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 SIZE = 100
 MAX_PAGES = 10     # bounded: up to ~1,000 most-recent postings per run

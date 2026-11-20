@@ -26,7 +26,7 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 USER_AGENT = (
-    "Mozilla/5.0 (compatible; jobmesh/0.1; +https://github.com/; job index)"
+    "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 )
 TIMEOUT = 25
 

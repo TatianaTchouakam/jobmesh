@@ -16,7 +16,7 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 API_ROOT = "https://apply.workable.com/api/v1/widget/accounts"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 20
 
 

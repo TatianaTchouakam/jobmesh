@@ -18,7 +18,7 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 API = "https://www.arbeitnow.com/api/job-board-api"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 25
 MAX_PAGES = 4
 

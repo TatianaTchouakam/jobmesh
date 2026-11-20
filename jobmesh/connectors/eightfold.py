@@ -20,7 +20,7 @@ from ..models import Job, now_iso
 from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 25
 NUM = 10          # page size
 MAX_PAGES = 5     # up to 50 roles per tenant per run

@@ -24,7 +24,7 @@ from .base import Connector
 TOKEN_URL = "https://entreprise.francetravail.fr/connexion/oauth2/access_token"
 API = "https://api.francetravail.io/partenaire/offresdemploi/v2/offres/search"
 SCOPE = "api_offresdemploiv2 o2dsoffre"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 RANGE = 150        # France Travail max per request
 MAX_PAGES = 7      # bounded: up to ~1,000 most-recent postings per run

@@ -20,7 +20,7 @@ from ..normalize import detect_remote, make_dedup_key
 from .base import Connector
 
 API_ROOT = "https://api.lever.co/v0/postings"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 20
 
 

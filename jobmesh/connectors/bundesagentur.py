@@ -28,7 +28,7 @@ from .base import Connector
 API = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs"
 # Documented public client id, used as the API key by the official site.
 API_KEY = "jobboerse-jobsuche"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 SIZE = 100
 MAX_PAGES = 20     # bounded: up to ~2,000 recent postings per run

@@ -26,7 +26,7 @@ from ..normalize import detect_remote, make_dedup_key, normalize_workplace
 from .base import Connector
 
 BASE = "https://join.com/companies"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 20
 MAX_PAGES = 20  # safety cap for very large career pages
 

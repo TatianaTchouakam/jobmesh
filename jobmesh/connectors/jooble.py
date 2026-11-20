@@ -27,7 +27,7 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 API_ROOT = "https://jooble.org/api"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 25
 # Jooble's default free key allows ~500 requests total. Keep page depth
 # low (2 pages per location) so a handful of countries per ingest stays

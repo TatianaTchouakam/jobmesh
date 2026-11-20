@@ -22,9 +22,10 @@ import requests
 from ..models import Job, now_iso
 from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
+from ..robots import allowed as robots_allowed
 
 USER_AGENT = (
-    "Mozilla/5.0 (compatible; jobmesh/0.1; +https://github.com/; job index)"
+    "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 )
 TIMEOUT = 25
 _LD_RE = re.compile(
@@ -163,6 +164,8 @@ class CareerSiteConnector(Connector):
         self._session.headers.setdefault("User-Agent", USER_AGENT)
 
     def fetch(self) -> list[Job]:
+        if not robots_allowed(self.board, self._session):
+            return []
         resp = self._session.get(self.board, timeout=TIMEOUT)
         resp.raise_for_status()
         fetched_at = now_iso()

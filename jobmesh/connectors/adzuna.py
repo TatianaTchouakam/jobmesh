@@ -28,7 +28,7 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 API_ROOT = "https://api.adzuna.com/v1/api/jobs"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 25
 RESULTS_PER_PAGE = 50      # Adzuna's maximum per page
 # Adzuna's FREE tier is ~250 calls/day and ~2,500/month. We deliberately

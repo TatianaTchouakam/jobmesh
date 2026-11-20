@@ -22,7 +22,7 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 API = "https://api.joinrise.io/api/v1/jobs/public"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 35
 LIMIT = 20          # a lighter page is easier on their backend (avoids 504s)
 MAX_PAGES = 10
