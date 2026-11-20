@@ -3593,3 +3593,7 @@ hireology:
 # HiBob (careers.hibob.com) — public keyless /api/job-ad; board = tenant subdomain prefix
 hibob:
   - hibob-fa0ad69d0cb34a   # HiBob's own board (~100 jobs)
+
+# CareerPlug (careerplug.com) — server-rendered JSON-LD ItemList at {tenant}.careerplug.com/jobs
+careerplug:
+  - cplugjobs   # CareerPlug's own board
