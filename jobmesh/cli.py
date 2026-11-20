@@ -13,12 +13,21 @@ import json
 import logging
 
 from . import storage
+import os
+
 from .config import load_boards
 from .pipeline import ingest
 
 
 def _cmd_ingest(args) -> None:
     boards = load_boards(args.config) if args.config else load_boards()
+    # Build-time safety cap (e.g. Render free tier): limit boards per platform.
+    # Unset locally -> full ingest. Self-discovering connectors (Dover/Recooty
+    # use the 'all' token) are bounded by their own *_MAX_* env vars instead.
+    _cap = os.getenv("INGEST_MAX_BOARDS")
+    if _cap:
+        _n = int(_cap)
+        boards = {p: bl[:_n] for p, bl in boards.items()}
     with storage.session(args.db) as conn:
         results = ingest(conn, boards)
 

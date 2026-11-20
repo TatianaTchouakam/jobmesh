@@ -10,3 +10,12 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"
+      # Free tier has a ~15 min build window; the board loop is sequential,
+      # so we cap boards/platform AT BUILD ONLY (local ingest stays full).
+      # Raise these once green, or move to Render Starter to uncap entirely.
+      - key: INGEST_MAX_BOARDS
+        value: "100"
+      - key: DOVER_MAX_BOARDS
+        value: "120"
+      - key: RECOOTY_MAX_JOBS
+        value: "200"
