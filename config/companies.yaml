@@ -3569,3 +3569,16 @@ niceboard:
   - jobs.nonprofittalent.com
   - jobs.aiacolorado.org
   - jobs.aicad.org
+
+# Dover (jobs.dover.com) — public keyless feed; 'all' self-discovers every tenant
+# from the careers sitemap. Cap with DOVER_MAX_BOARDS.
+dover:
+  - all
+
+# Recooty (jobs.recooty.com) — platform-wide sitemap + JSON-LD; 'all' = whole platform
+recooty:
+  - all
+
+# Jobylon (emp.jobylon.com) — platform-wide sitemap + JSON-LD; 'all' = whole platform (Nordic)
+jobylon:
+  - all
