@@ -33,7 +33,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 9 | Comeet | ✅ | `comeet` | live (1 board) | keyless hosted page `comeet.com/jobs/{company}/{uid}` (no token); more boards addable |
 | 10 | CSOD (Cornerstone) | ⬜ | | | |
 | 11 | Dayforce | ⬜ | | | |
-| 12 | Deel | ⬜ | | | |
+| 12 | Deel | ✅ | `deel` | live | JSON-LD JobPosting per job page at jobs.deel.com/{org}; robots-clean |
 | 13 | Dover | ✅ | `dover` | live (self-discovers) | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
 | 14 | Eightfold AI | ✅ | `eightfold` | 50 | keyless API |
 | 15 | FirstStage | ⬜ | | | |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 28 | 1 | 58 |
+| ATS | 29 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **32** | **2** | **78** |
+| **Total** | **33** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

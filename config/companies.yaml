@@ -3626,4 +3626,10 @@ freshteam:
 # Gem (jobs.gem.com) — public keyless GraphQL; board = vanity slug
 gem:
   - nabla-bio
-  - boltz
+
+# Deel ATS (jobs.deel.com) — JSON-LD JobPosting per job page; board = org slug
+deel:
+  - zonos
+  - cardo
+  - wespeak
+  - perfec-tone
