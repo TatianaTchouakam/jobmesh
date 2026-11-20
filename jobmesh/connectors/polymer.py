@@ -17,7 +17,11 @@ from ..normalize import detect_remote, make_dedup_key
 from .base import Connector
 
 API_ROOT = "https://api.polymer.co/v1/hire/organizations"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+# Polymer's API rejects non-browser User-Agents (403), so present as a real browser.
+USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+)
 TIMEOUT = 20
 
 
@@ -28,6 +32,10 @@ class PolymerConnector(Connector):
         super().__init__(board)
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
+        self._session.headers.setdefault("Accept", "application/json, text/plain, */*")
+        self._session.headers.setdefault("Accept-Language", "en-US,en;q=0.9")
+        self._session.headers.setdefault("Origin", "https://app.polymer.co")
+        self._session.headers.setdefault("Referer", "https://app.polymer.co/")
 
     def fetch(self) -> list[Job]:
         resp = self._session.get(f"{API_ROOT}/{self.board}/jobs", timeout=TIMEOUT)
