@@ -553,6 +553,8 @@ careersite: []
 # Le board est l'URL COMPLETE d'un flux XML/RSS. SmartJobBoard = {domaine}/rss,
 # WP Job Manager = {domaine}/?feed=job_feed. Valides via scripts/test_feeds.py.
 jobfeed:
+  # Wiley Madgex — board live (pattern {board}/jobsrss/)
+  - "https://www.nature.com/naturecareers/jobsrss/"   # Madgex — Nature Careers / Springer Nature (plateforme requise)
   # WP Job Manager (plateforme requise #2) — flux ?feed=job_feed
   - "https://jobs.blog/?feed=job_feed"               # WP Job Manager demo officiel Automattic (~10)
   # SmartJobBoard — nouveaux boards verifies le 20 nov. 2026
