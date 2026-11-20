@@ -177,5 +177,10 @@ python3 scripts/test_feeds.py     # discover & validate new SmartJobBoard / WPJM
 1. **Comeet** (ready) — wire public uid:token pairs → live.
 2. **WP Job Manager** (live) — add more boards via `?feed=job_feed`.
 3. More **SmartJobBoard** boards — breadth via `scripts/test_feeds.py`.
-4. SMB ATS with public surfaces — GoHire next (JOIN.com ✅, Polymer ✅).
+4. SMB ATS with public surfaces — JOIN.com ✅, Polymer ✅. GoHire API is
+   keyless (api2.gohire.io/widget-jobs/{token}) but has no public company
+   directory, so it is token-gated and not seeded.
+5. JOIN volume: scripts/discover_join.py grows the join board list from the
+   public company sitemap (bounded + cached) — run it to reach hundreds of
+   live boards.
 5. Enterprise ATS (iCIMS, Taleo, SuccessFactors, Avature…) — per-site, lower priority.

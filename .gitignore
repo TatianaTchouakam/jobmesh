@@ -18,3 +18,4 @@ venv/
 *.swp
 .idea/
 .vscode/
+config/.join_discovery_cache.json
