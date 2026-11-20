@@ -552,6 +552,11 @@ careersite: []
 # Le board est l'URL COMPLETE d'un flux XML/RSS. SmartJobBoard = {domaine}/rss,
 # WP Job Manager = {domaine}/?feed=job_feed. Valides via scripts/test_feeds.py.
 jobfeed:
+  # WP Job Manager (plateforme requise #2) — flux ?feed=job_feed
+  - "https://jobs.blog/?feed=job_feed"               # WP Job Manager demo officiel Automattic (~10)
+  # SmartJobBoard — nouveaux boards verifies le 20 nov. 2026
+  - "https://jobs.amahouston.org/rss"                # AMA Houston (~50)
+  - "https://investmentjobs.org/rss"                 # Investment Adviser Association (~32)
   # SmartJobBoard — 14 boards verifies le 14 nov. 2026 (~597 offres ; certains plafonnes a 50)
   - "https://jobs.flnonprofits.org/rss"              # Florida Nonprofit Alliance (~37)
   - "https://www.cleantechrecruits.com/rss"          # CleanTech Recruits (~10)

@@ -83,18 +83,18 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 1/20 live, 2/20 with an engine
+## Required job board platform coverage — 2/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
 | 1 | Niceboard | ⬜ | | | |
-| 2 | WP Job Manager | 🟡 | `jobfeed` | — | engine supports `?feed=job_feed`; awaiting a live board |
+| 2 | WP Job Manager | ✅ | `jobfeed` | live | public `?feed=job_feed` feed · verified on jobs.blog |
 | 3 | JobKit | ⬜ | | | |
 | 4 | Jobboardly | ⬜ | | | API key per board |
 | 5 | Jobiqo | ⬜ | | | XML is import-only |
 | 6 | JBoard.io | ⬜ | | | API on paid plan |
 | 7 | JobBoardFire | ⬜ | | | |
-| 8 | SmartJobBoard | ✅ | `jobfeed` | 597 | public `/rss` feed · verified on 14 live boards |
+| 8 | SmartJobBoard | ✅ | `jobfeed` | 680+ | public `/rss` feed · verified on 20 live boards |
 | 9 | JobBoard.io | ⬜ | | | API key per board |
 | 10 | Wiley Madgex | ⬜ | | | |
 | 11 | Talenetic | ⬜ | | | |
@@ -127,8 +127,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
 | ATS | 16 | 2 | 58 |
-| Job boards | 1 | 1 | 20 |
-| **Total** | **17** | **4** | **78** |
+| Job boards | 2 | 0 | 20 |
+| **Total** | **18** | **3** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
@@ -175,7 +175,7 @@ python3 scripts/test_feeds.py     # discover & validate new SmartJobBoard / WPJM
 ## Roadmap (next connectors, by feasibility)
 
 1. **Comeet** (ready) — wire public uid:token pairs → live.
-2. **WP Job Manager** (ready) — wire live boards via `?feed=job_feed`.
+2. **WP Job Manager** (live) — add more boards via `?feed=job_feed`.
 3. More **SmartJobBoard** boards — breadth via `scripts/test_feeds.py`.
 4. SMB ATS with public surfaces — JOIN.com, GoHire, Polymer.
 5. Enterprise ATS (iCIMS, Taleo, SuccessFactors, Avature…) — per-site, lower priority.
