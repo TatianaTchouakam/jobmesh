@@ -3589,3 +3589,7 @@ manatal:
 hireology:
   - hireology2       # Hireology's own board
   - sandiegopadres   # San Diego Padres
+
+# HiBob (careers.hibob.com) — public keyless /api/job-ad; board = tenant subdomain prefix
+hibob:
+  - hibob-fa0ad69d0cb34a   # HiBob's own board (~100 jobs)

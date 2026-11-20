@@ -39,6 +39,7 @@ from .rippling import RipplingConnector
 from .hirehive import HireHiveConnector
 from .manatal import ManatalConnector
 from .hireology import HireologyConnector
+from .hibob import HibobConnector
 from .eightfold import EightfoldConnector
 from .softgarden import SoftgardenConnector
 from .oracle import OracleConnector
@@ -91,6 +92,7 @@ REGISTRY: dict[str, type[Connector]] = {
     HireHiveConnector.platform: HireHiveConnector,
     ManatalConnector.platform: ManatalConnector,
     HireologyConnector.platform: HireologyConnector,
+    HibobConnector.platform: HibobConnector,
     EightfoldConnector.platform: EightfoldConnector,
     SoftgardenConnector.platform: SoftgardenConnector,
     OracleConnector.platform: OracleConnector,

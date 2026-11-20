@@ -41,7 +41,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 17 | Gem.com | ⬜ | | | |
 | 18 | GoHire | ⬜ | | | |
 | 19 | Greenhouse | ✅ | `greenhouse` | 22,728 | keyless board API |
-| 20 | HiBob | ⬜ | | | |
+| 20 | HiBob | ✅ | `hibob` | live (1 board, ~100 jobs) | keyless `/api/job-ad` on `{tenant}.careers.hibob.com`; desc, salary, locations |
 | 21 | HireBridge | ⬜ | | | |
 | 22 | HireHive | ✅ | `hirehive` | 87 | keyless API |
 | 23 | Hireology | ✅ | `hireology` | live (2 boards) | keyless API `api.hireology.com/v2/public/careers/{tenant}`; full desc, salary, locations |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 22 | 1 | 58 |
+| ATS | 23 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **26** | **2** | **78** |
+| **Total** | **27** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
