@@ -44,7 +44,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 20 | HiBob | ⬜ | | | |
 | 21 | HireBridge | ⬜ | | | |
 | 22 | HireHive | ✅ | `hirehive` | 87 | keyless API |
-| 23 | Hireology | ⬜ | | | |
+| 23 | Hireology | ✅ | `hireology` | live (2 boards) | keyless API `api.hireology.com/v2/public/careers/{tenant}`; full desc, salary, locations |
 | 24 | HiringThing | ⬜ | | | |
 | 25 | iCIMS | ⬜ | | | enterprise, per-site |
 | 26 | iSolvedHire | ⬜ | | | |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 21 | 1 | 58 |
+| ATS | 22 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **25** | **2** | **78** |
+| **Total** | **26** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

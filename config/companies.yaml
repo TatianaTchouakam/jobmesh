@@ -3584,3 +3584,8 @@ recooty:
 # Manatal (careers-page.com) — public keyless DRF API; board = tenant slug
 manatal:
   - manatal   # Manatal's own board (~33 jobs); add more tenant slugs as found
+
+# Hireology (careers.hireology.com) — public keyless API api.hireology.com/v2/public/careers/{tenant}
+hireology:
+  - hireology2       # Hireology's own board
+  - sandiegopadres   # San Diego Padres
