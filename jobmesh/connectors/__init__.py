@@ -41,6 +41,7 @@ from .manatal import ManatalConnector
 from .hireology import HireologyConnector
 from .hibob import HibobConnector
 from .careerplug import CareerPlugConnector
+from .jobvite import JobviteConnector
 from .eightfold import EightfoldConnector
 from .softgarden import SoftgardenConnector
 from .oracle import OracleConnector
@@ -95,6 +96,7 @@ REGISTRY: dict[str, type[Connector]] = {
     HireologyConnector.platform: HireologyConnector,
     HibobConnector.platform: HibobConnector,
     CareerPlugConnector.platform: CareerPlugConnector,
+    JobviteConnector.platform: JobviteConnector,
     EightfoldConnector.platform: EightfoldConnector,
     SoftgardenConnector.platform: SoftgardenConnector,
     OracleConnector.platform: OracleConnector,

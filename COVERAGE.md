@@ -49,7 +49,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 25 | iCIMS | ⬜ | | | enterprise, per-site |
 | 26 | iSolvedHire | ⬜ | | | |
 | 27 | JazzHR | ⬜ | | | HTML scrape only (no public JSON feed) |
-| 28 | Jobvite | ⬜ | | | career sites are JS-rendered |
+| 28 | Jobvite | ✅ | `jobvite` | live (3 boards) | server-rendered listing at jobs.jobvite.com/{slug}/search, paginated ?p=N; keyless |
 | 29 | JOIN.com | ✅ | `join` | live (24 boards) | public keyless Next.js career pages · join.com |
 | 30 | Kula.ai | ⬜ | | | |
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 24 | 1 | 58 |
+| ATS | 25 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **28** | **2** | **78** |
+| **Total** | **29** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
