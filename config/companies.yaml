@@ -553,6 +553,12 @@ careersite: []
 # Le board est l'URL COMPLETE d'un flux XML/RSS. SmartJobBoard = {domaine}/rss,
 # WP Job Manager = {domaine}/?feed=job_feed. Valides via scripts/test_feeds.py.
 jobfeed:
+  # JobBoard.io — boards live (pattern {board}/jobs.rss)
+  - "https://www.cancercareers.org/jobs.rss"   # JobBoard.io — AACR Cancer Careers
+  - "https://jobs.aacc.nche.edu/jobs.rss"   # JobBoard.io — AACC
+  - "https://jobs.cityandstateny.com/jobs.rss"   # JobBoard.io — City & State NY
+  - "https://jobs.rmets.org/jobs.rss"   # JobBoard.io — Royal Meteorological Society
+  - "https://jobs.motionographer.com/jobs.rss"   # JobBoard.io — Motionographer
   # JBoard.io — boards live (pattern {board}/rss/jobs)
   - "https://golf-jobs.com/rss/jobs"   # JBoard.io — Golf Jobs
   - "https://www.winti.jobs/rss/jobs"   # JBoard.io — Winti.Jobs

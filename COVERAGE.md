@@ -95,7 +95,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 6 | JBoard.io | ✅ | `jobfeed` | live | public RSS {board}/rss/jobs · verified on 4 live boards |
 | 7 | JobBoardFire | ⬜ | | | |
 | 8 | SmartJobBoard | ✅ | `jobfeed` | 680+ | public `/rss` feed · verified on 20 live boards |
-| 9 | JobBoard.io | ⬜ | | | API key per board |
+| 9 | JobBoard.io | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
 | 10 | Wiley Madgex | ✅ | `jobfeed` | | public RSS feed {board}/jobsrss/ · verified on Nature Careers |
 | 11 | Talenetic | ⬜ | | | |
 | 12 | JobMount | ⬜ | | | |
