@@ -598,8 +598,10 @@ smartjobboard: []
 
 # --- polymer : ATS public keyless (plateforme requise) ---
 # board = slug d'organisation ; GET api.polymer.co/v1/hire/organizations/{slug}/jobs
-polymer:
-  - prospera          # Prospera (~4)
+# polymer: DISABLED — connector built & verified, but api.polymer.co now
+# returns 403 (anti-bot). Re-enable by uncommenting if their API reopens.
+# polymer:
+#   - prospera          # Prospera (~4)
 
 # JOIN (join.com) — public keyless Next.js career pages; board = slug
 # maintained by scripts/discover_join.py (bounded sitemap discovery)
