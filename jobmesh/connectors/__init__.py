@@ -52,7 +52,6 @@ from .comeet import ComeetConnector
 from .careersite import CareerSiteConnector
 from .jobfeed import JobFeedConnector
 from .smartjobboard import SmartJobBoardConnector
-from .jobylon import JobylonConnector
 from .join import JoinConnector
 from .dover import DoverConnector
 from .niceboard import NiceboardConnector
@@ -104,7 +103,6 @@ REGISTRY: dict[str, type[Connector]] = {
     CareerSiteConnector.platform: CareerSiteConnector,
     JobFeedConnector.platform: JobFeedConnector,
     SmartJobBoardConnector.platform: SmartJobBoardConnector,
-    JobylonConnector.platform: JobylonConnector,
     JoinConnector.platform: JoinConnector,
     DoverConnector.platform: DoverConnector,
     NiceboardConnector.platform: NiceboardConnector,

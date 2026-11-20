@@ -130,8 +130,6 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Job boards | 4 | 0 | 20 |
 | **Total** | **23** | **4** | **78** |
 
-_Plus bonus platforms beyond the required 78: **Jobylon** (`jobylon`) — Nordic, platform-wide sitemap + JSON-LD (~9k open jobs)._
-
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
 > Greenhouse, SmartRecruiters, Lever, Ashby, Workable, Workday, Recruitee,
@@ -186,3 +184,12 @@ python3 scripts/test_feeds.py     # discover & validate new SmartJobBoard / WPJM
    public company sitemap (bounded + cached) — run it to reach hundreds of
    live boards.
 5. Enterprise ATS (iCIMS, Taleo, SuccessFactors, Avature…) — per-site, lower priority.
+
+
+### Robots & conduct
+Jobmesh identifies with a real User-Agent (`JobmeshBot`, contact URL in robots.py) and
+obeys each source's robots.txt. It reads only public, unauthenticated endpoints that a
+site's own front end calls, and every job links back to the employer's posting.
+**Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
+name; although a generic `User-agent: *` rule would still permit us, crawling it would go
+against the operator's clear intent, so it is left out.

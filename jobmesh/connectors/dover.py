@@ -22,10 +22,11 @@ import requests
 from ..models import Job, now_iso
 from ..normalize import detect_remote, html_to_text, make_dedup_key
 from .base import Connector
+from ..robots import allowed as robots_allowed, UA_TOKEN, USER_AGENT
 
 ROOT = "https://jobs.dover.com"
 CAREERS_SITEMAP = f"{ROOT}/feed/careers_sitemap"
-USER_AGENT = "jobmesh/0.1 (+https://github.com/; job index; contact via repo)"
+USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 20
 MAX_BOARDS = int(os.getenv("DOVER_MAX_BOARDS", "3000"))
 WORKERS = int(os.getenv("DOVER_WORKERS", "16"))
@@ -55,6 +56,10 @@ class DoverConnector(Connector):
             out.append(t)
         return out[:MAX_BOARDS]
 
+    def _fetch_board(self, tenant: str, fetched_at: str) -> list[Job]:
+        _url = f"{ROOT}/feed/v1/boards/{tenant}/jobs"
+        if not robots_allowed(_url, self._session):
+            return []
     def _fetch_board(self, tenant: str, fetched_at: str) -> list[Job]:
         resp = self._session.get(
             f"{ROOT}/feed/v1/boards/{tenant}/jobs", timeout=TIMEOUT
