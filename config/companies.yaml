@@ -577,6 +577,12 @@ jobfeed:
   - "https://jobs.njla.org/rss"                      # NJ Library Association (~50)
   - "https://jobs.rspa.net/rss"                      # Racquet Sports Pros (~43)
   - "https://jobs.coloradochiropractic.org/rss"      # Colorado Chiropractic (~21)
+  # jobBoardHQ (plateforme requise #17) — flux Indeed /jobs.xml complet (desc. incluses)
+  - "https://www.njschooljobs.com/jobs.xml"           # NJ School Jobs (~3700)
+  - "https://www.roaddogjobs.com/jobs.xml"            # RoadDog Jobs (~2300)
+  - "https://www.greaterroccareers.com/jobs.xml"      # Greater Rochester Careers (~1300)
+  - "https://www.jobsindoorcounty.com/jobs.xml"       # Jobs in Door County (~480)
+  - "https://jobs.macslist.org/jobs.xml"              # Mac's List Portland (~365)
 
 # --- smartjobboard : crawler sitemap -> pages -> JSON-LD (PROFONDEUR) ---
 # Le board est l'URL de BASE du site (ex. https://academiccareers.com).
