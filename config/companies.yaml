@@ -3603,12 +3603,18 @@ jobvite:
   - nutanix
   - gigamon
   - kymanox
+  - carfax
+  - optimas
 
 # Zoho Recruit (zohorecruit.com) — embedded JSON at {tenant}.zohorecruit.com/jobs/Careers; robots allows /jobs/*
 zohorecruit:
   - thehireboost
   - remoteoffice
   - tdcgroupltd
+  - fis
+  - menaalliances
+  - cause-capacity
+  - vfdgroup
 
 # Freshteam (freshteam.com) — server-rendered /jobs; robots allows /jobs; board = tenant slug
 freshteam:
