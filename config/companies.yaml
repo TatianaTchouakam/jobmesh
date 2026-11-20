@@ -553,6 +553,11 @@ careersite: []
 # Le board est l'URL COMPLETE d'un flux XML/RSS. SmartJobBoard = {domaine}/rss,
 # WP Job Manager = {domaine}/?feed=job_feed. Valides via scripts/test_feeds.py.
 jobfeed:
+  # JBoard.io — boards live (pattern {board}/rss/jobs)
+  - "https://golf-jobs.com/rss/jobs"   # JBoard.io — Golf Jobs
+  - "https://www.winti.jobs/rss/jobs"   # JBoard.io — Winti.Jobs
+  - "https://www.charityjobs.ie/rss/jobs"   # JBoard.io — Charity Jobs IE
+  - "https://couriergigs.com/rss/jobs"   # JBoard.io — Courier Gigs
   # Wiley Madgex — board live (pattern {board}/jobsrss/)
   - "https://www.nature.com/naturecareers/jobsrss/"   # Madgex — Nature Careers / Springer Nature (plateforme requise)
   # WP Job Manager (plateforme requise #2) — flux ?feed=job_feed

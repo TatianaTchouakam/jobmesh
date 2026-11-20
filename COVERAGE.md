@@ -92,7 +92,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 3 | JobKit | ⬜ | | | |
 | 4 | Jobboardly | ⬜ | | | API key per board |
 | 5 | Jobiqo | ⬜ | | | XML is import-only |
-| 6 | JBoard.io | ⬜ | | | API on paid plan |
+| 6 | JBoard.io | ✅ | `jobfeed` | live | public RSS {board}/rss/jobs · verified on 4 live boards |
 | 7 | JobBoardFire | ⬜ | | | |
 | 8 | SmartJobBoard | ✅ | `jobfeed` | 680+ | public `/rss` feed · verified on 20 live boards |
 | 9 | JobBoard.io | ⬜ | | | API key per board |
