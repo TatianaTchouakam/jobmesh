@@ -553,6 +553,12 @@ careersite: []
 # Le board est l'URL COMPLETE d'un flux XML/RSS. SmartJobBoard = {domaine}/rss,
 # WP Job Manager = {domaine}/?feed=job_feed. Valides via scripts/test_feeds.py.
 jobfeed:
+  # JobKit — board live (pattern {board}/jobs.rss)
+  - "https://jobs.rubyonrails.org/jobs.rss"   # JobKit — Rails Job Board
+  # ejobsitesoftware.com — boards live (pattern {board}/rss/job.php)
+  - "https://www.eyetasticjobs.com/rss/job.php"   # ejobsitesoftware — Eyetastic Jobs
+  - "https://jobqlick.com/rss/job.php"   # ejobsitesoftware — Jobqlick
+  - "https://connectagri.com/rss/job.php"   # ejobsitesoftware — ConnectAgri
   # Jobboardly — boards live (pattern {board}/jobs.rss)
   - "https://www.constructionjobsaustralia.com/jobs.rss"   # Jobboardly — Construction Jobs AU
   - "https://tradiejobs.com.au/jobs.rss"   # Jobboardly — Tradie Jobs AU
