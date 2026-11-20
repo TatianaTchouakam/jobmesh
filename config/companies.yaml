@@ -3580,3 +3580,7 @@ dover:
 recooty:
   - all
 
+
+# Manatal (careers-page.com) — public keyless DRF API; board = tenant slug
+manatal:
+  - manatal   # Manatal's own board (~33 jobs); add more tenant slugs as found

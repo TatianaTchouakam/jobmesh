@@ -165,14 +165,16 @@ def test_hirehive_maps():
 
 
 def test_manatal_maps():
-    js = {"data": [{"id": "h1", "position_name": "Recruiter",
-                    "location": {"city": "Paris", "country": "FR"},
-                    "url": "https://careers-page.com/acme/h1",
-                    "description": "<p>Hire</p>", "is_remote": False}]}
+    # Manatal's real careers-page.com API is DRF-paginated: count/next/results
+    js = {"count": 1, "next": None, "results": [
+        {"id": "h1", "hash": "H1", "position_name": "Recruiter",
+         "organization_name": "Sales", "city": "Paris", "country": "FR",
+         "location_display": "Paris, FR", "description": "<p>Hire</p>"}]}
     from jobmesh.connectors.manatal import ManatalConnector
     c = ManatalConnector("acme", session=_FakeSession([_Resp(js=js)]))
     j = c.fetch()[0]
     assert j.title == "Recruiter" and j.location == "Paris, FR"
+    assert j.company == "Acme"  # from slug; category is normalized by Job model
 
 
 def test_softgarden_schemaorg_and_flat():
