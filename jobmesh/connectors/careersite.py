@@ -57,7 +57,9 @@ def parse_jobpostings(html: str) -> list[dict]:
         if not block:
             continue
         try:
-            data = json.loads(block)
+            # strict=False tolerates raw control chars (\r\n, tabs) that some
+            # ATS/boards (e.g. Recooty) leave unescaped inside JSON-LD strings.
+            data = json.loads(block, strict=False)
         except (ValueError, TypeError):
             continue
         out.extend(_iter_jobpostings(data))
