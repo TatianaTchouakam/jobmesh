@@ -38,7 +38,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 14 | Eightfold AI | ✅ | `eightfold` | 50 | keyless API |
 | 15 | FirstStage | ⬜ | | | |
 | 16 | Freshteam | ✅ | `freshteam` | live (multiple tenants) | server-rendered /jobs at {tenant}.freshteam.com; robots allows /jobs |
-| 17 | Gem.com | ⬜ | | | |
+| 17 | Gem.com | ✅ | `gem` | live | public keyless GraphQL at jobs.gem.com/api/public/graphql/batch |
 | 18 | GoHire | ⬜ | | | |
 | 19 | Greenhouse | ✅ | `greenhouse` | 22,728 | keyless board API |
 | 20 | HiBob | ✅ | `hibob` | live (1 board, ~100 jobs) | keyless `/api/job-ad` on `{tenant}.careers.hibob.com`; desc, salary, locations |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 27 | 1 | 58 |
+| ATS | 28 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **31** | **2** | **78** |
+| **Total** | **32** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

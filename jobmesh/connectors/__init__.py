@@ -44,6 +44,7 @@ from .careerplug import CareerPlugConnector
 from .jobvite import JobviteConnector
 from .zohorecruit import ZohoRecruitConnector
 from .freshteam import FreshteamConnector
+from .gem import GemConnector
 from .eightfold import EightfoldConnector
 from .softgarden import SoftgardenConnector
 from .oracle import OracleConnector
@@ -101,6 +102,7 @@ REGISTRY: dict[str, type[Connector]] = {
     JobviteConnector.platform: JobviteConnector,
     ZohoRecruitConnector.platform: ZohoRecruitConnector,
     FreshteamConnector.platform: FreshteamConnector,
+    GemConnector.platform: GemConnector,
     EightfoldConnector.platform: EightfoldConnector,
     SoftgardenConnector.platform: SoftgardenConnector,
     OracleConnector.platform: OracleConnector,

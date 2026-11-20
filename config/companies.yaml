@@ -3622,3 +3622,8 @@ freshteam:
   - propine
   - mase
   - foodsafetyworks
+
+# Gem (jobs.gem.com) — public keyless GraphQL; board = vanity slug
+gem:
+  - nabla-bio
+  - boltz
