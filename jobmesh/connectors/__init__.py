@@ -46,6 +46,7 @@ from .zohorecruit import ZohoRecruitConnector
 from .freshteam import FreshteamConnector
 from .gem import GemConnector
 from .deel import DeelConnector
+from .avature import AvatureConnector
 from .eightfold import EightfoldConnector
 from .softgarden import SoftgardenConnector
 from .oracle import OracleConnector
@@ -105,6 +106,7 @@ REGISTRY: dict[str, type[Connector]] = {
     FreshteamConnector.platform: FreshteamConnector,
     GemConnector.platform: GemConnector,
     DeelConnector.platform: DeelConnector,
+    AvatureConnector.platform: AvatureConnector,
     EightfoldConnector.platform: EightfoldConnector,
     SoftgardenConnector.platform: SoftgardenConnector,
     OracleConnector.platform: OracleConnector,

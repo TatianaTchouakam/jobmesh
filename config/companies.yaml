@@ -3633,3 +3633,10 @@ deel:
   - cardo
   - wespeak
   - perfec-tone
+
+# Avature (avature.net) — server-rendered SearchJobs, paginated ?jobOffset=N; board = tenant slug
+avature:
+  - delta
+  - koch
+  - maximus
+  - resourcebank

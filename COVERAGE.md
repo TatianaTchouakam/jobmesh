@@ -25,7 +25,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 1 | ADP | ⬜ | | | enterprise, no public feed |
 | 2 | ApplicantPro | ⬜ | | | |
 | 3 | Ashby | ✅ | `ashby` | 5,046 | keyless board API |
-| 4 | Avature | ⬜ | | | |
+| 4 | Avature | ✅ | `avature` | live | public RSS feed at {tenant}.avature.net/careers/SearchJobs/feed/ (HTML page is bot-challenged) |
 | 5 | BambooHR | ✅ | `bamboohr` | 3 | keyless careers API |
 | 6 | BrassRing | ⬜ | | | |
 | 7 | Breezy HR | ✅ | `breezy` | 1,360 | keyless board API |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 29 | 1 | 58 |
+| ATS | 30 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **33** | **2** | **78** |
+| **Total** | **34** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
