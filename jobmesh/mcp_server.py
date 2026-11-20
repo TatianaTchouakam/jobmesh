@@ -57,6 +57,11 @@ TOOLS = [
         "description": "Headline numbers about the Jobmesh index: open postings, companies and source platforms.",
         "inputSchema": {"type": "object", "properties": {}},
     },
+    {
+        "name": "source_coverage",
+        "description": "Transparency: the source platforms Jobmesh indexes, with how many open roles and company boards each carries and whether its last refresh succeeded. Every number traces back to a real fetch of public data.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
 ]
 
 
@@ -105,6 +110,17 @@ def _run_stats(db_path: str) -> str:
     )
 
 
+def _run_coverage(db_path: str) -> str:
+    with storage.session(db_path) as conn:
+        c = storage.coverage(conn)
+    lines = [f"Jobmesh covers {c['platforms_live']} live source platforms:\n"]
+    for p in c["platforms"]:
+        flag = "ok" if p.get("last_status") == "success" else (p.get("last_status") or "-")
+        lines.append(f"{p['platform']}: {p['open_jobs']:,} open, "
+                     f"{p['boards']} board(s) [{flag}]")
+    return "\n".join(lines)
+
+
 # -- JSON-RPC dispatch -----------------------------------------------------
 
 def _ok(mid: Any, result: dict) -> dict:
@@ -139,6 +155,8 @@ def _handle(msg: dict, db_path: str) -> Optional[dict]:
                 text = _run_search(args, db_path)
             elif name == "index_stats":
                 text = _run_stats(db_path)
+            elif name == "source_coverage":
+                text = _run_coverage(db_path)
             else:
                 return _err(mid, -32602, f"Unknown tool: {name}")
         except Exception as exc:  # never 500 inside a tool

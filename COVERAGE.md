@@ -55,7 +55,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
 | 32 | Manatal | ✅ | `manatal` | live (1 board) | keyless DRF API `careers-page.com/api/v1.0/c/{tenant}/jobs/`; more boards addable |
 | 33 | Oracle Recruiting | ✅ | `oracle` | 2,400 | keyless CX API |
-| 34 | PageUp | ✅ | `pageup` | live | JSON-LD JobPosting per job page at {tenant}.pageuppeople.com; robots-clean |
+| 34 | PageUp | 🟡 | `pageup` | connector ready (JSON-LD), but list page is bot-challenged to plain requests — needs headless render |
 | 35 | Paradox | ⬜ | | | |
 | 36 | Paycom | ⬜ | | | |
 | 37 | Paycor | ⬜ | | | |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 31 | 1 | 58 |
+| ATS | 30 | 2 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **35** | **2** | **78** |
+| **Total** | **34** | **3** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

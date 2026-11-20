@@ -69,6 +69,13 @@ def get_stats() -> dict:
         return storage.stats(conn)
 
 
+@app.get("/coverage")
+def get_coverage() -> dict:
+    """Per-source-platform status: open jobs, boards and last-fetch health."""
+    with storage.session(DB_PATH) as conn:
+        return storage.coverage(conn)
+
+
 def _filters(keyword, company, location, platform, workplace_type,
              employment_type, category, country=None, level=None, since=None) -> dict:
     return {

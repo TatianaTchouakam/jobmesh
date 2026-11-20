@@ -393,6 +393,39 @@ def stats(conn: sqlite3.Connection) -> dict:
     }
 
 
+def coverage(conn: sqlite3.Connection) -> dict:
+    """Per-platform coverage: open jobs, boards and last-fetch health.
+
+    Powers a transparent "status page": which source platforms are live,
+    how many open roles each carries, and whether the last refresh of each
+    succeeded (from fetch_log). Every number traces back to a real fetch.
+    """
+    rows = conn.execute(
+        "SELECT source_platform AS platform, COUNT(*) AS open_jobs, "
+        "COUNT(DISTINCT source_board) AS boards "
+        "FROM jobs WHERE is_open=1 GROUP BY source_platform "
+        "ORDER BY open_jobs DESC"
+    ).fetchall()
+    last = {
+        r["platform"]: {"status": r["status"], "ran_at": r["ran_at"]}
+        for r in conn.execute(
+            "SELECT platform, status, ran_at FROM fetch_log "
+            "WHERE id IN (SELECT MAX(id) FROM fetch_log GROUP BY platform)"
+        ).fetchall()
+    }
+    platforms = []
+    for r in rows:
+        p = r["platform"]
+        platforms.append({
+            "platform": p,
+            "open_jobs": r["open_jobs"],
+            "boards": r["boards"],
+            "last_run": last.get(p, {}).get("ran_at"),
+            "last_status": last.get(p, {}).get("status"),
+        })
+    return {"platforms_live": len(platforms), "platforms": platforms}
+
+
 # -- helpers --------------------------------------------------------------
 
 def _bool(value: Optional[bool]) -> Optional[int]:
