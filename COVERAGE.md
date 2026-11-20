@@ -18,7 +18,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 17/58 live, 19/58 with a connector
+## Required ATS coverage — 18/58 live, 20/58 with a connector
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -50,7 +50,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 26 | iSolvedHire | ⬜ | | | |
 | 27 | JazzHR | ⬜ | | | HTML scrape only (no public JSON feed) |
 | 28 | Jobvite | ⬜ | | | career sites are JS-rendered |
-| 29 | JOIN.com | ⬜ | | | |
+| 29 | JOIN.com | ✅ | `join` | live (24 boards) | public keyless Next.js career pages · join.com |
 | 30 | Kula.ai | ⬜ | | | |
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
 | 32 | Manatal | 🟡 | `manatal` | — | connector written, currently disabled |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 17 | 2 | 58 |
+| ATS | 18 | 2 | 58 |
 | Job boards | 2 | 0 | 20 |
-| **Total** | **19** | **3** | **78** |
+| **Total** | **20** | **3** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
@@ -177,5 +177,5 @@ python3 scripts/test_feeds.py     # discover & validate new SmartJobBoard / WPJM
 1. **Comeet** (ready) — wire public uid:token pairs → live.
 2. **WP Job Manager** (live) — add more boards via `?feed=job_feed`.
 3. More **SmartJobBoard** boards — breadth via `scripts/test_feeds.py`.
-4. SMB ATS with public surfaces — JOIN.com, GoHire, Polymer.
+4. SMB ATS with public surfaces — GoHire next (JOIN.com ✅, Polymer ✅).
 5. Enterprise ATS (iCIMS, Taleo, SuccessFactors, Avature…) — per-site, lower priority.

@@ -600,3 +600,31 @@ smartjobboard: []
 # board = slug d'organisation ; GET api.polymer.co/v1/hire/organizations/{slug}/jobs
 polymer:
   - prospera          # Prospera (~4)
+
+# JOIN (join.com) — public keyless Next.js career pages; board = company slug
+# verified active (open jobs) across DACH/EU; swap/extend freely
+join:
+  - join
+  - pss-ti
+  - adito
+  - 365heroes
+  - lottenet
+  - efly-amz
+  - mediga
+  - med-x-press
+  - btd
+  - flotte1
+  - s-b-c
+  - gestionaconsultores
+  - dbp-architektur
+  - novogenia
+  - deman
+  - certex
+  - touchbed
+  - autohaus-knaller
+  - solarenergie-kueng
+  - my-buddy
+  - bluesakuranl
+  - bring
+  - younea
+  - augenchirurgie
