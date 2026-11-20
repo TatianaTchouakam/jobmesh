@@ -3608,5 +3608,11 @@ jobvite:
 zohorecruit:
   - thehireboost
   - remoteoffice
-  - careercentre
   - tdcgroupltd
+
+# Freshteam (freshteam.com) — server-rendered /jobs; robots allows /jobs; board = tenant slug
+freshteam:
+  - integralresources
+  - propine
+  - mase
+  - foodsafetyworks

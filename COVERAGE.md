@@ -37,7 +37,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 13 | Dover | ✅ | `dover` | live (self-discovers) | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
 | 14 | Eightfold AI | ✅ | `eightfold` | 50 | keyless API |
 | 15 | FirstStage | ⬜ | | | |
-| 16 | Freshteam | ⬜ | | | per-tenant token; product sunset |
+| 16 | Freshteam | ✅ | `freshteam` | live (multiple tenants) | server-rendered /jobs at {tenant}.freshteam.com; robots allows /jobs |
 | 17 | Gem.com | ⬜ | | | |
 | 18 | GoHire | ⬜ | | | |
 | 19 | Greenhouse | ✅ | `greenhouse` | 22,728 | keyless board API |
@@ -79,7 +79,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 55 | WeRecruit | ⬜ | | | |
 | 56 | Workable | ✅ | `workable` | 3,848 | keyless widget API |
 | 57 | Workday | ✅ | `workday` | 80 | keyless CXS API (hardened headers) |
-| 58 | Zoho Recruit | ✅ | `zohorecruit` | live (seeded 4 tenants) | embedded JSON at {tenant}.zohorecruit.com/jobs/Careers; robots allows /jobs/* |
+| 58 | Zoho Recruit | ✅ | `zohorecruit` | live (multiple tenants) | embedded JSON at {tenant}.zohorecruit.com/jobs/Careers; robots allows /jobs/* |
 
 ---
 
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 26 | 1 | 58 |
+| ATS | 27 | 1 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **30** | **2** | **78** |
+| **Total** | **31** | **2** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
