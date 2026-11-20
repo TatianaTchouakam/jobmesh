@@ -3579,6 +3579,3 @@ dover:
 recooty:
   - all
 
-# Jobylon (emp.jobylon.com) — platform-wide sitemap + JSON-LD; 'all' = whole platform (Nordic)
-jobylon:
-  - all
