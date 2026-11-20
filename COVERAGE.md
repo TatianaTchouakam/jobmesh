@@ -103,7 +103,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 14 | JobBoard.com | ⬜ | | | |
 | 15 | Artha | ⬜ | | | |
 | 16 | jobboardsoftware.com | ⬜ | | | |
-| 17 | jobBoardHQ | ⬜ | | | |
+| 17 | jobBoardHQ | ✅ | `jobfeed` | live (5 boards) | public Indeed-format /jobs.xml per board · complete feed |
 | 18 | Nodex | ⬜ | | | |
 | 19 | eJobBoard | ⬜ | | | |
 | 20 | ejobsitesoftware.com | ⬜ | | | |
@@ -127,8 +127,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
 | ATS | 17 | 3 | 58 |
-| Job boards | 3 | 0 | 20 |
-| **Total** | **20** | **4** | **78** |
+| Job boards | 4 | 0 | 20 |
+| **Total** | **21** | **4** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
