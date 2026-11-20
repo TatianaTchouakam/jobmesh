@@ -1,11 +1,13 @@
 """Jobvite connector — public, server-rendered career sites.
 
 Jobvite hosts each customer's career site at ``jobs.jobvite.com/{slug}``.
-The ``/search`` listing is server-rendered HTML (no JS needed): each job is
-a table row with ``jv-job-list-name`` (title + link to
-``/{slug}/job/{id}``) and ``jv-job-list-location``. Results paginate 50 per
-page via ``?p=N``. No API key, no CSRF; the host serves no robots.txt
-(404 -> allowed). A board is the company slug (e.g. "nutanix").
+The listing is server-rendered HTML (no JS needed): each job is a table row
+with ``jv-job-list-name`` (title + link to ``.../job/{id}``) and
+``jv-job-list-location``. Jobvite serves two URL shapes with the same markup
+-- legacy ``/{slug}/search?p=N`` and modern ``/careers/{slug}/jobs`` -- so we
+try both and use whichever returns rows. Results paginate 50 per page via
+``?p=N``. No API key, no CSRF; the host serves no robots.txt (404 ->
+allowed). A board is the company slug (e.g. "nutanix").
 
 Individual job pages carry no JSON-LD, so we take title, location and the
 job URL from the listing — enough for an index entry; descriptions are left
@@ -54,15 +56,24 @@ class JobviteConnector(Connector):
         self._company = board.replace("-", " ").replace("_", " ").strip().title() or board
 
     def fetch(self) -> list[Job]:
-        base = f"{BASE}/{self.board}"
-        if not robots_allowed(f"{base}/search/", self._session):
-            return []
         fetched_at = now_iso()
+        # Jobvite serves two listing shapes with identical markup; use the
+        # first that yields rows (legacy /search, then modern /careers/.../jobs).
+        for listing in (f"{BASE}/{self.board}/search/",
+                        f"{BASE}/careers/{self.board}/jobs"):
+            if not robots_allowed(listing, self._session):
+                continue
+            jobs = self._crawl(listing, fetched_at)
+            if jobs:
+                return jobs
+        return []
+
+    def _crawl(self, listing: str, fetched_at: str) -> list[Job]:
         jobs: list[Job] = []
         seen: set[str] = set()
         page = 1
         while page <= MAX_PAGES:
-            resp = self._session.get(f"{base}/search/", params={"p": page}, timeout=TIMEOUT)
+            resp = self._session.get(listing, params={"p": page}, timeout=TIMEOUT)
             resp.raise_for_status()
             rows = list(_ROW_RE.finditer(resp.text))
             if not rows:

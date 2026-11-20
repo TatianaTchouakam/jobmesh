@@ -23,15 +23,18 @@ class _Resp:
 
 
 class _FakeSession:
-    def __init__(self, pages):
+    """Routes the two Jobvite listing shapes: legacy /search vs /careers/.../jobs."""
+    def __init__(self, legacy=None, careers=None):
         self.headers = {}
-        self._pages = pages  # dict: page number -> html
+        self._legacy = legacy or {}
+        self._careers = careers or {}
 
     def get(self, url, params=None, timeout=None, **k):
         if url.endswith("/robots.txt"):
             return _Resp("", status=404)          # no robots -> allowed
         p = (params or {}).get("p", 1)
-        return _Resp(self._pages.get(p, _page([])))
+        pages = self._careers if "/careers/" in url else self._legacy
+        return _Resp(pages.get(p, _page([])))
 
 
 def test_parses_rows():
@@ -39,7 +42,7 @@ def test_parses_rows():
         _row("ozI4AfwF", "Advisory Enterprise Account Manager", "Philadelphia,\n            Pennsylvania"),
         _row("oK3NAfwU", "Backend Engineer", "Remote, United States"),
     ])
-    c = JobviteConnector("nutanix", session=_FakeSession({1: html}))
+    c = JobviteConnector("nutanix", session=_FakeSession(legacy={1: html}))
     jobs = c.fetch()
     assert len(jobs) == 2
     a = jobs[0]
@@ -55,7 +58,7 @@ def test_parses_rows():
 def test_pagination_and_stop():
     full = _page([_row(f"id{i}", f"Role {i}", "Austin, TX") for i in range(50)])
     full2 = _page([_row(f"id{i}", f"Role {i}", "Austin, TX") for i in range(50, 90)])  # 40 < 50 -> last
-    c = JobviteConnector("nutanix", session=_FakeSession({1: full, 2: full2}))
+    c = JobviteConnector("nutanix", session=_FakeSession(legacy={1: full, 2: full2}))
     jobs = c.fetch()
     assert len(jobs) == 90                         # 50 + 40, all unique
     ids = {j.source_job_id for j in jobs}
@@ -64,5 +67,13 @@ def test_pagination_and_stop():
 
 def test_company_from_hyphen_slug():
     html = _page([_row("x1", "Nurse", "Berlin, Germany")])
-    c = JobviteConnector("acme-health", session=_FakeSession({1: html}))
+    c = JobviteConnector("acme-health", session=_FakeSession(legacy={1: html}))
     assert c.fetch()[0].company == "Acme Health"
+
+
+def test_careers_format_fallback():
+    # legacy /search returns nothing -> connector falls back to /careers/{slug}/jobs
+    html = _page([_row("g1", "Security Engineer", "Santa Clara, California")])
+    c = JobviteConnector("gigamon", session=_FakeSession(legacy={}, careers={1: html}))
+    jobs = c.fetch()
+    assert len(jobs) == 1 and jobs[0].title == "Security Engineer"
