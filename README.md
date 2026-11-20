@@ -23,6 +23,7 @@ it through a documented API. Each job links back to its original posting.
 - 🏢 **~2,900 companies / boards** worldwide
 - ✅ **Official public APIs & feeds (REST / RSS / JSON-LD)** — no blind HTML scraping, no login-walled data
 - 📋 Full per-platform status vs the 78 required sources: see **[COVERAGE.md](COVERAGE.md)**
+- 📦 Running, operating costs & dependencies: see **[HANDOFF.md](HANDOFF.md)**
 
 ### Features
 
