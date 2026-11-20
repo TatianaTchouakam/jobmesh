@@ -90,7 +90,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 1 | Niceboard | ✅ | `niceboard` | live (5 boards) | public keyless /api/jobs per hosted board · niceboard.co |
 | 2 | WP Job Manager | ✅ | `jobfeed` | live | public `?feed=job_feed` feed · verified on jobs.blog |
 | 3 | JobKit | ⬜ | | | |
-| 4 | Jobboardly | ⬜ | | | API key per board |
+| 4 | Jobboardly | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
 | 5 | Jobiqo | ⬜ | | | XML is import-only |
 | 6 | JBoard.io | ✅ | `jobfeed` | live | public RSS {board}/rss/jobs · verified on 4 live boards |
 | 7 | JobBoardFire | ⬜ | | | |
