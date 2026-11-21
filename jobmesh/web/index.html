@@ -204,6 +204,7 @@
       <div class="langsel" id="langsel">
         <button data-lang="en">EN</button><button data-lang="de">DE</button><button data-lang="fr">FR</button>
       </div>
+      <a href="#pro" id="proBadge" style="text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,var(--gold-1),var(--gold-2));color:#fff;white-space:nowrap">&#10024; Premium &mdash; 3&nbsp;&euro;</a>
       <div class="live"><span class="dot"></span> <span data-i18n="live">Live index · refreshed continuously</span></div>
     </div>
   </div>
@@ -295,6 +296,9 @@
   <aside class="side" id="side"></aside>
   <section>
     <div class="active-chips" id="active"></div>
+    <div id="protools" style="display:flex;justify-content:flex-end;margin:0 0 10px">
+      <button type="button" id="exportcsv" style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:13px;color:var(--text);cursor:pointer">⬇ Export CSV</button>
+    </div>
     <div id="results"></div>
     <div id="morewrap"></div>
   </section>
@@ -381,6 +385,30 @@
   .bigfoot .fbottom{border-top:1px solid var(--line);text-align:center;font-size:12.5px;color:var(--soft);padding:16px}
   @media(max-width:760px){.bigfoot .cols{grid-template-columns:1fr 1fr}}
 </style>
+
+<section class="prosec" id="pro" style="max-width:1180px;margin:52px auto 0;padding:0 24px">
+  <div style="background:radial-gradient(900px 420px at 88% -20%,#fff6e3 0,rgba(255,246,227,0) 60%),var(--panel);border:1px solid var(--line);border-radius:22px;padding:42px 38px;box-shadow:0 10px 30px rgba(20,25,40,.05);text-align:center">
+    <div class="eyebrow" style="justify-content:center">Jobmesh Premium</div>
+    <h2 style="font-size:clamp(22px,2.4vw,30px);font-weight:900;letter-spacing:-.02em;margin:12px 0 10px">Go Premium &mdash; 3&nbsp;&euro;/month</h2>
+    <p style="font-size:15.5px;color:#4a5262;max-width:40em;margin:0 auto 28px">Support the project and unlock power-user features. Cancel anytime.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;text-align:left;max-width:720px;margin:0 auto 26px">
+      <div style="background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:14px;padding:22px">
+        <h3 style="font-size:17px;font-weight:800;margin:0 0 7px">&#11015; CSV export</h3>
+        <p style="font-size:14.5px;color:var(--muted);margin:0">Download any filtered search as a ready-to-use .csv file.</p></div>
+      <div style="background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:14px;padding:22px">
+        <h3 style="font-size:17px;font-weight:800;margin:0 0 7px">&#128273; Full API access</h3>
+        <p style="font-size:14.5px;color:var(--muted);margin:0">Higher limits &amp; full pagination on <code>/jobs</code> (free tier: 50 results/request).</p></div>
+    </div>
+    <button type="button" id="goPro" style="background:linear-gradient(135deg,var(--gold-1),var(--gold-2));color:#fff;border:0;border-radius:12px;padding:13px 26px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer">Passer &agrave; Premium &mdash; 3&nbsp;&euro;/mois</button>
+    <div style="margin-top:18px;font-size:13px;color:var(--soft)">
+      Already subscribed? Paste your key:
+      <input id="prokeyin" placeholder="jm_..." style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:13px;min-width:220px;vertical-align:middle">
+      <button type="button" id="savekey" style="border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;font-weight:700;cursor:pointer">Save</button>
+      <span id="keystat" style="margin-left:6px;font-weight:700;color:var(--gold-2)"></span>
+    </div>
+  </div>
+</section>
+
 <footer class="bigfoot">
   <div class="cols">
     <div>
@@ -1057,5 +1085,38 @@ runSearch();
      with your site code (e.g. jobmesh -> https://jobmesh.goatcounter.com/count). -->
 <script data-goatcounter="https://jobmesh.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+
+<script>
+(function(){
+  var LS="jobmesh_pro_key";
+  function getKey(){try{return localStorage.getItem(LS)||"";}catch(e){return "";}}
+  function setKey(k){try{k?localStorage.setItem(LS,k):localStorage.removeItem(LS);}catch(e){}}
+  var stat=document.getElementById("keystat");
+  var inp=document.getElementById("prokeyin");
+  var badge=document.getElementById("proBadge");
+  function show(){ var has=!!getKey(); if(stat) stat.textContent=has?"\u2713 key saved":""; if(badge) badge.textContent=has?"Premium \u2713":"\u2728 Premium \u2014 3\u00a0\u20ac"; }
+  if(inp && getKey()) inp.value=getKey();
+  show();
+  var sv=document.getElementById("savekey");
+  if(sv) sv.addEventListener("click",function(){ setKey((inp.value||"").trim()); show(); });
+  var gp=document.getElementById("goPro");
+  if(gp) gp.addEventListener("click",function(){
+    gp.disabled=true; var old=gp.textContent; gp.textContent="\u2026";
+    fetch("/pro/checkout",{method:"POST"}).then(function(r){return r.json();}).then(function(d){
+      if(d && d.url){ window.location=d.url; return; }
+      alert((d&&d.error)||"Billing not available yet."); gp.disabled=false; gp.textContent=old;
+    }).catch(function(){ alert("Could not start checkout."); gp.disabled=false; gp.textContent=old; });
+  });
+  var ex=document.getElementById("exportcsv");
+  if(ex) ex.addEventListener("click",function(){
+    var k=getKey();
+    if(!k){ var sec=document.getElementById("pro"); if(sec) sec.scrollIntoView({behavior:"smooth"});
+      if(stat) stat.textContent="\u2190 subscribe or paste your Premium key to export"; return; }
+    var qs=""; try{ qs=params().toString(); }catch(e){}
+    window.location="/export.csv?"+qs+(qs?"&":"")+"api_key="+encodeURIComponent(k);
+  });
+})();
+</script>
+
 </body>
 </html>

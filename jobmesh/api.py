@@ -13,13 +13,17 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from fastapi import FastAPI, Query
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Query, Request, Header
+from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import storage
 from . import geo
+from . import pro
+
+import csv
+import io
 
 
 class FeedbackIn(BaseModel):
@@ -47,6 +51,14 @@ if os.path.isdir(_VENDOR):
 try:
     from .mcp_server import register_mcp
     register_mcp(app, DB_PATH)
+except Exception:  # pragma: no cover
+    pass
+
+# Jobmesh Pro billing (Stripe Checkout + signed keys). Guarded so a missing
+# Stripe config can never stop the API from starting.
+try:
+    from .billing import router as _billing_router
+    app.include_router(_billing_router)
 except Exception:  # pragma: no cover
     pass
 
@@ -86,6 +98,16 @@ def _filters(keyword, company, location, platform, workplace_type,
     }
 
 
+FREE_LIMIT = 50          # max results per request without a Pro key
+PRO_LIMIT = 1000         # max results per request with a Pro key
+EXPORT_CAP = 5000        # max rows a single CSV export returns
+
+
+def _pro_payload(api_key, x_api_key):
+    """Return the signed-key payload if a valid Pro key is supplied, else None."""
+    return pro.verify_key(api_key or x_api_key)
+
+
 @app.get("/jobs")
 def list_jobs(
     keyword: Optional[str] = Query(None, description="match in title/description"),
@@ -98,10 +120,15 @@ def list_jobs(
     country: Optional[str] = Query(None, description="ISO-2 country, e.g. DE"),
     level: Optional[str] = Query(None, description="seniority, e.g. Internship, Junior / Entry, Senior"),
     since: Optional[str] = Query(None, description="only jobs posted within the last N days"),
-    limit: int = Query(30, ge=1, le=100),
+    limit: int = Query(30, ge=1, le=PRO_LIMIT),
     offset: int = Query(0, ge=0),
+    api_key: Optional[str] = Query(None, description="Jobmesh Premium API key"),
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
 ) -> dict:
     """Search the index with filters and pagination."""
+    is_pro = _pro_payload(api_key, x_api_key) is not None
+    if not is_pro:
+        limit = min(limit, FREE_LIMIT)
     f = _filters(keyword, company, location, platform, workplace_type,
                  employment_type, category, country, level, since)
     with storage.session(DB_PATH) as conn:
@@ -112,8 +139,69 @@ def list_jobs(
         "total": total,
         "limit": limit,
         "offset": offset,
+        "pro": is_pro,
+        "free_limit": FREE_LIMIT,
         "results": rows,
     }
+
+
+# Mapping: CSV column -> job row field
+_CSV_COLS = [
+    ("title", "title"), ("company", "company"), ("location", "location"),
+    ("platform", "source_platform"), ("category", "category"),
+    ("employment_type", "employment_type"), ("workplace_type", "workplace_type"),
+    ("remote", "remote"), ("level", "level"), ("posted_at", "posted_at"),
+    ("source_url", "source_url"), ("apply_url", "apply_url"),
+]
+
+
+@app.get("/export.csv")
+def export_csv(
+    keyword: Optional[str] = Query(None),
+    company: Optional[str] = Query(None),
+    location: Optional[str] = Query(None),
+    platform: Optional[str] = Query(None),
+    workplace_type: Optional[str] = Query(None),
+    employment_type: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    country: Optional[str] = Query(None),
+    level: Optional[str] = Query(None),
+    since: Optional[str] = Query(None),
+    api_key: Optional[str] = Query(None, description="Jobmesh Premium API key"),
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+):
+    """Pro-only: download the filtered search as CSV."""
+    if _pro_payload(api_key, x_api_key) is None:
+        return JSONResponse(
+            {"error": "Reserve a Jobmesh Premium: l'export CSV est reserve aux abonnes.",
+             "upgrade": "/#pro"},
+            status_code=402)
+    f = _filters(keyword, company, location, platform, workplace_type,
+                 employment_type, category, country, level, since)
+    header = [c for c, _ in _CSV_COLS]
+
+    def rows_iter():
+        buf = io.StringIO()
+        w = csv.writer(buf)
+        w.writerow(header)
+        yield buf.getvalue(); buf.seek(0); buf.truncate(0)
+        with storage.session(DB_PATH) as conn:
+            off, page = 0, 500
+            while off < EXPORT_CAP:
+                batch = storage.search(conn, limit=min(page, EXPORT_CAP - off),
+                                       offset=off, **f)
+                if not batch:
+                    break
+                for r in batch:
+                    w.writerow([r.get(src) for _, src in _CSV_COLS])
+                yield buf.getvalue(); buf.seek(0); buf.truncate(0)
+                if len(batch) < page:
+                    break
+                off += len(batch)
+
+    return StreamingResponse(
+        rows_iter(), media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="jobmesh.csv"'})
 
 
 @app.get("/feedback")
