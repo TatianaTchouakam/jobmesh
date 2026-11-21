@@ -15,6 +15,13 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +6 AI/Inde/LatAm/Golfe/SEA verifie live (sweep 10, 21 nov. 2026) ---
+  - highradius
+  - netradyne
+  - ebanx
+  - druva
+  - otterai
+  - heygen
   # --- +10 crypto/devinfra/HRtech/enterprise/nordique verifie live (sweep 9, 21 nov. 2026) ---
   - ripple
   - bitgo
@@ -276,6 +283,10 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +3 AI/Inde/LatAm/Golfe/SEA verifie live (sweep 10, 21 nov. 2026) ---
+  - zeta
+  - mindtickle
+  - fintual
   # --- +4 crypto/devinfra/HRtech/enterprise/nordique verifie live (sweep 9, 21 nov. 2026) ---
   - moonpay
   - omnisend
@@ -360,6 +371,22 @@ lever:
   - entrata
 
 ashby:
+  # --- +15 AI/Inde/LatAm/Golfe/SEA verifie live (sweep 10, 21 nov. 2026) ---
+  - cognition
+  - langchain
+  - rain
+  - synthesia
+  - anyscale
+  - gamma
+  - flip
+  - ziina
+  - leantech
+  - pinecone
+  - atlan
+  - skymavis
+  - poolside
+  - weaviate
+  - recraft
   # --- +20 crypto/devinfra/HRtech/enterprise/nordique verifie live (sweep 9, 21 nov. 2026) ---
   - temporal
   - lovable
