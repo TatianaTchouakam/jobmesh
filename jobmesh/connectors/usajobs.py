@@ -29,7 +29,7 @@ from .base import Connector
 API = "https://data.usajobs.gov/api/search"
 HOST = "data.usajobs.gov"
 RESULTS_PER_PAGE = 500     # USAJobs maximum
-MAX_PAGES = 4
+MAX_PAGES = 20
 TIMEOUT = 30
 
 

@@ -31,7 +31,7 @@ API_KEY = "jobboerse-jobsuche"
 USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 SIZE = 100
-MAX_PAGES = 20     # bounded: up to ~2,000 recent postings per run
+MAX_PAGES = 100    # bounded: up to ~10,000 recent postings per run
 
 
 def _first(d: dict, *keys):

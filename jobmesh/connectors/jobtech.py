@@ -22,7 +22,7 @@ API = "https://jobsearch.api.jobtechdev.se/search"
 USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 LIMIT = 100
-MAX_PAGES = 10     # bounded: up to ~1,000 most-recent postings per run
+MAX_PAGES = 30     # bounded: up to ~3,000 most-recent postings per run
 
 
 def _label(v):

@@ -27,7 +27,7 @@ SCOPE = "api_offresdemploiv2 o2dsoffre"
 USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 RANGE = 150        # France Travail max per request
-MAX_PAGES = 7      # bounded: up to ~1,000 most-recent postings per run
+MAX_PAGES = 21     # up to ~3,150 (France Travail hard per-query cap)
 
 
 def _creds() -> tuple[str, str]:
