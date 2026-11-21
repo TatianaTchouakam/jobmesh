@@ -61,6 +61,11 @@
   .search .go:hover{background:#000}
 
   .herochips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .selbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .selbar select{appearance:none;-webkit-appearance:none;background:var(--field,#f1f2f6) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%236a7280' fill='none' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 11px center;border:1px solid var(--line,#e5e8ee);border-radius:10px;padding:9px 32px 9px 13px;font:inherit;font-size:13.5px;font-weight:600;color:var(--text,#141828);cursor:pointer;max-width:210px}
+  .selbar select:hover{border-color:var(--gold-2,#c4871a)}
+  .selbar select:focus{outline:none;box-shadow:0 0 0 2px var(--accent) inset}
+  .selbar select.on{border-color:var(--gold-2,#c4871a);color:var(--gold-2,#c4871a);background-color:#fffdf5}
   .hchip{background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13px;color:#3c4457;cursor:pointer;display:inline-flex;gap:7px;align-items:center;transition:.15s}
   .hchip:hover{border-color:var(--accent);color:var(--accent);background:#fff}
   .hchip .n{color:var(--soft);font-variant-numeric:tabular-nums;font-size:12px}
@@ -226,6 +231,7 @@
         <input type="text" id="location" placeholder="Location" />
         <button class="go" type="submit" data-i18n="search">Search</button>
       </form>
+      <div class="selbar" id="selbar"></div>
       <div class="herochips" id="herochips"></div>
     </div>
     <div class="globewrap">
@@ -662,7 +668,6 @@ async function loadHeroChips(){
       c.innerHTML=`${esc(t("wp_remote"))} <span class="n">${GEO.remote.toLocaleString()}</span>`;
       c.onclick=()=>{F.workplace_type=F.workplace_type==="remote"?"":"remote";scrollToResults();runSearch()};
       box.appendChild(c);}
-      {const a=document.createElement("button");a.className="hchip all";a.innerHTML=t("filters_cta")+' <span class="n">→</span>';a.onclick=scrollToResults;box.appendChild(a);}
   }catch(e){}
 }
 function scrollToResults(){document.querySelector(".main").scrollIntoView({behavior:"smooth",block:"start"})}
@@ -817,9 +822,40 @@ function selectCountry(code){
 }
 
 /* ---- facets / results (search) ---- */
+function renderSelects(f){
+  const box=document.getElementById("selbar"); if(!box)return;
+  const defs=[
+    {p:"category",lab:t("g_domain"),counts:f.category||{},tr:tcat},
+    {p:"level",lab:t("g_level"),counts:f.level||{},tr:tlvl},
+    {p:"workplace_type",lab:t("g_workplace"),counts:f.workplace_type||{},tr:wpl},
+    {p:"employment_type",lab:t("g_jobtype"),counts:f.employment_type||{},tr:(v)=>v},
+    {p:"country",lab:t("g_country"),counts:(GEO&&GEO.countries)||{},tr:(v)=>CNAME[v]||v},
+    {p:"since",lab:t("g_date"),fixed:[["1",t("since_today")],["7",t("since_7")],["30",t("since_30")]]},
+  ];
+  let html="";
+  for(const d of defs){
+    const cur=F[d.p]||"";
+    let opts=`<option value="">${esc(d.lab)}</option>`;
+    if(d.fixed){
+      for(const [v,l] of d.fixed)opts+=`<option value="${esc(v)}"${v===cur?" selected":""}>${esc(l)}</option>`;
+    }else{
+      const ents=Object.entries(d.counts).filter(([k])=>k&&k!=="Other").sort((a,b)=>b[1]-a[1]).slice(0,25);
+      if(cur&&!ents.some(([k])=>k===cur))ents.unshift([cur,0]);
+      for(const [v,n] of ents)opts+=`<option value="${esc(v)}"${v===cur?" selected":""}>${esc(d.tr(v))}${n?` (${n.toLocaleString()})`:""}</option>`;
+    }
+    html+=`<select data-param="${d.p}" class="${cur?"on":""}" aria-label="${esc(d.lab)}">${opts}</select>`;
+  }
+  box.innerHTML=html;
+  box.querySelectorAll("select").forEach(sel=>sel.onchange=()=>{
+    const pr=sel.dataset.param; F[pr]=sel.value;
+    if(pr==="country"&&window.__selectCountry)window.__selectCountry(F.country||null);
+    scrollToResults(); runSearch();
+  });
+}
 async function loadFacets(){
   try{
     const f=await(await fetch("/facets?"+params().toString())).json();
+    renderSelects(f);
     {const cel=$("count");if(cel)cel.innerHTML=`${(f.total||0).toLocaleString()} <span>${t("open_roles")}</span>`;}
     let html='<div class="sidehead">'+t("filters_title")+'</div>';
     const DOPTS=[["1","since_today"],["7","since_7"],["30","since_30"]];
