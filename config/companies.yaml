@@ -3866,3 +3866,7 @@ firststage:
 # HiringThing ({sub}.hiringthing.com) — server-rendered /jobs cards; board = subdomain (or full white-label host)
 hiringthing:
   - "smart"    # SMART Reading — verifie 21 nov. 2026 (2 offres)
+
+# Nodex / fabricjobs job-board platform — sitemap.xml + per-posting JSON-LD; board = full host
+nodex:
+  - "www.work.healthcare"    # work.healthcare (UK healthcare) — verifie 21 nov. 2026 (586 offres au sitemap)

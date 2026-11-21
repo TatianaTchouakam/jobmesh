@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **114,375** |
-| Total postings tracked (open + closed) | 126,143 |
+| Open postings | **114,677** |
+| Total postings tracked (open + closed) | 126,445 |
 | Closed postings detected & marked | 11,768 |
 | Duplicate open postings grouped (dedup) | 6,400 |
-| Active platforms | 68 |
-| Boards / companies indexed | 11,367 |
+| Active platforms | 70 |
+| Boards / companies indexed | 11,371 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -85,7 +85,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 12/20 live
+## Required job board platform coverage — 13/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -103,10 +103,10 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 12 | JobMount | ⬜ | | | |
 | 13 | CareerSiteCloud | ⬜ | | | |
 | 14 | JobBoard.com | ⬜ | | | |
-| 15 | Artha | ⬜ | | | |
+| 15 | Artha | ⬜ | | | reachable but pages are Cloudflare-protected (403) and the backend API (`api.arthajobboard.com`) exposes no keyless jobs endpoint — deferred |
 | 16 | jobboardsoftware.com | ✅ | `exenzo` | | public JSON API {tenant}.api.exenzo.com/api/public/v1 · 3 boards |
 | 17 | jobBoardHQ | ✅ | `jobfeed` | live (5 boards) | public Indeed-format /jobs.xml per board · complete feed |
-| 18 | Nodex | ⬜ | | | |
+| 18 | Nodex | ✅ | `nodex` | ~300 | sitemap.xml + per-posting schema.org JSON-LD · fabricjobs engine · board = host (cap 300; 586 at sitemap) |
 | 19 | eJobBoard | ⬜ | | | |
 | 20 | ejobsitesoftware.com | ✅ | `jobfeed` | | public RSS {board}/rss/job.php · verified on 3 live boards |
 
@@ -129,8 +129,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
 | ATS | 45 | 1 | 58 |
-| Job boards | 12 | 0 | 20 |
-| **Total** | **57** | **1** | **78** |
+| Job boards | 13 | 0 | 20 |
+| **Total** | **58** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The live
 > platforms include the highest-volume, most widely deployed ATS —
@@ -194,4 +194,4 @@ obeys each source's robots.txt. It reads only public, unauthenticated endpoints 
 site's own front end calls, and every job links back to the employer's posting.
 **Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
 name; although a generic `User-agent: *` rule would still permit us, crawling it would go
-against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API. **Cornerstone / CSOD** — the careersite's only job-data route (`*.api.csod.com/rec-job-search`) requires a bearer token extracted from the page and replayed; that is a lifted credential, not a cleanly public keyless endpoint like Dayforce's anonymous CSRF handshake, so CSOD is excluded on principle.
+against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API. **Cornerstone / CSOD** — the careersite's only job-data route (`*.api.csod.com/rec-job-search`) requires a bearer token extracted from the page and replayed; that is a lifted credential, not a cleanly public keyless endpoint like Dayforce's anonymous CSRF handshake, so CSOD is excluded on principle. **rexx systems** (bonus, not in the 78) — robots.txt names automated clients (python-requests, Scrapy, aiohttp, axios) with `Disallow: /`; although our `JobmeshBot` is not named and a public Atom feed is declared, the operator's intent is clearly anti-aggregator, so for consistency with Jobylon it is left out.
