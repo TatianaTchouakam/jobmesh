@@ -3818,3 +3818,35 @@ adp:
 dvinci:
   - cadenas
   - rpc
+
+# Dayforce — public candidate-portal search API (CSRF handshake only, no login); board = namespace[|BOARDCODE]
+dayforce:
+  - mydayforce        # Dayforce (Ceridian) own portal — verifie 21 nov. 2026 (1 offre)
+
+# CATS (catsone.com) — portal's public Remix data route {slug}.catsone.com/careers/{id}.data; board = slug|portalId
+catsone:
+  - "sau|112762"           # Southern Adventist University — verifie 21 nov. 2026 (21 offres)
+  - "icrecruiting|20594"   # InterContinental Recruiting — verifie 21 nov. 2026 (114 offres)
+
+# Taleo (Oracle) — careersection REST jobboard/searchjobs; board = tenant|portal (section defaults to "ex"), or tenant|section|portal
+taleo:
+  - "hdr|101430233"        # HDR Inc. — verifie 21 nov. 2026 (2206 offres, pagination REST)
+
+# HireBridge (recruit.hirebridge.com) — public career list /v3/jobs/list.aspx?cid={cid}; board = cid
+hirebridge:
+  - "5535"    # Menard, Inc. — verifie 21 nov. 2026 (805 offres)
+  - "7743"    # Vertafore — a verifier par ingest
+  - "7844"    # Numerator — a verifier par ingest
+  - "7724"    # CentralSquare — a verifier par ingest
+  - "8484"    # Confirm — a verifier par ingest
+
+# TriNet Hire (app.trinethire.com) — public career table /companies/{slug}/jobs; board = full slug
+trinet:
+  - "22943-cabaletta-bio-inc"    # Cabaletta Bio — verifie 21 nov. 2026 (6 offres)
+
+# Trakstar Hire (ex-Recruiterbox) — public careers {sub}.hire.trakstar.com; board = subdomain
+trakstar:
+  - "bookmyshow"    # BookMyShow — verifie 21 nov. 2026 (20 offres)
+  - "aprco"          # a verifier par ingest
+  - "registrarcorp"  # a verifier par ingest
+  - "clinicmind"     # a verifier par ingest

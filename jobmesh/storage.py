@@ -80,8 +80,20 @@ CREATE TABLE IF NOT EXISTS feedback (
 
 
 def connect(db_path: str = DEFAULT_DB) -> sqlite3.Connection:
-    conn = sqlite3.connect(db_path)
+    # timeout: wait (don't error) if another connection holds the write lock.
+    conn = sqlite3.connect(db_path, timeout=30)
     conn.row_factory = sqlite3.Row
+    # Wait (don't error) when another connection holds the write lock.
+    conn.execute("PRAGMA busy_timeout=30000")
+    # WAL lets readers and a single writer coexist without corrupting the file
+    # (e.g. the web server reading while `ingest` writes). Some filesystems
+    # (certain network/overlay mounts) reject WAL with a disk I/O error, so
+    # fall back silently to the default rollback journal there.
+    try:
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA synchronous=NORMAL")
+    except sqlite3.OperationalError:
+        pass
     conn.executescript(_SCHEMA)
     _migrate(conn)
     return conn

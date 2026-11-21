@@ -77,6 +77,12 @@ from .join import JoinConnector
 from .dover import DoverConnector
 from .niceboard import NiceboardConnector
 from .polymer import PolymerConnector
+from .dayforce import DayforceConnector
+from .taleo import TaleoConnector
+from .hirebridge import HireBridgeConnector
+from .trinet import TriNetConnector
+from .trakstar import TrakstarConnector
+from .catsone import CatsOneConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
 from .jooble import JoobleConnector
@@ -150,6 +156,12 @@ REGISTRY: dict[str, type[Connector]] = {
     NiceboardConnector.platform: NiceboardConnector,
     RecootyConnector.platform: RecootyConnector,
     PolymerConnector.platform: PolymerConnector,
+    DayforceConnector.platform: DayforceConnector,
+    CatsOneConnector.platform: CatsOneConnector,
+    TaleoConnector.platform: TaleoConnector,
+    HireBridgeConnector.platform: HireBridgeConnector,
+    TriNetConnector.platform: TriNetConnector,
+    TrakstarConnector.platform: TrakstarConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
     UsaJobsConnector.platform: UsaJobsConnector,

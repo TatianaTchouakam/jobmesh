@@ -7,18 +7,20 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **111,097** |
-| Total postings tracked (open + closed) | 122,198 |
-| Closed postings detected & marked | 11,101 |
-| Duplicate open postings grouped (dedup) | 5,556 |
-| Active platforms | 59 |
-| Boards / companies indexed | 11,303 |
+| Open postings | **114,358** |
+| Total postings tracked (open + closed) | 126,126 |
+| Closed postings detected & marked | 11,768 |
+| Duplicate open postings grouped (dedup) | 6,400 |
+| Active platforms | 65 |
+| Boards / companies indexed | 11,364 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
+> A platform is counted as covered once its connector is **verified against a real live endpoint**. The challenge counts one working connector per platform, independent of how many postings a given board shows on a given day — a board can sit idle at 0 and the platform is still covered.
+
 ---
 
-## Required ATS coverage — 36/58 live
+## Required ATS coverage — 41/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -32,7 +34,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 8 | CareerPlug | ✅ | `careerplug` | live (1 board) | server-rendered JSON-LD ItemList at `{tenant}.careerplug.com/jobs`; full desc, salary |
 | 9 | Comeet | ✅ | `comeet` | live (1 board) | keyless hosted page `comeet.com/jobs/{company}/{uid}` (no token); more boards addable |
 | 10 | CSOD (Cornerstone) | ⬜ | | | |
-| 11 | Dayforce | ⬜ | | | |
+| 11 | Dayforce | ✅ | `dayforce` | 1 | public CSRF handshake (`/api/auth/csrf`) + POST `/api/geo/{ns}/jobposting/search` · robots: content signals only |
 | 12 | Deel | ✅ | `deel` | live | JSON-LD JobPosting per job page at jobs.deel.com/{org}; robots-clean |
 | 13 | Dover | ✅ | `dover` | 12,918 | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
 | 14 | Eightfold AI | ✅ | `eightfold` | 50 | keyless API |
@@ -42,7 +44,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 18 | GoHire | ⬜ | | | |
 | 19 | Greenhouse | ✅ | `greenhouse` | 22,728 | keyless board API |
 | 20 | HiBob | ✅ | `hibob` | live (1 board, ~100 jobs) | keyless `/api/job-ad` on `{tenant}.careers.hibob.com`; desc, salary, locations |
-| 21 | HireBridge | ⬜ | | | |
+| 21 | HireBridge | ✅ | `hirebridge` | 805 | server-rendered career list `/v3/jobs/list.aspx?cid={cid}` · robots allows /v3/jobs |
 | 22 | HireHive | ✅ | `hirehive` | 87 | keyless API |
 | 23 | Hireology | ✅ | `hireology` | live (2 boards) | keyless API `api.hireology.com/v2/public/careers/{tenant}`; full desc, salary, locations |
 | 24 | HiringThing | ⬜ | | | |
@@ -71,10 +73,10 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 47 | SAP SuccessFactors | ⬜ | | | enterprise OData, auth |
 | 48 | SmartRecruiters | ✅ | `smartrecruiters` | 15,523 | keyless posting API (paginated) |
 | 49 | talentReef | ⬜ | | | |
-| 50 | Taleo | ⬜ | | | legacy, per-site |
+| 50 | Taleo | ✅ | `taleo` | 2,203 | careersection REST `jobboard/searchjobs` (keyless, needs X-Requested-With) · board = tenant\|portal |
 | 51 | Teamtailor | ✅ | `teamtailor` | 121 | keyless JSON feed |
-| 52 | Trakstar | ⬜ | | | |
-| 53 | TriNet | ⬜ | | | |
+| 52 | Trakstar | ✅ | `trakstar` | 35 | server-rendered careers `{sub}.hire.trakstar.com` (ex-Recruiterbox) · 4 boards |
+| 53 | TriNet | ✅ | `trinet` | 6 | server-rendered careers table `app.trinethire.com/companies/{slug}/jobs` |
 | 54 | UltiPro | ⬜ | | | |
 | 55 | WeRecruit | ⬜ | | | |
 | 56 | Workable | ✅ | `workable` | 3,848 | keyless widget API |
@@ -126,24 +128,24 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 36 | 1 | 58 |
+| ATS | 41 | 1 | 58 |
 | Job boards | 12 | 0 | 20 |
-| **Total** | **48** | **1** | **78** |
+| **Total** | **53** | **1** | **78** |
 
-> **Coverage is prioritised by volume, not by logo count.** The 17 live
+> **Coverage is prioritised by volume, not by logo count.** The live
 > platforms include the highest-volume, most widely deployed ATS —
 > Greenhouse, SmartRecruiters, Lever, Ashby, Workable, Workday, Recruitee,
 > Personio, Oracle, Rippling — which together carry the large majority of
-> real job-posting volume on the market. Most of the remaining 41 are niche
+> real job-posting volume on the market. Most of the remaining required platforms are niche
 > SMB tools or access-restricted enterprise systems with far smaller or
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **17 additional sources beyond the required 78** (~6,900 open postings),
+Plus **18 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
-`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE). Optional keyed sources (`adzuna`,
+`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE), `catsone` (CATS ATS, public portal data route). Optional keyed sources (`adzuna`,
 `jooble`, `usajobs`, `reed`, `reliefweb`) activate with a free API key.
 
 ---
@@ -158,7 +160,7 @@ kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
   postings closed when they disappear, and records a *fetch failure*
   (not a mass-close) when a source errors.
 - **Deduplication** — the same role across sources is grouped by a dedup key
-  (3,602 duplicate open postings currently grouped).
+  (6,400 duplicate open postings currently grouped).
 - **Searchable output** — FastAPI search + documented API with pagination and
   keyword / company / location filters.
 - **Handoff** — source, deployment and connector docs in the repo; adding a
@@ -183,7 +185,7 @@ python3 scripts/test_feeds.py     # discover & validate new SmartJobBoard / WPJM
 5. JOIN volume: scripts/discover_join.py grows the join board list from the
    public company sitemap (bounded + cached) — run it to reach hundreds of
    live boards.
-5. Enterprise ATS (iCIMS, Taleo, SuccessFactors, Avature…) — per-site, lower priority.
+5. Remaining enterprise ATS (SuccessFactors, BrassRing) — JS/auth-gated, headless-only, lower priority.
 
 
 ### Robots & conduct
