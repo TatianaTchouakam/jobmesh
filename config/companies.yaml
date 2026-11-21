@@ -15,6 +15,19 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +12 Israel/Canada verifie live (sweep 13, 21 nov. 2026) ---
+  - catonetworks
+  - jfrog
+  - tulip
+  - similarweb
+  - riskified
+  - forter
+  - axonius
+  - island
+  - yotpo
+  - transmitsecurity
+  - pagaya
+  - bringg
   # --- +6 AI/Inde/LatAm/Golfe/SEA verifie live (sweep 10, 21 nov. 2026) ---
   - highradius
   - netradyne
@@ -283,6 +296,9 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +2 Israel/Canada verifie live (sweep 13, 21 nov. 2026) ---
+  - walkme
+  - apryse
   # --- +3 AI/Inde/LatAm/Golfe/SEA verifie live (sweep 10, 21 nov. 2026) ---
   - zeta
   - mindtickle
