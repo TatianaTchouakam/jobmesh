@@ -575,6 +575,12 @@ careersite: []
 # Le board est l'URL COMPLETE d'un flux XML/RSS. SmartJobBoard = {domaine}/rss,
 # WP Job Manager = {domaine}/?feed=job_feed. Valides via scripts/test_feeds.py.
 jobfeed:
+  - "https://api.cryptojobslist.com/jobs.rss"   # Crypto Jobs List (single board)
+  - "https://www.proapartments.com/rss/"   # SmartJobBoard - ProApartments
+  - "https://jobsboard.edsurge.com/rss/"   # SmartJobBoard - EdSurge
+  - "https://onboardnwa.com/jobs.rss"   # Jobboardly - ONBoard NWA
+  - "https://www.jobsindevon.uk/jobs.rss"   # Jobboardly - Jobs in Devon
+  - "https://jobs.sciencecareers.org/jobsrss/"   # Madgex - Science Careers (AAAS)
   # JobKit — board live (pattern {board}/jobs.rss)
   - "https://jobs.rubyonrails.org/jobs.rss"   # JobKit — Rails Job Board
   # ejobsitesoftware.com — boards live (pattern {board}/rss/job.php)
@@ -3803,3 +3809,7 @@ homerun:
 jobscore:
   - solutions2go
   - jobscore
+
+# Factorial ATS — sitemap.xml + schema.org JobPosting; bonus source
+factorial:
+  - careers.factorial.com

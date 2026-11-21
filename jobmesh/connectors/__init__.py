@@ -54,6 +54,7 @@ from .phenom import PhenomConnector
 from .jobiqo import JobiqoConnector
 from .homerun import HomerunConnector
 from .jobscore import JobScoreConnector
+from .factorial import FactorialConnector
 from .paylocity import PaylocityConnector
 from .avature import AvatureConnector
 from .pageup import PageUpConnector
@@ -124,6 +125,7 @@ REGISTRY: dict[str, type[Connector]] = {
     JobiqoConnector.platform: JobiqoConnector,
     HomerunConnector.platform: HomerunConnector,
     JobScoreConnector.platform: JobScoreConnector,
+    FactorialConnector.platform: FactorialConnector,
     PaylocityConnector.platform: PaylocityConnector,
     AvatureConnector.platform: AvatureConnector,
     PageUpConnector.platform: PageUpConnector,
