@@ -70,3 +70,17 @@ def test_no_inactive_source_is_seeded_for_live_ingest():
 
 def test_active_count_is_65():
     assert srcreg.status_counts().get("ACTIVE") == 65
+
+
+def test_bonus_sources_are_real_and_seeded():
+    """Bonus sources must have a real connector and be actually seeded live
+    (non-empty board list) — a bonus with no boards is not a live source."""
+    bonus = srcreg.bonus_sources()
+    cfg = yaml.safe_load(open("config/companies.yaml"))
+    required = srcreg.active_connectors()
+    for b in bonus:
+        c = b["connector"]
+        assert c in REGISTRY, f"bonus references missing connector: {c}"
+        assert cfg.get(c), f"bonus {c} is not seeded with any board"
+        assert c not in required, f"bonus {c} is actually a required-platform connector"
+        assert b["status"] == "ACTIVE"

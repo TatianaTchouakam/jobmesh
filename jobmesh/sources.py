@@ -31,12 +31,18 @@ def load_sources(path: str | None = None) -> dict:
         data = yaml.safe_load(fh) or {}
     data.setdefault("required_ats", [])
     data.setdefault("required_boards", [])
+    data.setdefault("bonus_sources", [])
     return data
 
 
 def all_required(data: dict | None = None) -> list[dict]:
     data = data or load_sources()
     return list(data["required_ats"]) + list(data["required_boards"])
+
+
+def bonus_sources(data: dict | None = None) -> list[dict]:
+    data = data or load_sources()
+    return list(data.get("bonus_sources", []))
 
 
 def status_counts(data: dict | None = None) -> dict[str, int]:

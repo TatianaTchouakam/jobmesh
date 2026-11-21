@@ -104,3 +104,37 @@ required_boards:
       reason: "No client names or live tenant published anywhere", next_action: "Request client references and an official access" }
   - { name: "ejobsitesoftware.com", connector: jobfeed, status: ACTIVE }
 
+
+# Bonus sources — BEYOND the required 78. Real, deduplicated jobs that prove
+# the engine generalizes (national portals, remote boards, extra ATS).
+# ACTIVE and live, but NOT counted toward the 78 challenge score.
+bonus_sources:
+  - { name: "arbeitnow", connector: arbeitnow, status: ACTIVE, note: "Germany jobs API" }
+  - { name: "bundesagentur", connector: bundesagentur, status: ACTIVE, note: "Germany — federal employment agency (Arbeitsagentur)" }
+  - { name: "catsone", connector: catsone, status: ACTIVE, note: "CATS ATS (not in the 78)" }
+  - { name: "devitjobs", connector: devitjobs, status: ACTIVE, note: "Tech/dev jobs" }
+  - { name: "dvinci", connector: dvinci, status: ACTIVE, note: "d.vinci ATS (DE, not in the 78)" }
+  - { name: "eures", connector: eures, status: ACTIVE, note: "EU/EEA — job mobility portal (27 countries)" }
+  - { name: "fourdayweek", connector: fourdayweek, status: ACTIVE, note: "4-day-week jobs" }
+  - { name: "herp", connector: herp, status: ACTIVE, note: "Japan — startup/SMB ATS (JSON-LD)" }
+  - { name: "himalayas", connector: himalayas, status: ACTIVE, note: "Remote jobs" }
+  - { name: "homerun", connector: homerun, status: ACTIVE, note: "Homerun ATS (SMB/EU, not in the 78)" }
+  - { name: "jobicy", connector: jobicy, status: ACTIVE, note: "Remote jobs" }
+  - { name: "jobscore", connector: jobscore, status: ACTIVE, note: "JobScore ATS official feed (not in the 78)" }
+  - { name: "jobspresso", connector: jobspresso, status: ACTIVE, note: "Remote tech jobs" }
+  - { name: "jobtech", connector: jobtech, status: ACTIVE, note: "Sweden — national portal (Arbetsförmedlingen)" }
+  - { name: "jooble", connector: jooble, status: ACTIVE, note: "Global — job aggregator" }
+  - { name: "keka", connector: keka, status: ACTIVE, note: "India — SMB HR suite careers API" }
+  - { name: "mycareersfuture", connector: mycareersfuture, status: ACTIVE, note: "Singapore — national portal API" }
+  - { name: "pythonjobs", connector: pythonjobs, status: ACTIVE, note: "Python.org job board" }
+  - { name: "recruitcrm", connector: recruitcrm, status: ACTIVE, note: "Recruit CRM (agency ATS, not in the 78)" }
+  - { name: "reed", connector: reed, status: ACTIVE, note: "UK — job board" }
+  - { name: "reliefweb", connector: reliefweb, status: ACTIVE, note: "Humanitarian/NGO sector (UN OCHA)" }
+  - { name: "remoteok", connector: remoteok, status: ACTIVE, note: "Remote tech jobs" }
+  - { name: "remotive", connector: remotive, status: ACTIVE, note: "Remote jobs" }
+  - { name: "softgarden", connector: softgarden, status: ACTIVE, note: "softgarden ATS (DE, not in the 78)" }
+  - { name: "talentlyft", connector: talentlyft, status: ACTIVE, note: "TalentLyft ATS (not in the 78)" }
+  - { name: "uncareers", connector: uncareers, status: ACTIVE, note: "United Nations — official careers RSS (international)" }
+  - { name: "usajobs", connector: usajobs, status: ACTIVE, note: "USA — federal jobs API" }
+  - { name: "weworkremotely", connector: weworkremotely, status: ACTIVE, note: "Remote jobs" }
+  - { name: "workingnomads", connector: workingnomads, status: ACTIVE, note: "Remote jobs" }

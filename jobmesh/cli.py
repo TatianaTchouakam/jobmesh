@@ -103,6 +103,13 @@ def _cmd_sources(args) -> None:
             print(f"  ACTIVE                      {r['name']:<22} {r['connector']:<16} {tail}")
         else:
             print(f"  {r['status']:<27} {r['name']:<22} -> {r['next_action'] or r['reason'] or ''}")
+    bonus = srcreg.bonus_sources(data)
+    if bonus:
+        print(f"\nPlus {len(bonus)} BONUS sources (beyond the 78, not counted toward the score):")
+        for b in sorted(bonus, key=lambda x: x["name"]):
+            live = obp.get(b["connector"])
+            tail = f"{live} open" if live is not None else "live"
+            print(f"  BONUS                       {b['name']:<22} {b['connector']:<16} {tail}")
     print("\nStatus summary: " + ", ".join(f"{k}={counts[k]}" for k in srcreg.STATUSES if k in counts))
     print("Only ACTIVE sources run in the daily ingest; the rest are declared, not failed.")
 

@@ -161,7 +161,7 @@ redistribute* them (licence/terms); both must hold before a source goes live.
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **25 additional sources beyond the required 78** (~6,900 open postings),
+Plus **29 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
