@@ -3888,3 +3888,7 @@ uncareers:
 # Artha / Knovator job-board platform (required #15) — guest search API, Origin = board host; board = host
 artha:
   - "www.fpnajobs.com"    # FP&A Jobs — verifie 21 nov. 2026 (632 offres)
+
+# JobBoard.com (required #14) — per-sector RSS feeds (rate-limited, retried); board = host
+jobboardcom:
+  - "preview.jobboard.com"    # JobBoard.com editor board — verifie 21 nov. 2026

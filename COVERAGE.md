@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **115,190** |
-| Total postings tracked (open + closed) | 126,958 |
+| Open postings | **116,222** |
+| Total postings tracked (open + closed) | 127,990 |
 | Closed postings detected & marked | 11,768 |
-| Duplicate open postings grouped (dedup) | 6,417 |
-| Active platforms | 73 |
-| Boards / companies indexed | 11,445 |
+| Duplicate open postings grouped (dedup) | 6,423 |
+| Active platforms | 75 |
+| Boards / companies indexed | 11,753 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -85,7 +85,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 14/20 live
+## Required job board platform coverage — 15/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -102,7 +102,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 11 | Talenetic | ⬜ | | | |
 | 12 | JobMount | ⬜ | | | |
 | 13 | CareerSiteCloud | ⬜ | | | |
-| 14 | JobBoard.com | ⬜ | | | |
+| 14 | JobBoard.com | ✅ | `jobboardcom` | live | per-sector RSS `/jobs/rss/?params=SectorIds=N` (rate-limited, retried) · board = host |
 | 15 | Artha | ✅ | `artha` | 632 | keyless guest search API `jobs/search/guest` (Origin-scoped) · Knovator engine · board = host |
 | 16 | jobboardsoftware.com | ✅ | `exenzo` | | public JSON API {tenant}.api.exenzo.com/api/public/v1 · 3 boards |
 | 17 | jobBoardHQ | ✅ | `jobfeed` | live (5 boards) | public Indeed-format /jobs.xml per board · complete feed |
@@ -129,8 +129,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
 | ATS | 45 | 1 | 58 |
-| Job boards | 14 | 0 | 20 |
-| **Total** | **59** | **1** | **78** |
+| Job boards | 15 | 0 | 20 |
+| **Total** | **60** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The live
 > platforms include the highest-volume, most widely deployed ATS —
