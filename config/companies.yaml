@@ -15,6 +15,19 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +12 PME europeennes verifiees live (sweep 3, 21 nov. 2026) ---
+  - deliveroo
+  - graphcore
+  - wolt
+  - helsing
+  - staffbase
+  - bird
+  - commercetools
+  - moonfare
+  - cleo
+  - mentimeter
+  - platformsh
+  - konux
   # --- +9 international verifie live (sweep 2, 21 nov. 2026) ---
   - eucalyptus
   - octopusdeploy
@@ -174,6 +187,10 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +3 PME europeennes verifiees live (sweep 3, 21 nov. 2026) ---
+  - 360learning
+  - scaleway
+  - zopa
   # --- +4 international verifie live (sweep 2, 21 nov. 2026) ---
   - swile
   - contentsquare
@@ -225,6 +242,19 @@ lever:
   - entrata
 
 ashby:
+  # --- +12 PME europeennes verifiees live (sweep 3, 21 nov. 2026) ---
+  - parloa
+  - snyk
+  - zego
+  - elliptic
+  - paddle
+  - lunar
+  - langdock
+  - choco
+  - alephalpha
+  - gelato
+  - sorare
+  - ankorstore
   # --- +7 international verifie live (sweep 2, 21 nov. 2026) ---
   - pleo
   - wayflyer
