@@ -20,7 +20,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 44/58 live
+## Required ATS coverage — 45/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -33,7 +33,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 7 | Breezy HR | ✅ | `breezy` | 1,360 | keyless board API |
 | 8 | CareerPlug | ✅ | `careerplug` | live (1 board) | server-rendered JSON-LD ItemList at `{tenant}.careerplug.com/jobs`; full desc, salary |
 | 9 | Comeet | ✅ | `comeet` | live (1 board) | keyless hosted page `comeet.com/jobs/{company}/{uid}` (no token); more boards addable |
-| 10 | CSOD (Cornerstone) | ⬜ | | | |
+| 10 | CSOD (Cornerstone) | ⛔ | | | search API needs a bearer token lifted from the page — not cleanly keyless; excluded on principle (see Robots & conduct) |
 | 11 | Dayforce | ✅ | `dayforce` | 1 | public CSRF handshake (`/api/auth/csrf`) + POST `/api/geo/{ns}/jobposting/search` · robots: content signals only |
 | 12 | Deel | ✅ | `deel` | live | JSON-LD JobPosting per job page at jobs.deel.com/{org}; robots-clean |
 | 13 | Dover | ✅ | `dover` | 12,918 | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
@@ -47,7 +47,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 21 | HireBridge | ✅ | `hirebridge` | 805 | server-rendered career list `/v3/jobs/list.aspx?cid={cid}` · robots allows /v3/jobs |
 | 22 | HireHive | ✅ | `hirehive` | 87 | keyless API |
 | 23 | Hireology | ✅ | `hireology` | live (2 boards) | keyless API `api.hireology.com/v2/public/careers/{tenant}`; full desc, salary, locations |
-| 24 | HiringThing | ⬜ | | | |
+| 24 | HiringThing | ✅ | `hiringthing` | 2 | server-rendered /jobs cards · `{sub}.hiringthing.com` · robots allows /jobs |
 | 25 | iCIMS | ✅ | `icims` | 300 | public `sitemap.xml` + per-posting JSON-LD (`?in_iframe=1`) · {portal}.icims.com |
 | 26 | iSolvedHire | ✅ | `isolvedhire` | live | public `sitemap.xml` + schema.org JSON-LD per posting · {tenant}.isolvedhire.com |
 | 27 | JazzHR | ✅ | `jazzhr` | live | keyless server-rendered careers list · {board}.applytojob.com |
@@ -128,9 +128,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 44 | 1 | 58 |
+| ATS | 45 | 1 | 58 |
 | Job boards | 12 | 0 | 20 |
-| **Total** | **56** | **1** | **78** |
+| **Total** | **57** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The live
 > platforms include the highest-volume, most widely deployed ATS —
@@ -194,4 +194,4 @@ obeys each source's robots.txt. It reads only public, unauthenticated endpoints 
 site's own front end calls, and every job links back to the employer's posting.
 **Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
 name; although a generic `User-agent: *` rule would still permit us, crawling it would go
-against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API.
+against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API. **Cornerstone / CSOD** — the careersite's only job-data route (`*.api.csod.com/rec-job-search`) requires a bearer token extracted from the page and replayed; that is a lifted credential, not a cleanly public keyless endpoint like Dayforce's anonymous CSRF handshake, so CSOD is excluded on principle.

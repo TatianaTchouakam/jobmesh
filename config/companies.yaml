@@ -3862,3 +3862,7 @@ werecruit:
 # FirstStage (firststage.co) — server-rendered /jobs card list; board = subdomain
 firststage:
   - "firststage"    # First (editor) — verifie 21 nov. 2026 (1 offre)
+
+# HiringThing ({sub}.hiringthing.com) — server-rendered /jobs cards; board = subdomain (or full white-label host)
+hiringthing:
+  - "smart"    # SMART Reading — verifie 21 nov. 2026 (2 offres)

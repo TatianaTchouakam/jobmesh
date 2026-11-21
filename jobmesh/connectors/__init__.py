@@ -85,6 +85,7 @@ from .trakstar import TrakstarConnector
 from .rival import RivalConnector
 from .werecruit import WeRecruitConnector
 from .firststage import FirstStageConnector
+from .hiringthing import HiringThingConnector
 from .catsone import CatsOneConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
@@ -168,6 +169,7 @@ REGISTRY: dict[str, type[Connector]] = {
     RivalConnector.platform: RivalConnector,
     WeRecruitConnector.platform: WeRecruitConnector,
     FirstStageConnector.platform: FirstStageConnector,
+    HiringThingConnector.platform: HiringThingConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
     UsaJobsConnector.platform: UsaJobsConnector,
