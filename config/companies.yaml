@@ -15,6 +15,33 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +9 hardware/govtech/LatAm/Afrique verifie live (sweep 7, 21 nov. 2026) ---
+  - coreweave
+  - machindustries
+  - chaosindustries
+  - asteralabs
+  - tenstorrent
+  - ionq
+  - psiquantum
+  - lightmatter
+  - epirus
+  # --- +16 sante/media/insurtech/robotics/Asie verifie live (sweep 6, 21 nov. 2026) ---
+  - waymo
+  - nuro
+  - apptronik
+  - agilityrobotics
+  - pathrobotics
+  - cortica
+  - twitch
+  - coalition
+  - figure
+  - assemblyai
+  - primemedicine
+  - hometap
+  - descript
+  - speechmatics
+  - pacaso
+  - ethos
   # --- +20 cyber/edtech/logistique/Afrique verifie live (sweep 5, 21 nov. 2026) ---
   - chainguard
   - tailscale
@@ -218,6 +245,16 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +3 hardware/govtech/LatAm/Afrique verifie live (sweep 7, 21 nov. 2026) ---
+  - hermeus
+  - atomcomputing
+  - rigetti
+  # --- +5 sante/media/insurtech/robotics/Asie verifie live (sweep 6, 21 nov. 2026) ---
+  - lyrahealth
+  - includedhealth
+  - dexterity
+  - enveda
+  - sanabenefits
   # --- +4 cyber/edtech/logistique/Afrique verifie live (sweep 5, 21 nov. 2026) ---
   - secureframe
   - loadsmart
@@ -283,6 +320,29 @@ lever:
   - entrata
 
 ashby:
+  # --- +3 hardware/govtech/LatAm/Afrique verifie live (sweep 7, 21 nov. 2026) ---
+  - cerebras
+  - etched
+  - primer
+  # --- +18 sante/media/insurtech/robotics/Asie verifie live (sweep 6, 21 nov. 2026) ---
+  - 1x
+  - headway
+  - deepgram
+  - physicalintelligence
+  - lemonade
+  - alma
+  - kin
+  - patreon
+  - substack
+  - pika
+  - krea
+  - lumaai
+  - openly
+  - maven
+  - ideogram
+  - musinsa
+  - mux
+  - bestow
   # --- +11 cyber/edtech/logistique/Afrique verifie live (sweep 5, 21 nov. 2026) ---
   - lemfi
   - drata
