@@ -15,6 +15,22 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +9 international verifie live (sweep 2, 21 nov. 2026) ---
+  - eucalyptus
+  - octopusdeploy
+  - remote
+  - raisin
+  - gocardless
+  - mirakl
+  - sumup
+  - grover
+  - dataiku
+  # --- +5 international verifie live (sweep 21 nov. 2026) ---
+  - clara
+  - slice
+  - xendit
+  - cobre
+  - wallapop
   # --- +16 entreprises verifiees live (sweep navigateur, 21 nov. 2026) ---
   - celonis
   - adyen
@@ -158,6 +174,14 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +4 international verifie live (sweep 2, 21 nov. 2026) ---
+  - swile
+  - contentsquare
+  - blablacar
+  - tala
+  # --- +2 international verifie live (sweep 21 nov. 2026) ---
+  - pigment
+  - nium
   # NB: plaid retire — 404 sur l'API lever au run (token a reverifier).
   # --- Monde / continents (verifie en direct) ---
   - ninjavan   # Asie (50)
@@ -201,6 +225,21 @@ lever:
   - entrata
 
 ashby:
+  # --- +7 international verifie live (sweep 2, 21 nov. 2026) ---
+  - pleo
+  - wayflyer
+  - ledger
+  - nirvana
+  - forto
+  - enpal
+  - truelayer
+  # --- +6 international verifie live (sweep 21 nov. 2026) ---
+  - pennylane
+  - doctolib
+  - alan
+  - qonto
+  - kueski
+  - belvo
   # --- +9 entreprises verifiees live (sweep navigateur, 21 nov. 2026) ---
   - sierra
   - decagon
