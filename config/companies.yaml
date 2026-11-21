@@ -3917,3 +3917,11 @@ jobmount:
   - "jobnet.wacities.org/planning-community-development"
   - "jobnet.wacities.org/utilities"
   - "jobnet.wacities.org/clerk"
+
+# Keka (India SMB HR suite) — keyless careers JSON API (bonus). board = host|orgId|Company
+keka:
+  - "hr.keka.com|24040a7e-a7c5-47a5-9cd5-019962c66385|Keka"   # verifie 21 nov. 2026 (43 offres)
+
+# HERP (Japan SMB/startup ATS) — list page + per-job schema.org JSON-LD (bonus)
+herp:
+  - "herpinc"    # HERP Inc. — verifie 21 nov. 2026 (46 offres)

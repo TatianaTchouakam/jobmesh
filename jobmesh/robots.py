@@ -15,7 +15,7 @@ config rather than filtered here; see COVERAGE.md.
 from __future__ import annotations
 
 import threading
-from urllib.parse import urlparse
+from urllib.parse import quote, unquote, urlparse, urlunparse
 from urllib.robotparser import RobotFileParser
 
 import requests
@@ -46,11 +46,44 @@ def _parser(origin: str, session: requests.Session) -> RobotFileParser | None:
     return rp
 
 
+def _longest_match_allowed(rp: RobotFileParser, ua_token: str, url: str) -> bool:
+    """RFC 9309 decision: the most specific (longest) matching rule wins,
+    ties go to Allow. Python's urllib uses first-rule-in-file-order instead,
+    which wrongly blocks the common ``Disallow: /`` + ``Allow: /careers/``
+    pattern that operators use to expose exactly their public career pages.
+    We reuse urllib's fetching, UA-group selection and wildcard matching, and
+    only replace the allow/deny decision. Falls back to urllib on any
+    internals mismatch."""
+    try:
+        # Normalise the path exactly as urllib's can_fetch does.
+        pr = urlparse(unquote(url))
+        norm = quote(urlunparse(("", "", pr.path, pr.params, pr.query, pr.fragment))) or "/"
+        # Most specific applicable UA group (named beats the "*" default).
+        entry = None
+        for e in rp.entries:
+            if e.applies_to(ua_token):
+                entry = e
+                break
+        if entry is None:
+            entry = rp.default_entry
+        if entry is None:
+            return True
+        best_len, best_allow = -1, True
+        for rl in entry.rulelines:
+            if rl.applies_to(norm):
+                plen = len(rl.path)
+                if plen > best_len or (plen == best_len and rl.allowance and not best_allow):
+                    best_len, best_allow = plen, rl.allowance
+        return best_allow if best_len >= 0 else True
+    except Exception:
+        return rp.can_fetch(ua_token, url)
+
+
 def allowed(url: str, session: requests.Session, ua_token: str = UA_TOKEN) -> bool:
-    """True if robots.txt permits ``ua_token`` to fetch ``url``."""
+    """True if robots.txt permits ``ua_token`` to fetch ``url`` (RFC 9309)."""
     parts = urlparse(url)
     origin = f"{parts.scheme}://{parts.netloc}"
     rp = _parser(origin, session)
     if rp is None:
         return True
-    return rp.can_fetch(ua_token, url)
+    return _longest_match_allowed(rp, ua_token, url)

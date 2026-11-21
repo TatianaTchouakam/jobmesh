@@ -95,6 +95,8 @@ from .jobboardcom import JobBoardComConnector
 from .mycareersfuture import MyCareersFutureConnector
 from .eures import EuresConnector
 from .jobmount import JobMountConnector
+from .keka import KekaConnector
+from .herp import HerpConnector
 from .catsone import CatsOneConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
@@ -188,6 +190,8 @@ REGISTRY: dict[str, type[Connector]] = {
     MyCareersFutureConnector.platform: MyCareersFutureConnector,
     EuresConnector.platform: EuresConnector,
     JobMountConnector.platform: JobMountConnector,
+    KekaConnector.platform: KekaConnector,
+    HerpConnector.platform: HerpConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
     UsaJobsConnector.platform: UsaJobsConnector,
