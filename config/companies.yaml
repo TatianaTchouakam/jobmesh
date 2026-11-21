@@ -572,6 +572,10 @@ workable:
   - huggingface
 
 smartrecruiters:
+  # --- +3 grands comptes SmartRecruiters verifies live (sweep 11, 21 nov. 2026) ---
+  - ServiceNow
+  - Continental
+  - Experian
   # --- +1 entreprise verifiee live (sweep navigateur, 21 nov. 2026) ---
   - McDonaldsCorporation
   - InterIKEAGroup   # IKEA (Inter IKEA) — retail mondial (verifie, board public SR)
