@@ -80,10 +80,10 @@
 
   /* Stat band */
   .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.55)}
-  .bandwrap{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .bandwrap{max-width:1180px;margin:0 auto;padding:9px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
   .stat{display:flex;flex-direction:column;gap:1px}
-  .stat .v{font-size:clamp(20px,2.3vw,27px);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-  .stat .k{font-size:12px;color:var(--muted)}
+  .stat .v{font-size:clamp(16px,1.8vw,21px);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .stat .k{font-size:11px;color:var(--muted)}
   .bandwrap .cvtoggle{margin-left:auto;display:inline-flex;align-items:center;gap:9px;background:linear-gradient(180deg,#fffdf5,#fff);border:1.5px solid rgba(227,166,0,.45);color:var(--gold-2);font-weight:700;font-size:14px;border-radius:12px;padding:10px 16px;cursor:pointer}
   .bandwrap .cvtoggle:hover{background:#fffaef}
   .bandwrap .cvtoggle .cvchev{font-size:11px;transition:transform .15s}
@@ -97,7 +97,7 @@
   .pstrip .ptag.more{background:transparent;color:var(--soft);border:1px solid var(--line,#e7e9f0);opacity:1}
 
   /* Search bar (results section) */
-  .main{max-width:1180px;margin:0 auto;padding:22px 24px 60px;display:grid;grid-template-columns:248px 1fr;gap:28px;align-items:start}
+  .main{max-width:1180px;margin:0 auto;padding:12px 24px 60px;display:grid;grid-template-columns:248px 1fr;gap:28px;align-items:start}
   .side{position:sticky;top:76px}
   .sidehead{grid-column:1/-1;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#6a7280);margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line,#e7e9f0)}
   .hchip.all{border:1.5px solid var(--gold-2,#c4871a);color:var(--gold-2,#c4871a);font-weight:700;background:#fffdf5}
@@ -302,9 +302,6 @@
   <aside class="side" id="side"></aside>
   <section>
     <div class="active-chips" id="active"></div>
-    <div id="protools" style="display:flex;justify-content:flex-end;margin:0 0 10px">
-      <button type="button" id="exportcsv" style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:13px;color:var(--text);cursor:pointer">⬇ Export CSV</button>
-    </div>
     <div id="results"></div>
     <div id="morewrap"></div>
   </section>
@@ -400,7 +397,7 @@
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;text-align:left;max-width:720px;margin:0 auto 26px">
       <div style="background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:14px;padding:22px">
         <h3 style="font-size:17px;font-weight:800;margin:0 0 7px">&#11015; CSV export</h3>
-        <p style="font-size:14.5px;color:var(--muted);margin:0">Download any filtered search as a ready-to-use .csv file.</p></div>
+        <p style="font-size:14.5px;color:var(--muted);margin:0">Download any filtered search as a ready-to-use .csv file.</p><button type="button" id="exportcsv" style="margin-top:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 15px;font-family:inherit;font-weight:700;font-size:13px;color:var(--text);cursor:pointer">⬇ Export CSV</button></div>
       <div style="background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:14px;padding:22px">
         <h3 style="font-size:17px;font-weight:800;margin:0 0 7px">&#128273; Full API access</h3>
         <p style="font-size:14.5px;color:var(--muted);margin:0">Higher limits &amp; full pagination on <code>/jobs</code> (free tier: 50 results/request).</p></div>
