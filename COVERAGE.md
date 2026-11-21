@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **110,940** |
-| Total postings tracked (open + closed) | 122,041 |
+| Open postings | **111,067** |
+| Total postings tracked (open + closed) | 122,168 |
 | Closed postings detected & marked | 11,101 |
-| Duplicate open postings grouped (dedup) | 5,553 |
+| Duplicate open postings grouped (dedup) | 5,556 |
 | Active platforms | 57 |
-| Boards / companies indexed | 11,279 |
+| Boards / companies indexed | 11,300 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -139,11 +139,11 @@ URL into `config/companies.yaml`. New boards are discovered with
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **17 additional sources beyond the required 78** (~6,900 open postings),
+Plus **16 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
-`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `factorial` (Factorial ATS). Optional keyed sources (`adzuna`,
+`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json). Optional keyed sources (`adzuna`,
 `jooble`, `usajobs`, `reed`, `reliefweb`) activate with a free API key.
 
 ---
