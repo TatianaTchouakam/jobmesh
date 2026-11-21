@@ -47,6 +47,10 @@ from .freshteam import FreshteamConnector
 from .gem import GemConnector
 from .deel import DeelConnector
 from .exenzo import ExenzoConnector
+from .isolvedhire import IsolvedHireConnector
+from .jazzhr import JazzHrConnector
+from .icims import IcimsConnector
+from .phenom import PhenomConnector
 from .paylocity import PaylocityConnector
 from .avature import AvatureConnector
 from .pageup import PageUpConnector
@@ -110,6 +114,10 @@ REGISTRY: dict[str, type[Connector]] = {
     GemConnector.platform: GemConnector,
     DeelConnector.platform: DeelConnector,
     ExenzoConnector.platform: ExenzoConnector,
+    IsolvedHireConnector.platform: IsolvedHireConnector,
+    JazzHrConnector.platform: JazzHrConnector,
+    IcimsConnector.platform: IcimsConnector,
+    PhenomConnector.platform: PhenomConnector,
     PaylocityConnector.platform: PaylocityConnector,
     AvatureConnector.platform: AvatureConnector,
     PageUpConnector.platform: PageUpConnector,

@@ -46,9 +46,9 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 22 | HireHive | ✅ | `hirehive` | 87 | keyless API |
 | 23 | Hireology | ✅ | `hireology` | live (2 boards) | keyless API `api.hireology.com/v2/public/careers/{tenant}`; full desc, salary, locations |
 | 24 | HiringThing | ⬜ | | | |
-| 25 | iCIMS | ⬜ | | | enterprise, per-site |
-| 26 | iSolvedHire | ⬜ | | | |
-| 27 | JazzHR | ⬜ | | | HTML scrape only (no public JSON feed) |
+| 25 | iCIMS | ✅ | `icims` | live | public `sitemap.xml` + per-posting JSON-LD (`?in_iframe=1`) · {portal}.icims.com |
+| 26 | iSolvedHire | ✅ | `isolvedhire` | live | public `sitemap.xml` + schema.org JSON-LD per posting · {tenant}.isolvedhire.com |
+| 27 | JazzHR | ✅ | `jazzhr` | live | keyless server-rendered careers list · {board}.applytojob.com |
 | 28 | Jobvite | ✅ | `jobvite` | live (3 boards) | server-rendered listing at jobs.jobvite.com/{slug}/search, paginated ?p=N; keyless |
 | 29 | JOIN.com | ✅ | `join` | live (24 boards) | public keyless Next.js career pages · join.com |
 | 30 | Kula.ai | ⬜ | | | |
@@ -61,7 +61,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 37 | Paycor | ⬜ | | | |
 | 38 | Paylocity | ✅ | `paylocity` | | keyless public board; window.pageData JSON at recruiting.paylocity.com/Recruiting/Jobs/All/{companyId} |
 | 39 | Personio | ✅ | `personio` | 1,129 | keyless XML feed |
-| 40 | Phenom People | ⬜ | | | |
+| 40 | Phenom People | ✅ | `phenom` | live | `sitemap.xml` + schema.org JobPosting per posting · employer career-site host |
 | 41 | Pinpoint | ✅ | `pinpoint` | 3 | keyless API |
 | 42 | Polymer | ⚠️ | `polymer` | built, blocked | connector built & verified; api.polymer.co now 403 (anti-bot) — board disabled |
 | 43 | Recooty | ✅ | `recooty` | live (platform-wide) | one public sitemap + schema.org JSON-LD; no per-tenant discovery |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 30 | 2 | 58 |
+| ATS | 34 | 2 | 58 |
 | Job boards | 4 | 0 | 20 |
-| **Total** | **34** | **3** | **78** |
+| **Total** | **38** | **3** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —

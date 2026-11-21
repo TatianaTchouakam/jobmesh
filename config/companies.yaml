@@ -3741,3 +3741,20 @@ exenzo:
   - bb
   - greenjobs
   - overheid
+
+# iSolvedHire (isolved Talent Acquisition / ApplicantPro engine) — {tenant}.isolvedhire.com
+# public sitemap.xml + per-posting schema.org JSON-LD; board = tenant subdomain
+isolvedhire:
+  - isolved
+
+# JazzHR — {board}.applytojob.com; keyless server-rendered careers page
+jazzhr:
+  - easeinc
+
+# iCIMS — {portal}.icims.com; public sitemap.xml + per-posting JSON-LD (?in_iframe=1)
+icims:
+  - careers-brightspring
+
+# Phenom People — career site on the employer host; sitemap.xml + schema.org JobPosting
+phenom:
+  - careers.freedommortgage.com
