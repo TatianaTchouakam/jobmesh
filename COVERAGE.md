@@ -18,7 +18,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 17/58 live, 20/58 with a connector
+## Required ATS coverage — 35/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -83,7 +83,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 2/20 live
+## Required job board platform coverage — 12/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 34 | 2 | 58 |
-| Job boards | 5 | 0 | 20 |
-| **Total** | **39** | **3** | **78** |
+| ATS | 35 | 1 | 58 |
+| Job boards | 12 | 0 | 20 |
+| **Total** | **47** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
