@@ -52,6 +52,7 @@ from .jazzhr import JazzHrConnector
 from .icims import IcimsConnector
 from .phenom import PhenomConnector
 from .jobiqo import JobiqoConnector
+from .homerun import HomerunConnector
 from .paylocity import PaylocityConnector
 from .avature import AvatureConnector
 from .pageup import PageUpConnector
@@ -120,6 +121,7 @@ REGISTRY: dict[str, type[Connector]] = {
     IcimsConnector.platform: IcimsConnector,
     PhenomConnector.platform: PhenomConnector,
     JobiqoConnector.platform: JobiqoConnector,
+    HomerunConnector.platform: HomerunConnector,
     PaylocityConnector.platform: PaylocityConnector,
     AvatureConnector.platform: AvatureConnector,
     PageUpConnector.platform: PageUpConnector,

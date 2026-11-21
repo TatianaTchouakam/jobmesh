@@ -3762,3 +3762,8 @@ phenom:
 # Jobiqo — job boards on the Jobiqo platform; sitemap.xml + schema.org JobPosting
 jobiqo:
   - careers.unitedway.org
+
+# Homerun — SMB ATS ({company}.homerun.co or custom domain); sitemap.xml + JSON-LD
+# (bonus source, not one of the required 78)
+homerun:
+  - vacatures.vpro.nl
