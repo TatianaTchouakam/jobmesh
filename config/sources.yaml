@@ -139,6 +139,10 @@ bonus_sources:
   - { name: "workingnomads", connector: workingnomads, status: ACTIVE, note: "Remote jobs" }
   - { name: "themuse", connector: themuse, status: ACTIVE, note: "The Muse — curated jobs, keyless public API" }
 
+  - { name: "taiwanjobs", connector: taiwanjobs, status: ACTIVE, note: "Taiwan — Ministry of Labor public job webservice, keyless, OGDL 1.0" }
+
+  - { name: "nav", connector: nav, status: ACTIVE, note: "Norway — NAV Arbeidsplassen official job feed, explicit republish right; public token or free private token (NAV_TOKEN)" }
+
 # Keyed/optional sources — worldwide reach, activated with the user's own
 # free API credentials (env vars). Not auto-seeded in the daily ingest.
 keyed_sources:

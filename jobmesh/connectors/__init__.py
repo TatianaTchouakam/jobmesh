@@ -100,6 +100,9 @@ from .herp import HerpConnector
 from .successfactors import SuccessFactorsConnector
 from .gohire import GoHireConnector
 from .kula import KulaConnector
+from .taiwanjobs import TaiwanJobsConnector
+from .vantaa import VantaaConnector
+from .nav import NavConnector
 from .catsone import CatsOneConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
@@ -198,6 +201,9 @@ REGISTRY: dict[str, type[Connector]] = {
     SuccessFactorsConnector.platform: SuccessFactorsConnector,
     GoHireConnector.platform: GoHireConnector,
     KulaConnector.platform: KulaConnector,
+    TaiwanJobsConnector.platform: TaiwanJobsConnector,
+    VantaaConnector.platform: VantaaConnector,
+    NavConnector.platform: NavConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
     UsaJobsConnector.platform: UsaJobsConnector,
