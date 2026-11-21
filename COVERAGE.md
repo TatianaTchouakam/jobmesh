@@ -91,7 +91,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 2 | WP Job Manager | ✅ | `jobfeed` | live | public `?feed=job_feed` feed · verified on jobs.blog |
 | 3 | JobKit | ✅ | `jobfeed` | | public RSS {board}/jobs.rss · verified on Rails Job Board |
 | 4 | Jobboardly | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
-| 5 | Jobiqo | ⬜ | | | XML is import-only |
+| 5 | Jobiqo | ✅ | `jobiqo` | live | `sitemap.xml` + schema.org JobPosting per posting · Jobiqo-hosted site host |
 | 6 | JBoard.io | ✅ | `jobfeed` | live | public RSS {board}/rss/jobs · verified on 4 live boards |
 | 7 | JobBoardFire | ⬜ | | | |
 | 8 | SmartJobBoard | ✅ | `jobfeed` | 680+ | public `/rss` feed · verified on 20 live boards |
@@ -127,8 +127,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
 | ATS | 34 | 2 | 58 |
-| Job boards | 4 | 0 | 20 |
-| **Total** | **38** | **3** | **78** |
+| Job boards | 5 | 0 | 20 |
+| **Total** | **39** | **3** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
