@@ -18,11 +18,11 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 35/58 live
+## Required ATS coverage — 36/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
-| 1 | ADP | ⬜ | | | enterprise, no public feed |
+| 1 | ADP | ✅ | `adp` | 8 | public keyless Career Center feed (`/public/`) · {cid}+{ccId} per company |
 | 2 | ApplicantPro | ⬜ | | | |
 | 3 | Ashby | ✅ | `ashby` | 5,046 | keyless board API |
 | 4 | Avature | ✅ | `avature` | live | public RSS feed at {tenant}.avature.net/careers/SearchJobs/feed/ (HTML page is bot-challenged) |
@@ -126,9 +126,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 35 | 1 | 58 |
+| ATS | 36 | 1 | 58 |
 | Job boards | 12 | 0 | 20 |
-| **Total** | **47** | **1** | **78** |
+| **Total** | **48** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The 17 live
 > platforms include the highest-volume, most widely deployed ATS —
