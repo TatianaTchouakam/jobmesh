@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **116,222** |
-| Total postings tracked (open + closed) | 127,990 |
+| Open postings | **121,295** |
+| Total postings tracked (open + closed) | 133,063 |
 | Closed postings detected & marked | 11,768 |
-| Duplicate open postings grouped (dedup) | 6,423 |
-| Active platforms | 75 |
-| Boards / companies indexed | 11,753 |
+| Duplicate open postings grouped (dedup) | 6,811 |
+| Active platforms | 76 |
+| Boards / companies indexed | 13,094 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -141,11 +141,11 @@ URL into `config/companies.yaml`. New boards are discovered with
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **21 additional sources beyond the required 78** (~6,900 open postings),
+Plus **22 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
-`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE), `catsone` (CATS ATS, public portal data route), `talentlyft` (TalentLyft ATS, sitemap+JSON-LD), `recruitcrm` (Recruit CRM, keyless agency jobs API), `uncareers` (UN Careers official RSS, 458 intl/non-tech jobs). Optional keyed sources (`adzuna`,
+`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE), `catsone` (CATS ATS, public portal data route), `talentlyft` (TalentLyft ATS, sitemap+JSON-LD), `recruitcrm` (Recruit CRM, keyless agency jobs API), `uncareers` (UN Careers official RSS, 458 intl/non-tech jobs), `mycareersfuture` (Singapore national portal, keyless public API). Optional keyed sources (`adzuna`,
 `jooble`, `usajobs`, `reed`, `reliefweb`) activate with a free API key.
 
 ---

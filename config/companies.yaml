@@ -3892,3 +3892,7 @@ artha:
 # JobBoard.com (required #14) — per-sector RSS feeds (rate-limited, retried); board = host
 jobboardcom:
   - "preview.jobboard.com"    # JobBoard.com editor board — verifie 21 nov. 2026
+
+# MyCareersFuture (Singapore national portal) — keyless public jobs API (bonus, hors 78)
+mycareersfuture:
+  - "mycareersfuture.gov.sg"    # Singapore MyCareersFuture — verifie 21 nov. 2026 (81k offres, cappe 5000)
