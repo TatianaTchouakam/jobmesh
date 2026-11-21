@@ -3870,3 +3870,7 @@ hiringthing:
 # Nodex / fabricjobs job-board platform — sitemap.xml + per-posting JSON-LD; board = full host
 nodex:
   - "www.work.healthcare"    # work.healthcare (UK healthcare) — verifie 21 nov. 2026 (586 offres au sitemap)
+
+# TalentLyft ({board}.talentlyft.com) — sitemap.xml + per-posting JSON-LD; board = full host (bonus, hors 78)
+talentlyft:
+  - "riverwalkertalentcareers.talentlyft.com"    # Riverwalker Talent — verifie 21 nov. 2026
