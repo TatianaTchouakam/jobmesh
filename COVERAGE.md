@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **111,067** |
-| Total postings tracked (open + closed) | 122,168 |
+| Open postings | **111,097** |
+| Total postings tracked (open + closed) | 122,198 |
 | Closed postings detected & marked | 11,101 |
 | Duplicate open postings grouped (dedup) | 5,556 |
-| Active platforms | 57 |
-| Boards / companies indexed | 11,300 |
+| Active platforms | 59 |
+| Boards / companies indexed | 11,303 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
