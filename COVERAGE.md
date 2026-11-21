@@ -1,18 +1,18 @@
 # Jobmesh — Platform Coverage Checklist
 
 **Challenge:** Build a Job Board Indexer (58 ATS + 20 job board platforms)
-**Last verified:** 2026-11-14 · from a full `jobmesh ingest` run + `jobmesh stats`
+**Last verified:** 2026-11-21 · from a full `jobmesh ingest` run + `jobmesh stats`
 
 ## Snapshot (live index)
 
 | Metric | Value |
 |---|---|
-| Open postings | **69,090** |
-| Total postings tracked (open + closed) | 83,235 |
-| Closed postings detected & marked | 14,145 |
-| Duplicate open postings grouped (dedup) | 3,602 |
-| Active platforms | 31 |
-| Boards / companies indexed | 2,911 |
+| Open postings | **110,650** |
+| Total postings tracked (open + closed) | 121,751 |
+| Closed postings detected & marked | 11,101 |
+| Duplicate open postings grouped (dedup) | 5,553 |
+| Active platforms | 55 |
+| Boards / companies indexed | 11,233 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -34,7 +34,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 10 | CSOD (Cornerstone) | ⬜ | | | |
 | 11 | Dayforce | ⬜ | | | |
 | 12 | Deel | ✅ | `deel` | live | JSON-LD JobPosting per job page at jobs.deel.com/{org}; robots-clean |
-| 13 | Dover | ✅ | `dover` | live (self-discovers) | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
+| 13 | Dover | ✅ | `dover` | 12,918 | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
 | 14 | Eightfold AI | ✅ | `eightfold` | 50 | keyless API |
 | 15 | FirstStage | ⬜ | | | |
 | 16 | Freshteam | ✅ | `freshteam` | live (multiple tenants) | server-rendered /jobs at {tenant}.freshteam.com; robots allows /jobs |
@@ -46,11 +46,11 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 22 | HireHive | ✅ | `hirehive` | 87 | keyless API |
 | 23 | Hireology | ✅ | `hireology` | live (2 boards) | keyless API `api.hireology.com/v2/public/careers/{tenant}`; full desc, salary, locations |
 | 24 | HiringThing | ⬜ | | | |
-| 25 | iCIMS | ✅ | `icims` | live | public `sitemap.xml` + per-posting JSON-LD (`?in_iframe=1`) · {portal}.icims.com |
+| 25 | iCIMS | ✅ | `icims` | 300 | public `sitemap.xml` + per-posting JSON-LD (`?in_iframe=1`) · {portal}.icims.com |
 | 26 | iSolvedHire | ✅ | `isolvedhire` | live | public `sitemap.xml` + schema.org JSON-LD per posting · {tenant}.isolvedhire.com |
 | 27 | JazzHR | ✅ | `jazzhr` | live | keyless server-rendered careers list · {board}.applytojob.com |
 | 28 | Jobvite | ✅ | `jobvite` | live (3 boards) | server-rendered listing at jobs.jobvite.com/{slug}/search, paginated ?p=N; keyless |
-| 29 | JOIN.com | ✅ | `join` | live (24 boards) | public keyless Next.js career pages · join.com |
+| 29 | JOIN.com | ✅ | `join` | 8,845 | public keyless Next.js career pages · join.com |
 | 30 | Kula.ai | ⬜ | | | |
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
 | 32 | Manatal | ✅ | `manatal` | live (1 board) | keyless DRF API `careers-page.com/api/v1.0/c/{tenant}/jobs/`; more boards addable |
@@ -59,12 +59,12 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 35 | Paradox | ⬜ | | | |
 | 36 | Paycom | ⬜ | | | |
 | 37 | Paycor | ⬜ | | | |
-| 38 | Paylocity | ✅ | `paylocity` | | keyless public board; window.pageData JSON at recruiting.paylocity.com/Recruiting/Jobs/All/{companyId} |
+| 38 | Paylocity | ✅ | `paylocity` | 582 | keyless public board; window.pageData JSON at recruiting.paylocity.com/Recruiting/Jobs/All/{companyId} |
 | 39 | Personio | ✅ | `personio` | 1,129 | keyless XML feed |
 | 40 | Phenom People | ✅ | `phenom` | live | `sitemap.xml` + schema.org JobPosting per posting · employer career-site host |
 | 41 | Pinpoint | ✅ | `pinpoint` | 3 | keyless API |
 | 42 | Polymer | ⚠️ | `polymer` | built, blocked | connector built & verified; api.polymer.co now 403 (anti-bot) — board disabled |
-| 43 | Recooty | ✅ | `recooty` | live (platform-wide) | one public sitemap + schema.org JSON-LD; no per-tenant discovery |
+| 43 | Recooty | ✅ | `recooty` | 308 (platform-wide) | one public sitemap + schema.org JSON-LD; no per-tenant discovery |
 | 44 | Recruitee | ✅ | `recruitee` | 4,653 | keyless offers API |
 | 45 | Rippling | ✅ | `rippling` | 1,344 | keyless board API |
 | 46 | Rival | ⬜ | | | |
@@ -87,7 +87,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
-| 1 | Niceboard | ✅ | `niceboard` | live (5 boards) | public keyless /api/jobs per hosted board · niceboard.co |
+| 1 | Niceboard | ✅ | `niceboard` | 1,208 | public keyless /api/jobs per hosted board · niceboard.co |
 | 2 | WP Job Manager | ✅ | `jobfeed` | live | public `?feed=job_feed` feed · verified on jobs.blog |
 | 3 | JobKit | ✅ | `jobfeed` | | public RSS {board}/jobs.rss · verified on Rails Job Board |
 | 4 | Jobboardly | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
