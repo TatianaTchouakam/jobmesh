@@ -52,3 +52,35 @@ def test_sitemap_and_jsonld():
     assert j["56715"].company == "United Way SHR"
     assert j["56715"].location == "Norfolk, VA, US"
     assert j["57998"].title == "Controller"
+
+
+SITEMAP_LIST = """<?xml version='1.0'?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://jobs.acme.at/job/multi-loc-42</loc></url>
+</urlset>"""
+
+_PAGE_LIST = ('<html><script type="application/ld+json">{"@type":"JobPosting",'
+             '"title":"Multi-loc","hiringOrganization":{"@type":"Organization",'
+             '"name":"WKO"},"jobLocation":[{"@type":"Place","address":{"@type":'
+             '"PostalAddress","addressLocality":"Vienna","addressRegion":"W",'
+             '"addressCountry":"AT"}},{"@type":"Place","address":{"@type":'
+             '"PostalAddress","addressLocality":"Graz"}}]}</script></html>')
+
+
+class _SessionList:
+    def __init__(self):
+        self.headers = {}
+
+    def get(self, url, timeout=None, **k):
+        if url.endswith("/robots.txt"):
+            return _Resp("", status=404)
+        if url.endswith("/sitemap.xml"):
+            return _Resp(SITEMAP_LIST)
+        return _Resp(_PAGE_LIST)
+
+
+def test_joblocation_as_list_does_not_crash():
+    c = JobiqoConnector("jobs.acme.at", session=_SessionList())
+    jobs = c.fetch()
+    assert len(jobs) == 1
+    assert jobs[0].location == "Vienna, W, AT"

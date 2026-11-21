@@ -41,6 +41,14 @@ def _job_posting(html_text: str) -> dict | None:
     return None
 
 
+def _first_address(job_location) -> dict:
+    if isinstance(job_location, list):
+        job_location = job_location[0] if job_location else {}
+    if isinstance(job_location, dict):
+        return job_location.get("address") or {}
+    return {}
+
+
 class JobiqoConnector(Connector):
     platform = "jobiqo"
 
@@ -93,7 +101,7 @@ class JobiqoConnector(Connector):
         if not data:
             return None
         org = data.get("hiringOrganization") or {}
-        addr = ((data.get("jobLocation") or {}).get("address")) or {}
+        addr = _first_address(data.get("jobLocation"))
         location = ", ".join(
             p for p in (addr.get("addressLocality"), addr.get("addressRegion"),
                         addr.get("addressCountry")) if p) or None
