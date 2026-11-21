@@ -27,6 +27,7 @@ Credentials (free, no employer account):
 from __future__ import annotations
 
 import os
+import re
 
 import requests
 
@@ -59,7 +60,11 @@ class NavConnector(Connector):
         # NAV publishes a public experimentation token; fine for a demo.
         r = self._session.get(PUBLIC_TOKEN_URL, timeout=TIMEOUT)
         r.raise_for_status()
-        return r.text.strip().strip('"')
+        text = r.text.strip().strip('"')
+        # The public-token endpoint returns a human-readable line then the JWT,
+        # e.g. "Current public token for Nav Job Vacancy Feed:\n<jwt>".
+        m = re.search(r"eyJ[\w\-]+\.[\w\-]+\.[\w\-]+", text)
+        return m.group(0) if m else text.splitlines()[-1].strip()
 
     def fetch(self) -> list[Job]:
         if not robots_allowed(FEED, self._session):

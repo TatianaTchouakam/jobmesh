@@ -4296,3 +4296,7 @@ taiwanjobs:
 # Auto-uses NAV's public token; set NAV_TOKEN (free, email nav.team.arbeidsplassen@nav.no) for production.
 nav:
   - "all"    # verifie 21 nov. 2026
+
+# Vantaa (City of Vantaa, Finland) — keyless open jobs JSON API (bonus). board ignored.
+vantaa:
+  - "all"    # verifie 21 nov. 2026 (37 offres)
