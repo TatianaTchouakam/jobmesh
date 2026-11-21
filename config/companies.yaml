@@ -3850,3 +3850,15 @@ trakstar:
   - "aprco"          # a verifier par ingest
   - "registrarcorp"  # a verifier par ingest
   - "clinicmind"     # a verifier par ingest
+
+# Rival / SilkRoad Recruiting (jobs.silkroad.com) — server-rendered list; board = Tenant/Board
+rival:
+  - "RAA/RAACareers"    # RAA (Australia) — verifie 21 nov. 2026 (10 offres)
+
+# WeRecruit (careers.werecruit.io) — embedded JSON in server HTML; board = account slug
+werecruit:
+  - "atlantis"    # Atlantis — verifie 21 nov. 2026 (1 offre)
+
+# FirstStage (firststage.co) — server-rendered /jobs card list; board = subdomain
+firststage:
+  - "firststage"    # First (editor) — verifie 21 nov. 2026 (1 offre)

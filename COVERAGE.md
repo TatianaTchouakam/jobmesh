@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **114,358** |
-| Total postings tracked (open + closed) | 126,126 |
+| Open postings | **114,375** |
+| Total postings tracked (open + closed) | 126,143 |
 | Closed postings detected & marked | 11,768 |
 | Duplicate open postings grouped (dedup) | 6,400 |
-| Active platforms | 65 |
-| Boards / companies indexed | 11,364 |
+| Active platforms | 68 |
+| Boards / companies indexed | 11,367 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -20,7 +20,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 41/58 live
+## Required ATS coverage — 44/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -38,7 +38,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 12 | Deel | ✅ | `deel` | live | JSON-LD JobPosting per job page at jobs.deel.com/{org}; robots-clean |
 | 13 | Dover | ✅ | `dover` | 12,918 | public keyless feed; `all` reads the careers sitemap (~2,900 tenants) |
 | 14 | Eightfold AI | ✅ | `eightfold` | 50 | keyless API |
-| 15 | FirstStage | ⬜ | | | |
+| 15 | FirstStage | ✅ | `firststage` | 1 | server-rendered /jobs card list · `{sub}.firststage.co` · no robots.txt |
 | 16 | Freshteam | ✅ | `freshteam` | live (multiple tenants) | server-rendered /jobs at {tenant}.freshteam.com; robots allows /jobs |
 | 17 | Gem.com | ✅ | `gem` | live | public keyless GraphQL at jobs.gem.com/api/public/graphql/batch |
 | 18 | GoHire | ⬜ | | | |
@@ -53,7 +53,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 27 | JazzHR | ✅ | `jazzhr` | live | keyless server-rendered careers list · {board}.applytojob.com |
 | 28 | Jobvite | ✅ | `jobvite` | live (3 boards) | server-rendered listing at jobs.jobvite.com/{slug}/search, paginated ?p=N; keyless |
 | 29 | JOIN.com | ✅ | `join` | 8,845 | public keyless Next.js career pages · join.com |
-| 30 | Kula.ai | ⬜ | | | |
+| 30 | Kula.ai | ⛔ | | | robots `Disallow: /api/` blocks the only data route — excluded on principle (see Robots & conduct) |
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
 | 32 | Manatal | ✅ | `manatal` | 236 (2 boards) | keyless DRF API `careers-page.com/api/v1.0/c/{tenant}/jobs/`; more boards addable |
 | 33 | Oracle Recruiting | ✅ | `oracle` | 2,400 | keyless CX API |
@@ -69,7 +69,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 43 | Recooty | ✅ | `recooty` | 308 (platform-wide) | one public sitemap + schema.org JSON-LD; no per-tenant discovery |
 | 44 | Recruitee | ✅ | `recruitee` | 4,653 | keyless offers API |
 | 45 | Rippling | ✅ | `rippling` | 1,344 | keyless board API |
-| 46 | Rival | ⬜ | | | |
+| 46 | Rival | ✅ | `rival` | 15 | server-rendered list `jobs.silkroad.com/{Tenant}/{Board}` (sr-panel cards) · robots-clean |
 | 47 | SAP SuccessFactors | ⬜ | | | enterprise OData, auth |
 | 48 | SmartRecruiters | ✅ | `smartrecruiters` | 15,523 | keyless posting API (paginated) |
 | 49 | talentReef | ⬜ | | | |
@@ -78,7 +78,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 52 | Trakstar | ✅ | `trakstar` | 35 | server-rendered careers `{sub}.hire.trakstar.com` (ex-Recruiterbox) · 4 boards |
 | 53 | TriNet | ✅ | `trinet` | 6 | server-rendered careers table `app.trinethire.com/companies/{slug}/jobs` |
 | 54 | UltiPro | ⬜ | | | |
-| 55 | WeRecruit | ⬜ | | | |
+| 55 | WeRecruit | ✅ | `werecruit` | 1 | embedded JSON in server HTML · `careers.werecruit.io/en/{account}` · robots Allow: / |
 | 56 | Workable | ✅ | `workable` | 3,848 | keyless widget API |
 | 57 | Workday | ✅ | `workday` | 80 | keyless CXS API (hardened headers) |
 | 58 | Zoho Recruit | ✅ | `zohorecruit` | live (multiple tenants) | embedded JSON at {tenant}.zohorecruit.com/jobs/Careers; robots allows /jobs/* |
@@ -128,9 +128,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 41 | 1 | 58 |
+| ATS | 44 | 1 | 58 |
 | Job boards | 12 | 0 | 20 |
-| **Total** | **53** | **1** | **78** |
+| **Total** | **56** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The live
 > platforms include the highest-volume, most widely deployed ATS —
@@ -194,4 +194,4 @@ obeys each source's robots.txt. It reads only public, unauthenticated endpoints 
 site's own front end calls, and every job links back to the employer's posting.
 **Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
 name; although a generic `User-agent: *` rule would still permit us, crawling it would go
-against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint.
+against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API.
