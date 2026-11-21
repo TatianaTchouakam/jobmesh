@@ -14,13 +14,16 @@ same schema maps cleanly onto Postgres later.
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from contextlib import contextmanager
 from typing import Iterable, Iterator, Optional
 
 from .models import Job, now_iso
 
-DEFAULT_DB = "jobmesh.db"
+# DB location is env-configurable so a deploy can point it at a
+# persistent disk (e.g. Render: JOBMESH_DB=/var/data/jobmesh.db).
+DEFAULT_DB = os.getenv("JOBMESH_DB", "jobmesh.db")
 
 # Fields compared to decide whether an existing posting has changed.
 _TRACKED_FIELDS = (

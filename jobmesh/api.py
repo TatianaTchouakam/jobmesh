@@ -245,3 +245,48 @@ def get_facets(
                  employment_type, category, country, level, since)
     with storage.session(DB_PATH) as conn:
         return storage.facets(conn, **f)
+
+
+# --- Optional background index refresh -------------------------------------
+# When INGEST_INTERVAL_HOURS is set, a daemon thread re-ingests every N hours
+# so the deployed index updates itself on a schedule. WAL (see storage.connect)
+# makes the concurrent background write + API reads safe. Off unless the env
+# var is set, so local runs and tests are unaffected.
+@app.on_event("startup")
+def _maybe_start_refresher() -> None:
+    import logging
+    import threading
+    import time
+
+    raw = os.getenv("INGEST_INTERVAL_HOURS")
+    if not raw:
+        return
+    try:
+        interval = float(raw) * 3600.0
+    except ValueError:
+        return
+    if interval <= 0:
+        return
+
+    log = logging.getLogger("jobmesh.refresher")
+
+    def _loop() -> None:
+        from .config import load_boards
+        from .pipeline import ingest as _ingest
+
+        cap = os.getenv("INGEST_MAX_BOARDS")
+        while True:
+            time.sleep(interval)
+            try:
+                boards = load_boards()
+                if cap:
+                    n = int(cap)
+                    boards = {p: bl[:n] for p, bl in boards.items()}
+                with storage.session(DB_PATH) as conn:
+                    _ingest(conn, boards)
+                log.info("scheduled index refresh complete")
+            except Exception as exc:  # pragma: no cover - best effort
+                log.warning("scheduled index refresh failed: %s", exc)
+
+    threading.Thread(target=_loop, name="jobmesh-refresher", daemon=True).start()
+    log.info("background index refresh enabled: every %s h", raw)

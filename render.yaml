@@ -1,12 +1,49 @@
-# Render deployment blueprint for jobmesh.
-# The index is built once during the build step, then the API serves it.
+# Render deployment blueprint for Jobmesh.
+#
+# A persistent disk holds the SQLite index so it survives restarts and
+# redeploys; the API serves it. Set INGEST_INTERVAL_HOURS to have the web
+# service refresh the index on a schedule in the background (WAL makes the
+# concurrent read/write safe).
+#
+# One-time setup after the first deploy: open the service Shell and run
+#   python -m jobmesh.cli ingest
+# to populate /var/data/jobmesh.db (the disk is empty on first boot).
 services:
   - type: web
     name: jobmesh
     runtime: python
-    plan: free
-    buildCommand: "pip install -r requirements.txt && python -m jobmesh.cli ingest || true"
+    plan: starter                 # paid plan — required for a persistent disk
+    buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn jobmesh.api:app --host 0.0.0.0 --port $PORT"
+    disk:
+      name: jobmesh-data
+      mountPath: /var/data
+      sizeGB: 3                    # index ~0.5 GB today + WAL + headroom
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"
+      - key: JOBMESH_DB
+        value: /var/data/jobmesh.db
+      - key: SECRET_KEY            # signs Jobmesh Premium keys
+        generateValue: true
+      - key: STRIPE_SECRET_KEY     # set in dashboard (secret)
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: BASE_URL             # e.g. https://jobmesh.onrender.com
+        sync: false
+      - key: INGEST_INTERVAL_HOURS # optional: background refresh cadence (e.g. 12)
+        sync: false
+      - key: INGEST_MAX_BOARDS     # optional: cap boards/platform for lighter runs
+        sync: false
+      # Optional keys for keyed sources (leave unset to skip those sources)
+      - key: JOOBLE_API_KEY
+        sync: false
+      - key: REED_API_KEY
+        sync: false
+      - key: USAJOBS_API_KEY
+        sync: false
+      - key: USAJOBS_EMAIL
+        sync: false
+      - key: RELIEFWEB_APPNAME
+        sync: false
