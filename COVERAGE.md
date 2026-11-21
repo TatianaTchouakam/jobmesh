@@ -20,7 +20,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 49/58 live
+## Required ATS coverage — 50/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -53,7 +53,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 27 | JazzHR | ✅ | `jazzhr` | live | keyless server-rendered careers list · {board}.applytojob.com |
 | 28 | Jobvite | ✅ | `jobvite` | live (3 boards) | server-rendered listing at jobs.jobvite.com/{slug}/search, paginated ?p=N; keyless |
 | 29 | JOIN.com | ✅ | `join` | 8,845 | public keyless Next.js career pages · join.com |
-| 30 | Kula.ai | ⛔ | | | robots `Disallow: /api/` blocks the only data route — excluded on principle (see Robots & conduct) |
+| 30 | Kula.ai | ✅ | `kula` | live | official public RSS `/{slug}/feed` (robots allows /feed; only /api/ disallowed) · verified on Rocketlane (48) |
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
 | 32 | Manatal | ✅ | `manatal` | 236 (2 boards) | keyless DRF API `careers-page.com/api/v1.0/c/{tenant}/jobs/`; more boards addable |
 | 33 | Oracle Recruiting | ✅ | `oracle` | 2,400 | keyless CX API |
@@ -128,9 +128,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live (ACTIVE) | Declared (pending access) | Required |
 |---|---|---|---|
-| ATS | 49 | 9 | 58 |
+| ATS | 50 | 8 | 58 |
 | Job boards | 16 | 4 | 20 |
-| **Total** | **65** | **13** | **78** |
+| **Total** | **66** | **12** | **78** |
 
 **Every one of the 78 required platforms is declared in the source registry**
 (`config/sources.yaml`), with a status that separates *technical* from
@@ -140,8 +140,8 @@ rest are declared, never silently failed, and never counted as covered:
 
 | Status | Count | Meaning |
 |---|---|---|
-| `ACTIVE` | 65 | live, robots-permitted, keyless — real jobs in the index |
-| `API_REQUIRED` | 5 | official API / credentials needed (BrassRing, CSOD, Kula, Paycom, UltiPro) |
+| `ACTIVE` | 66 | live, robots-permitted, keyless — real jobs in the index |
+| `API_REQUIRED` | 4 | official API / credentials needed (BrassRing, CSOD, Paycom, UltiPro) |
 | `CLIENT_CONNECTION_REQUIRED` | 2 | an employer must connect their feed (Talenetic, talentReef) |
 | `TEMPORARILY_UNAVAILABLE` | 3 | service down / anti-bot (CareerSiteCloud 502, JobBoardFire, Polymer 403) |
 | `RETIRED` | 2 | merged/acquired, no standalone surface (Paradox→Workday, Paycor→Paychex) |

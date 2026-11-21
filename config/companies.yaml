@@ -4277,3 +4277,7 @@ gohire:
 # The Muse (job board) — keyless public API (bonus, free). board ignored.
 themuse:
   - "all"    # verifie 21 nov. 2026 a confirmer en live
+
+# Kula.ai (ATS #30/78) — official public RSS feed /{slug}/feed (robots allows /feed; only /api/ disallowed). board = slug|Company
+kula:
+  - "rocketlane|Rocketlane"    # verifie 21 nov. 2026 (48 offres, careers.kula.ai/rocketlane/feed)

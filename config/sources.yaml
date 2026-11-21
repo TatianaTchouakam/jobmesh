@@ -41,8 +41,7 @@ required_ats:
   - { name: "JazzHR", connector: jazzhr, status: ACTIVE }
   - { name: "Jobvite", connector: jobvite, status: ACTIVE }
   - { name: "JOIN.com", connector: join, status: ACTIVE }
-  - { name: "Kula.ai", connector: null, status: API_REQUIRED,
-      reason: "robots Disallow: /api/ blocks the only data route; list is SPA, no sitemap", next_action: "Request a partner feed/export or authorized API from the client" }
+  - { name: "Kula.ai", connector: kula, status: ACTIVE }
   - { name: "Lever.co", connector: lever, status: ACTIVE }
   - { name: "Manatal", connector: manatal, status: ACTIVE }
   - { name: "Oracle Recruiting", connector: oracle, status: ACTIVE }
