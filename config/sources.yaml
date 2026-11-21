@@ -138,3 +138,12 @@ bonus_sources:
   - { name: "usajobs", connector: usajobs, status: ACTIVE, note: "USA — federal jobs API" }
   - { name: "weworkremotely", connector: weworkremotely, status: ACTIVE, note: "Remote jobs" }
   - { name: "workingnomads", connector: workingnomads, status: ACTIVE, note: "Remote jobs" }
+  - { name: "themuse", connector: themuse, status: ACTIVE, note: "The Muse — curated jobs, keyless public API" }
+
+# Keyed/optional sources — worldwide reach, activated with the user's own
+# free API credentials (env vars). Not auto-seeded in the daily ingest.
+keyed_sources:
+  - { name: "adzuna", connector: adzuna, status: ACTIVE, note: "Aggregator, ~20 countries all sectors — demoed one-shot on the free trial tier (8 countries, 798 jobs: CA/AU/BR/IN/MX/ZA/NZ/PL). Sustained/daily use needs a paid plan. Env: ADZUNA_APP_ID/ADZUNA_APP_KEY" }
+  - { name: "francetravail", connector: francetravail, status: CLIENT_CONNECTION_REQUIRED, note: "France national gov portal (France Travail / ex-Pole emploi), free OAuth. Env: FRANCETRAVAIL_CLIENT_ID/SECRET" }
+  - { name: "usajobs", connector: usajobs, status: ACTIVE, note: "USA federal gov portal, free API key" }
+  - { name: "reed", connector: reed, status: ACTIVE, note: "UK job board, free API key" }

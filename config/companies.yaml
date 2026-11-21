@@ -4273,3 +4273,7 @@ successfactors:
 # GoHire (ATS #18/78) — hosted careers: sitemap.txt + schema.org JSON-LD per job (no token). board = careers host
 gohire:
   - "careers.gohire.io"    # GoHire's own board — verifie 21 nov. 2026
+
+# The Muse (job board) — keyless public API (bonus, free). board ignored.
+themuse:
+  - "all"    # verifie 21 nov. 2026 a confirmer en live

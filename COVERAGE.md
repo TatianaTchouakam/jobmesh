@@ -161,7 +161,7 @@ redistribute* them (licence/terms); both must hold before a source goes live.
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **29 additional sources beyond the required 78** (~6,900 open postings),
+Plus **Adzuna** (multi-country aggregator, free trial tier — one-shot demo indexing 8 new countries / 798 jobs: Canada, Australia, Brazil, India, Mexico, South Africa, New Zealand, Poland — giving the index **6-continent reach**; sustained use needs a paid plan, aggregator so dedup-overlap applies) and **29 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
