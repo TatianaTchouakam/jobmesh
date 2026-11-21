@@ -15,6 +15,17 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +10 crypto/devinfra/HRtech/enterprise/nordique verifie live (sweep 9, 21 nov. 2026) ---
+  - ripple
+  - bitgo
+  - apolloio
+  - salesloft
+  - honeycomb
+  - transfergo
+  - dialpad
+  - airtable
+  - stackblitz
+  - lattice
   # --- +19 retail/martech/space/EuropeSud verifie live (sweep 8, 21 nov. 2026) ---
   - feverup
   - braze
@@ -265,6 +276,11 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +4 crypto/devinfra/HRtech/enterprise/nordique verifie live (sweep 9, 21 nov. 2026) ---
+  - moonpay
+  - omnisend
+  - neon
+  - 15five
   # --- +3 retail/martech/space/EuropeSud verifie live (sweep 8, 21 nov. 2026) ---
   - loftorbital
   - jobandtalent
@@ -344,6 +360,27 @@ lever:
   - entrata
 
 ashby:
+  # --- +20 crypto/devinfra/HRtech/enterprise/nordique verifie live (sweep 9, 21 nov. 2026) ---
+  - temporal
+  - lovable
+  - satispay
+  - clickup
+  - hostinger
+  - surfshark
+  - coder
+  - alchemy
+  - phantom
+  - lemlist
+  - humaans
+  - gorgias
+  - uniswap
+  - mystenlabs
+  - railway
+  - found
+  - quicknode
+  - zed
+  - charthop
+  - assemble
   # --- +6 retail/martech/space/EuropeSud verifie live (sweep 8, 21 nov. 2026) ---
   - rothys
   - amplitude
