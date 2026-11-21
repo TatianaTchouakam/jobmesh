@@ -3813,3 +3813,8 @@ jobscore:
 # ADP Workforce Now — public keyless Career Center feed; board = "cid|ccId|Company"
 adp:
   - "e9311e7a-3998-4669-af66-1616e7b7f2fe|22330316_1091|Hurco"
+
+# d.vinci — German ATS; public /jobPublication/list.json; bonus source
+dvinci:
+  - cadenas
+  - rpc

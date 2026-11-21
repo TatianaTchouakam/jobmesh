@@ -55,6 +55,7 @@ from .jobiqo import JobiqoConnector
 from .homerun import HomerunConnector
 from .jobscore import JobScoreConnector
 from .adp import AdpConnector
+from .dvinci import DvinciConnector
 from .paylocity import PaylocityConnector
 from .avature import AvatureConnector
 from .pageup import PageUpConnector
@@ -126,6 +127,7 @@ REGISTRY: dict[str, type[Connector]] = {
     HomerunConnector.platform: HomerunConnector,
     JobScoreConnector.platform: JobScoreConnector,
     AdpConnector.platform: AdpConnector,
+    DvinciConnector.platform: DvinciConnector,
     PaylocityConnector.platform: PaylocityConnector,
     AvatureConnector.platform: AvatureConnector,
     PageUpConnector.platform: PageUpConnector,
