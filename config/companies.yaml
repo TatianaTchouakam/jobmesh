@@ -572,6 +572,11 @@ workable:
   - huggingface
 
 smartrecruiters:
+  # --- +4 grands comptes SmartRecruiters verifies live (sweep 12, 21 nov. 2026) ---
+  - ASOS
+  - KPN
+  - Lonza
+  - LVMH
   # --- +3 grands comptes SmartRecruiters verifies live (sweep 11, 21 nov. 2026) ---
   - ServiceNow
   - Continental
