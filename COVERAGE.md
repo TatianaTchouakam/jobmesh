@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **115,143** |
-| Total postings tracked (open + closed) | 126,911 |
+| Open postings | **115,190** |
+| Total postings tracked (open + closed) | 126,958 |
 | Closed postings detected & marked | 11,768 |
 | Duplicate open postings grouped (dedup) | 6,417 |
 | Active platforms | 73 |
-| Boards / companies indexed | 11,443 |
+| Boards / companies indexed | 11,445 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -194,4 +194,4 @@ obeys each source's robots.txt. It reads only public, unauthenticated endpoints 
 site's own front end calls, and every job links back to the employer's posting.
 **Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
 name; although a generic `User-agent: *` rule would still permit us, crawling it would go
-against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API. **Cornerstone / CSOD** — the careersite's only job-data route (`*.api.csod.com/rec-job-search`) requires a bearer token extracted from the page and replayed; that is a lifted credential, not a cleanly public keyless endpoint like Dayforce's anonymous CSRF handshake, so CSOD is excluded on principle. **rexx systems** (bonus, not in the 78) — robots.txt names automated clients (python-requests, Scrapy, aiohttp, axios) with `Disallow: /`; although our `JobmeshBot` is not named and a public Atom feed is declared, the operator's intent is clearly anti-aggregator, so for consistency with Jobylon it is left out. **Umantis** (Haufe/Abacus; bonus) — robots.txt opens with a `User-agent: * / Disallow: /` group, so it is excluded despite reachable vacancy pages.
+against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API. **Cornerstone / CSOD** — the careersite's only job-data route (`*.api.csod.com/rec-job-search`) requires a bearer token extracted from the page and replayed; that is a lifted credential, not a cleanly public keyless endpoint like Dayforce's anonymous CSRF handshake, so CSOD is excluded on principle. **rexx systems** (bonus, not in the 78) — robots.txt names automated clients (python-requests, Scrapy, aiohttp, axios) with `Disallow: /`; although our `JobmeshBot` is not named and a public Atom feed is declared, the operator's intent is clearly anti-aggregator, so for consistency with Jobylon it is left out. **Stonefish** (UK university ATS; bonus) — its robots.txt names job-aggregators that “scrape job adverts and re-publish” and disallows them; that describes exactly what an index does, so despite a public RSS feed it is left out for the same reason. **Umantis** (Haufe/Abacus; bonus) — robots.txt opens with a `User-agent: * / Disallow: /` group, so it is excluded despite reachable vacancy pages.

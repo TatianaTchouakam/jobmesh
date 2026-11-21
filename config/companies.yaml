@@ -580,6 +580,8 @@ jobfeed:
   - "https://onboardnwa.com/jobs.rss"   # Jobboardly - ONBoard NWA
   - "https://www.jobsindevon.uk/jobs.rss"   # Jobboardly - Jobs in Devon
   - "https://jobs.sciencecareers.org/jobsrss/"   # Madgex - Science Careers (AAAS)
+  - "https://isr.firefishsoftware.com/rss/adverts/latest.aspx"   # Firefish - ISR Recruitment (UK agency ATS)
+  - "https://www.jobbnorge.no/apps/joblist/JobListBuilder.ashx?id=20d77ee3-91bc-49d9-91f2-500cd22ee511&trid=1"   # Jobbnorge - Kriminalomsorgen (NO public sector)
   # JobKit — board live (pattern {board}/jobs.rss)
   - "https://jobs.rubyonrails.org/jobs.rss"   # JobKit — Rails Job Board
   # ejobsitesoftware.com — boards live (pattern {board}/rss/job.php)
