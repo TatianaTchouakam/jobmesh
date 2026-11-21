@@ -15,6 +15,23 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +16 entreprises verifiees live (sweep navigateur, 21 nov. 2026) ---
+  - celonis
+  - adyen
+  - riotgames
+  - scopely
+  - monzo
+  - contentful
+  - launchdarkly
+  - fireblocks
+  - komodohealth
+  - wise
+  - ginkgobioworks
+  - recursionpharmaceuticals
+  - circleci
+  - planetscale
+  - cockroachlabs
+  - bungie
   # --- +2 verifies en live (navigateur, 21 nov. 2026) ---
   - okta            # Okta — identity / security, US (~370)
   - twilio          # Twilio — cloud comms, US (~110)
@@ -184,6 +201,16 @@ lever:
   - entrata
 
 ashby:
+  # --- +9 entreprises verifiees live (sweep navigateur, 21 nov. 2026) ---
+  - sierra
+  - decagon
+  - suno
+  - writer
+  - braintrust
+  - abridge
+  - pylon
+  - mintlify
+  - hightouch
   - hex
   - watershed
   - clay
@@ -259,6 +286,8 @@ workable:
   - huggingface
 
 smartrecruiters:
+  # --- +1 entreprise verifiee live (sweep navigateur, 21 nov. 2026) ---
+  - McDonaldsCorporation
   - InterIKEAGroup   # IKEA (Inter IKEA) — retail mondial (verifie, board public SR)
   # --- Monde / continents (verifie en direct) ---
   - swiggy   # Asie (186)
