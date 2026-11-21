@@ -3636,6 +3636,7 @@ recooty:
 
 # Manatal (careers-page.com) — public keyless DRF API; board = tenant slug
 manatal:
+  - hr-ways-3
   - manatal   # Manatal's own board (~33 jobs); add more tenant slugs as found
 
 # Hireology (careers.hireology.com) — public keyless API api.hireology.com/v2/public/careers/{tenant}
@@ -3794,4 +3795,11 @@ jobiqo:
 # Homerun — SMB ATS ({company}.homerun.co or custom domain); sitemap.xml + JSON-LD
 # (bonus source, not one of the required 78)
 homerun:
+  - dekoffiejongens.homerun.co
+  - jobs.homerun.co
   - vacatures.vpro.nl
+
+# JobScore — official per-company feed.json (careers.jobscore.com); bonus source
+jobscore:
+  - solutions2go
+  - jobscore

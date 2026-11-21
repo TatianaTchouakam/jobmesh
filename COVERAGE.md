@@ -139,11 +139,11 @@ URL into `config/companies.yaml`. New boards are discovered with
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **15 additional sources beyond the required 78** (~6,900 open postings),
+Plus **16 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
-`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU). Optional keyed sources (`adzuna`,
+`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json). Optional keyed sources (`adzuna`,
 `jooble`, `usajobs`, `reed`, `reliefweb`) activate with a free API key.
 
 ---
@@ -192,4 +192,4 @@ obeys each source's robots.txt. It reads only public, unauthenticated endpoints 
 site's own front end calls, and every job links back to the employer's posting.
 **Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
 name; although a generic `User-agent: *` rule would still permit us, crawling it would go
-against the operator's clear intent, so it is left out.
+against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint.
