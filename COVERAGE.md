@@ -102,7 +102,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 13 | CareerSiteCloud | ⬜ | | | |
 | 14 | JobBoard.com | ⬜ | | | |
 | 15 | Artha | ⬜ | | | |
-| 16 | jobboardsoftware.com | ⬜ | | | |
+| 16 | jobboardsoftware.com | ✅ | `exenzo` | | public JSON API {tenant}.api.exenzo.com/api/public/v1 · 3 boards |
 | 17 | jobBoardHQ | ✅ | `jobfeed` | live (5 boards) | public Indeed-format /jobs.xml per board · complete feed |
 | 18 | Nodex | ⬜ | | | |
 | 19 | eJobBoard | ⬜ | | | |

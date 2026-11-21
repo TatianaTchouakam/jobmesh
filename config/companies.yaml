@@ -3735,3 +3735,9 @@ paylocity:
   - 01379b28-c62c-4419-8202-ad29d6ce12f2    # South Carolina Research Authority (1)
   - 0172af1c-21ff-4304-9bc8-fc45e6467713    # Bayer Heritage Federal Credit Union (1)
   - 01909e35-1ef9-4bfb-89d5-c616e010e41d    # Chapters Living of Greensburg (1)
+
+# jobboardsoftware.com / Exenzo — API JSON publique {tenant}.api.exenzo.com
+exenzo:
+  - bb
+  - greenjobs
+  - overheid
