@@ -3878,3 +3878,7 @@ talentlyft:
 # Recruit CRM (recruitcrm.io) — keyless agency jobs API; board = account name (bonus, hors 78)
 recruitcrm:
   - "Intver_Global"    # Intver Global — verifie 21 nov. 2026 (5 offres)
+
+# UN Careers (careers.un.org) — official UN job RSS feed (Inspira); board = feed host (bonus, hors 78)
+uncareers:
+  - "careers.un.org"    # United Nations — verifie 21 nov. 2026 (458 offres au flux)

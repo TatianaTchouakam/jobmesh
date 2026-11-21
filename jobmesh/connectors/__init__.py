@@ -89,6 +89,7 @@ from .hiringthing import HiringThingConnector
 from .nodex import NodexConnector
 from .talentlyft import TalentLyftConnector
 from .recruitcrm import RecruitCrmConnector
+from .uncareers import UnCareersConnector
 from .catsone import CatsOneConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
@@ -176,6 +177,7 @@ REGISTRY: dict[str, type[Connector]] = {
     NodexConnector.platform: NodexConnector,
     TalentLyftConnector.platform: TalentLyftConnector,
     RecruitCrmConnector.platform: RecruitCrmConnector,
+    UnCareersConnector.platform: UnCareersConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
     UsaJobsConnector.platform: UsaJobsConnector,

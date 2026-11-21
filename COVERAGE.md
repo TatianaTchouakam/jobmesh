@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **114,685** |
-| Total postings tracked (open + closed) | 126,453 |
+| Open postings | **115,143** |
+| Total postings tracked (open + closed) | 126,911 |
 | Closed postings detected & marked | 11,768 |
-| Duplicate open postings grouped (dedup) | 6,401 |
-| Active platforms | 72 |
-| Boards / companies indexed | 11,373 |
+| Duplicate open postings grouped (dedup) | 6,417 |
+| Active platforms | 73 |
+| Boards / companies indexed | 11,443 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -141,11 +141,11 @@ URL into `config/companies.yaml`. New boards are discovered with
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **20 additional sources beyond the required 78** (~6,900 open postings),
+Plus **21 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
-`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE), `catsone` (CATS ATS, public portal data route), `talentlyft` (TalentLyft ATS, sitemap+JSON-LD), `recruitcrm` (Recruit CRM, keyless agency jobs API). Optional keyed sources (`adzuna`,
+`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE), `catsone` (CATS ATS, public portal data route), `talentlyft` (TalentLyft ATS, sitemap+JSON-LD), `recruitcrm` (Recruit CRM, keyless agency jobs API), `uncareers` (UN Careers official RSS, 458 intl/non-tech jobs). Optional keyed sources (`adzuna`,
 `jooble`, `usajobs`, `reed`, `reliefweb`) activate with a free API key.
 
 ---
