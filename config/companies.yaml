@@ -4089,3 +4089,7 @@ herp:
 # SAP SuccessFactors (ATS #47/78) — Career Site Builder: sitemap + schema.org microdata (no token). board = host|Company
 successfactors:
   - "jobs.boehringer-ingelheim.com|Boehringer Ingelheim"   # verifie 21 nov. 2026 (901 offres au sitemap)
+
+# GoHire (ATS #18/78) — hosted careers: sitemap.txt + schema.org JSON-LD per job (no token). board = careers host
+gohire:
+  - "careers.gohire.io"    # GoHire's own board — verifie 21 nov. 2026

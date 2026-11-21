@@ -98,6 +98,7 @@ from .jobmount import JobMountConnector
 from .keka import KekaConnector
 from .herp import HerpConnector
 from .successfactors import SuccessFactorsConnector
+from .gohire import GoHireConnector
 from .catsone import CatsOneConnector
 # Generalist job boards (free API key, read from the environment)
 from .adzuna import AdzunaConnector
@@ -194,6 +195,7 @@ REGISTRY: dict[str, type[Connector]] = {
     KekaConnector.platform: KekaConnector,
     HerpConnector.platform: HerpConnector,
     SuccessFactorsConnector.platform: SuccessFactorsConnector,
+    GoHireConnector.platform: GoHireConnector,
     AdzunaConnector.platform: AdzunaConnector,
     JoobleConnector.platform: JoobleConnector,
     UsaJobsConnector.platform: UsaJobsConnector,

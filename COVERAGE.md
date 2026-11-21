@@ -20,7 +20,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 48/58 live
+## Required ATS coverage — 49/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -41,7 +41,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 15 | FirstStage | ✅ | `firststage` | 1 | server-rendered /jobs card list · `{sub}.firststage.co` · no robots.txt |
 | 16 | Freshteam | ✅ | `freshteam` | live (multiple tenants) | server-rendered /jobs at {tenant}.freshteam.com; robots allows /jobs |
 | 17 | Gem.com | ✅ | `gem` | live | public keyless GraphQL at jobs.gem.com/api/public/graphql/batch |
-| 18 | GoHire | ⬜ | | | |
+| 18 | GoHire | ✅ | `gohire` | live | hosted careers: `/sitemap.txt` + schema.org **JSON-LD** per job (Google for Jobs, no token) · verified on careers.gohire.io |
 | 19 | Greenhouse | ✅ | `greenhouse` | 22,728 | keyless board API |
 | 20 | HiBob | ✅ | `hibob` | live (1 board, ~100 jobs) | keyless `/api/job-ad` on `{tenant}.careers.hibob.com`; desc, salary, locations |
 | 21 | HireBridge | ✅ | `hirebridge` | 805 | server-rendered career list `/v3/jobs/list.aspx?cid={cid}` · robots allows /v3/jobs |
@@ -128,7 +128,7 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 48 | 1 | 58 |
+| ATS | 49 | 1 | 58 |
 | Job boards | 16 | 0 | 20 |
 | **Total** | **60** | **1** | **78** |
 
