@@ -7,12 +7,12 @@
 
 | Metric | Value |
 |---|---|
-| Open postings | **110,650** |
-| Total postings tracked (open + closed) | 121,751 |
+| Open postings | **110,940** |
+| Total postings tracked (open + closed) | 122,041 |
 | Closed postings detected & marked | 11,101 |
 | Duplicate open postings grouped (dedup) | 5,553 |
-| Active platforms | 55 |
-| Boards / companies indexed | 11,233 |
+| Active platforms | 57 |
+| Boards / companies indexed | 11,279 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -53,7 +53,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 29 | JOIN.com | ✅ | `join` | 8,845 | public keyless Next.js career pages · join.com |
 | 30 | Kula.ai | ⬜ | | | |
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
-| 32 | Manatal | ✅ | `manatal` | live (1 board) | keyless DRF API `careers-page.com/api/v1.0/c/{tenant}/jobs/`; more boards addable |
+| 32 | Manatal | ✅ | `manatal` | 236 (2 boards) | keyless DRF API `careers-page.com/api/v1.0/c/{tenant}/jobs/`; more boards addable |
 | 33 | Oracle Recruiting | ✅ | `oracle` | 2,400 | keyless CX API |
 | 34 | PageUp | 🟡 | `pageup` | connector ready (JSON-LD), but list page is bot-challenged to plain requests — needs headless render |
 | 35 | Paradox | ⬜ | | | |
@@ -91,7 +91,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 2 | WP Job Manager | ✅ | `jobfeed` | live | public `?feed=job_feed` feed · verified on jobs.blog |
 | 3 | JobKit | ✅ | `jobfeed` | | public RSS {board}/jobs.rss · verified on Rails Job Board |
 | 4 | Jobboardly | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
-| 5 | Jobiqo | ✅ | `jobiqo` | live | `sitemap.xml` + schema.org JobPosting per posting · Jobiqo-hosted site host |
+| 5 | Jobiqo | ✅ | `jobiqo` | 66 | `sitemap.xml` + schema.org JobPosting per posting · Jobiqo-hosted site host |
 | 6 | JBoard.io | ✅ | `jobfeed` | live | public RSS {board}/rss/jobs · verified on 4 live boards |
 | 7 | JobBoardFire | ⬜ | | | |
 | 8 | SmartJobBoard | ✅ | `jobfeed` | 680+ | public `/rss` feed · verified on 20 live boards |
