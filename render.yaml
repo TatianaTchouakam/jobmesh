@@ -1,40 +1,30 @@
 # Render deployment blueprint for Jobmesh.
 #
-# A persistent disk holds the SQLite index so it survives restarts and
-# redeploys; the API serves it. Set INGEST_INTERVAL_HOURS to have the web
-# service refresh the index on a schedule in the background (WAL makes the
-# concurrent read/write safe).
+# The index is (re)built at deploy time by the build step, so no persistent
+# disk is needed: every deploy produces a fresh index that the API serves.
+# The service runs on a Starter instance (always on, no spin-down).
 #
-# One-time setup after the first deploy: open the service Shell and run
-#   python -m jobmesh.cli ingest
-# to populate /var/data/jobmesh.db (the disk is empty on first boot).
+# Secret env vars (STRIPE_*, BASE_URL) are set in the Render dashboard
+# (declared here with sync:false). SECRET_KEY is generated once by Render.
 services:
   - type: web
     name: jobmesh
     runtime: python
-    plan: starter                 # paid plan — required for a persistent disk
-    buildCommand: "pip install -r requirements.txt"
+    plan: starter
+    buildCommand: "pip install -r requirements.txt && python -m jobmesh.cli ingest || true"
     startCommand: "uvicorn jobmesh.api:app --host 0.0.0.0 --port $PORT"
-    disk:
-      name: jobmesh-data
-      mountPath: /var/data
-      sizeGB: 3                    # index ~0.5 GB today + WAL + headroom
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"
-      - key: JOBMESH_DB
-        value: /var/data/jobmesh.db
       - key: SECRET_KEY            # signs Jobmesh Premium keys
         generateValue: true
       - key: STRIPE_SECRET_KEY     # set in dashboard (secret)
         sync: false
       - key: STRIPE_PRICE_ID
         sync: false
-      - key: BASE_URL             # e.g. https://jobmesh.onrender.com
+      - key: BASE_URL             # e.g. https://jobmesh.world
         sync: false
-      - key: INGEST_INTERVAL_HOURS # optional: background refresh cadence (e.g. 12)
-        sync: false
-      - key: INGEST_MAX_BOARDS     # optional: cap boards/platform for lighter runs
+      - key: INGEST_MAX_BOARDS     # optional: cap boards/platform to keep builds fast
         sync: false
       # Optional keys for keyed sources (leave unset to skip those sources)
       - key: JOOBLE_API_KEY
