@@ -15,6 +15,27 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +20 cyber/edtech/logistique/Afrique verifie live (sweep 5, 21 nov. 2026) ---
+  - chainguard
+  - tailscale
+  - abnormalsecurity
+  - cribl
+  - misfitsmarket
+  - huntress
+  - cabify
+  - datacamp
+  - coursera
+  - tines
+  - stockx
+  - thrivemarket
+  - weee
+  - project44
+  - grey
+  - newsela
+  - prospa
+  - guild
+  - udemy
+  - degreed
   # --- +9 climate/biotech/gaming/Asie verifie live (sweep 4, 21 nov. 2026) ---
   - epicgames
   - redwoodmaterials
@@ -197,6 +218,11 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +4 cyber/edtech/logistique/Afrique verifie live (sweep 5, 21 nov. 2026) ---
+  - secureframe
+  - loadsmart
+  - educative
+  - brilliant
   # --- +4 climate/biotech/gaming/Asie verifie live (sweep 4, 21 nov. 2026) ---
   - dreamgames
   - arcadia
@@ -257,6 +283,18 @@ lever:
   - entrata
 
 ashby:
+  # --- +11 cyber/edtech/logistique/Afrique verifie live (sweep 5, 21 nov. 2026) ---
+  - lemfi
+  - drata
+  - multiverse
+  - oyster
+  - semgrep
+  - infisical
+  - capchase
+  - doppler
+  - outschool
+  - flink
+  - orca
   # --- +8 climate/biotech/gaming/Asie verifie live (sweep 4, 21 nov. 2026) ---
   - formenergy
   - voodoo
