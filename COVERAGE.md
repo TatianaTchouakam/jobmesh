@@ -161,11 +161,11 @@ redistribute* them (licence/terms); both must hold before a source goes live.
 > gated footprints. Indexing the dominant platforms first maximises the
 > share of *actual open jobs* captured per connector built.
 
-Plus **Adzuna** (multi-country aggregator, free trial tier — one-shot demo indexing 8 new countries / 798 jobs: Canada, Australia, Brazil, India, Mexico, South Africa, New Zealand, Poland — giving the index **6-continent reach**; sustained use needs a paid plan, aggregator so dedup-overlap applies) and **29 additional sources beyond the required 78** (~6,900 open postings),
+Plus **Adzuna** (multi-country aggregator, free trial tier — one-shot demo indexing 8 new countries / 798 jobs: Canada, Australia, Brazil, India, Mexico, South Africa, New Zealand, Poland — giving the index **6-continent reach**; sustained use needs a paid plan, aggregator so dedup-overlap applies) and **32 additional sources beyond the required 78** (~6,900 open postings),
 kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 (Germany), `jobtech` (Sweden), `devitjobs`, `fourdayweek`, `remoteok`,
 `remotive`, `jobicy`, `himalayas`, `weworkremotely`, `workingnomads`,
-`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE), `catsone` (CATS ATS, public portal data route), `talentlyft` (TalentLyft ATS, sitemap+JSON-LD), `recruitcrm` (Recruit CRM, keyless agency jobs API), `uncareers` (UN Careers official RSS, 458 intl/non-tech jobs), `mycareersfuture` (Singapore national portal, keyless public API), `eures` (EU/EEA job mobility portal, keyless public API), `keka` (India SMB HR suite, keyless careers API), `herp` (Japan startup ATS, JSON-LD). Optional keyed sources (`adzuna`,
+`jobspresso`, `pythonjobs`, `softgarden`, `homerun` (Homerun ATS, SMB/EU), `jobscore` (official feed.json), `dvinci` (d.vinci ATS, DE), `catsone` (CATS ATS, public portal data route), `talentlyft` (TalentLyft ATS, sitemap+JSON-LD), `recruitcrm` (Recruit CRM, keyless agency jobs API), `uncareers` (UN Careers official RSS, 458 intl/non-tech jobs), `mycareersfuture` (Singapore national portal, keyless public API), `eures` (EU/EEA job mobility portal, keyless public API), `keka` (India SMB HR suite, keyless careers API), `herp` (Japan startup ATS, JSON-LD), `taiwanjobs` (Taiwan Ministry of Labor public webservice, OGDL), `vantaa` (City of Vantaa / Finland open jobs API), `themuse` (curated jobs, keyless). Optional keyed sources (`adzuna`,
 `jooble`, `usajobs`, `reed`, `reliefweb`) activate with a free API key.
 
 ---

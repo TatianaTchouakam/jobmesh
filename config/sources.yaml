@@ -16,12 +16,12 @@ required_ats:
   - { name: "Avature", connector: avature, status: ACTIVE }
   - { name: "BambooHR", connector: bamboohr, status: ACTIVE }
   - { name: "BrassRing", connector: null, status: API_REQUIRED,
-      reason: "HomeSearch POST needs replayed session cookies; no robots-permitted feed", next_action: "Request Kenexa/BrassRing partner API or an employer-provided feed" }
+      reason: "HomeSearch POST needs replayed session cookies; no robots-permitted feed", next_action: "PARTNERSHIP_PENDING — IBM BrassRing 'Job Board Aggregator Integration' (see PARTNERSHIPS.md)" }
   - { name: "Breezy HR", connector: breezy, status: ACTIVE }
   - { name: "CareerPlug", connector: careerplug, status: ACTIVE }
   - { name: "Comeet", connector: comeet, status: ACTIVE }
   - { name: "CSOD (Cornerstone)", connector: null, status: API_REQUIRED,
-      reason: "Only data route (api.csod.com/rec-job-search) needs a page-lifted bearer token", next_action: "Use the official Cornerstone API with client OAuth / granted access" }
+      reason: "Only data route (api.csod.com/rec-job-search) needs a page-lifted bearer token", next_action: "PARTNERSHIP_PENDING — Cornerstone Technology Partner Program, free Pilot/Stage env (see PARTNERSHIPS.md)" }
   - { name: "Dayforce", connector: dayforce, status: ACTIVE }
   - { name: "Deel", connector: deel, status: ACTIVE }
   - { name: "Dover", connector: dover, status: ACTIVE }
@@ -47,17 +47,17 @@ required_ats:
   - { name: "Oracle Recruiting", connector: oracle, status: ACTIVE }
   - { name: "PageUp", connector: pageup, status: ACTIVE }
   - { name: "Paradox", connector: null, status: RETIRED,
-      reason: "Acquired by Workday; no standalone public job surface; client sites run on their own domains", next_action: "Integrate via Workday for clients that migrated" }
+      reason: "Acquired by Workday; no standalone public job surface; client sites run on their own domains", next_action: "PARTNERSHIP_PENDING — Workday Recruiting partner feed; McHire tenant exists but detail pages are anti-bot 202 (see PARTNERSHIPS.md)" }
   - { name: "Paycom", connector: null, status: API_REQUIRED,
-      reason: "Jobs load from a clientkey'd cross-subdomain API; no robots-permitted sitemap/JSON-LD", next_action: "Request official Paycom developer API credentials" }
+      reason: "Jobs load from a clientkey'd cross-subdomain API; no robots-permitted sitemap/JSON-LD", next_action: "API_REQUEST_PENDING — Paycom developer/partner API; robots allows /api/ats/job-postings/, lock is a page-JWT (see PARTNERSHIPS.md)" }
   - { name: "Paycor", connector: null, status: RETIRED,
-      reason: "Acquired by Paychex; recruitingbypaycor tenants redirect to client sites (often an ATS already covered)", next_action: "Integrate via Paychex / handle per client site" }
+      reason: "Acquired by Paychex; recruitingbypaycor tenants redirect to client sites (often an ATS already covered)", next_action: "PARTNERSHIP_PENDING — Paychex partner job API/feed (see PARTNERSHIPS.md)" }
   - { name: "Paylocity", connector: paylocity, status: ACTIVE }
   - { name: "Personio", connector: personio, status: ACTIVE }
   - { name: "Phenom People", connector: phenom, status: ACTIVE }
   - { name: "Pinpoint", connector: pinpoint, status: ACTIVE }
   - { name: "Polymer", connector: polymer, status: TEMPORARILY_UNAVAILABLE,
-      reason: "Connector built & offline-tested; api.polymer.co now returns 403 (anti-bot)", next_action: "Re-enable when the public API is reachable again" }
+      reason: "Connector built & offline-tested; api.polymer.co now returns 403 (anti-bot)", next_action: "DIAGNOSTIC_PENDING — public API 403 anti-bot; ask support@polymer.co to whitelist JobmeshBot (see PARTNERSHIPS.md)" }
   - { name: "Recooty", connector: recooty, status: ACTIVE }
   - { name: "Recruitee", connector: recruitee, status: ACTIVE }
   - { name: "Rippling", connector: rippling, status: ACTIVE }
@@ -65,13 +65,13 @@ required_ats:
   - { name: "SAP SuccessFactors", connector: successfactors, status: ACTIVE }
   - { name: "SmartRecruiters", connector: smartrecruiters, status: ACTIVE }
   - { name: "talentReef", connector: null, status: CLIENT_CONNECTION_REQUIRED,
-      reason: "sitemap+JSON-LD recipe ready, but no live public tenant found (21/11/2026)", next_action: "Ask a client employer for their official feed / integration" }
+      reason: "sitemap+JSON-LD recipe ready, but no live public tenant found (21/11/2026)", next_action: "SYNDICATION_PENDING — TalentReef XML job distribution / syndication feed (see PARTNERSHIPS.md)" }
   - { name: "Taleo", connector: taleo, status: ACTIVE }
   - { name: "Teamtailor", connector: teamtailor, status: ACTIVE }
   - { name: "Trakstar", connector: trakstar, status: ACTIVE }
   - { name: "TriNet", connector: trinet, status: ACTIVE }
   - { name: "UltiPro", connector: null, status: API_REQUIRED,
-      reason: "robots Disallow: */JobBoardView blocks the search/data route", next_action: "Use the official UKG Pro Recruiting Job Postings API or a client feed" }
+      reason: "robots Disallow: */JobBoardView blocks the search/data route", next_action: "PARTNERSHIP_PENDING — UKG Developer Portal partner job-board feed, avoids robots-blocked JobBoardView (see PARTNERSHIPS.md)" }
   - { name: "WeRecruit", connector: werecruit, status: ACTIVE }
   - { name: "Workable", connector: workable, status: ACTIVE }
   - { name: "Workday", connector: workday, status: ACTIVE }
@@ -85,22 +85,22 @@ required_boards:
   - { name: "Jobiqo", connector: jobiqo, status: ACTIVE }
   - { name: "JBoard.io", connector: jobfeed, status: ACTIVE }
   - { name: "JobBoardFire", connector: null, status: TEMPORARILY_UNAVAILABLE,
-      reason: "Only live board is behind Cloudflare with 0 jobs; all feed paths 404", next_action: "Re-check for an authorized, functioning board" }
+      reason: "Only live board is behind Cloudflare with 0 jobs; all feed paths 404", next_action: "SYNDICATION_PENDING — ask for a centralized published-jobs feed, not the per-owner mgmt API (see PARTNERSHIPS.md)" }
   - { name: "SmartJobBoard", connector: jobfeed, status: ACTIVE }
   - { name: "JobBoard.io", connector: jobfeed, status: ACTIVE }
   - { name: "Wiley Madgex", connector: jobfeed, status: ACTIVE }
   - { name: "Talenetic", connector: null, status: CLIENT_CONNECTION_REQUIRED,
-      reason: "No active client board found on the public web", next_action: "Request a live tenant / official feed from a client" }
+      reason: "No active client board found on the public web", next_action: "PARTNERSHIP_PENDING — Talenetic XML/JSON syndication partnership, FeedOuts (see PARTNERSHIPS.md)" }
   - { name: "JobMount", connector: jobmount, status: ACTIVE }
   - { name: "CareerSiteCloud", connector: null, status: TEMPORARILY_UNAVAILABLE,
-      reason: "Service returns 502 (offline across repeated checks)", next_action: "Re-check later; integrate once the service is back" }
+      reason: "Service returns 502 (offline across repeated checks)", next_action: "PROVIDER_CHECK_PENDING — 502 + daily health-check; free partner XML export, no $1000/mo backfill (see PARTNERSHIPS.md)" }
   - { name: "JobBoard.com", connector: jobboardcom, status: ACTIVE }
   - { name: "Artha", connector: artha, status: ACTIVE }
   - { name: "jobboardsoftware.com", connector: exenzo, status: ACTIVE }
   - { name: "jobBoardHQ", connector: jobfeed, status: ACTIVE }
   - { name: "Nodex", connector: nodex, status: ACTIVE }
   - { name: "eJobBoard", connector: null, status: PARTNERSHIP_REQUIRED,
-      reason: "No client names or live tenant published anywhere", next_action: "Request client references and an official access" }
+      reason: "No client names or live tenant published anywhere", next_action: "PARTNERSHIP_PENDING — negotiated XML feed only; active vendor (~$49/mo), no public tenant (see PARTNERSHIPS.md)" }
   - { name: "ejobsitesoftware.com", connector: jobfeed, status: ACTIVE }
 
 
@@ -141,6 +141,8 @@ bonus_sources:
 
   - { name: "taiwanjobs", connector: taiwanjobs, status: ACTIVE, note: "Taiwan — Ministry of Labor public job webservice, keyless, OGDL 1.0" }
 
+
+  - { name: "vantaa", connector: vantaa, status: ACTIVE, note: "Finland — City of Vantaa open jobs JSON API, keyless" }
 
 # Keyed/optional sources — worldwide reach, activated with the user's own
 # free API credentials (env vars). Not auto-seeded in the daily ingest.
