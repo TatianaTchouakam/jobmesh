@@ -15,6 +15,16 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +9 climate/biotech/gaming/Asie verifie live (sweep 4, 21 nov. 2026) ---
+  - epicgames
+  - redwoodmaterials
+  - paypay
+  - isomorphiclabs
+  - thunes
+  - generatebiomedicines
+  - swordhealth
+  - altoslabs
+  - palmetto
   # --- +12 PME europeennes verifiees live (sweep 3, 21 nov. 2026) ---
   - deliveroo
   - graphcore
@@ -187,6 +197,11 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +4 climate/biotech/gaming/Asie verifie live (sweep 4, 21 nov. 2026) ---
+  - dreamgames
+  - arcadia
+  - charmindustrial
+  - patch
   # --- +3 PME europeennes verifiees live (sweep 3, 21 nov. 2026) ---
   - 360learning
   - scaleway
@@ -242,6 +257,15 @@ lever:
   - entrata
 
 ashby:
+  # --- +8 climate/biotech/gaming/Asie verifie live (sweep 4, 21 nov. 2026) ---
+  - formenergy
+  - voodoo
+  - helion
+  - span
+  - insitro
+  - sylvera
+  - openevidence
+  - aurorasolar
   # --- +12 PME europeennes verifiees live (sweep 3, 21 nov. 2026) ---
   - parloa
   - snyk
@@ -4023,3 +4047,7 @@ keka:
 # HERP (Japan SMB/startup ATS) — list page + per-job schema.org JSON-LD (bonus)
 herp:
   - "herpinc"    # HERP Inc. — verifie 21 nov. 2026 (46 offres)
+
+# SAP SuccessFactors (ATS #47/78) — Career Site Builder: sitemap + schema.org microdata (no token). board = host|Company
+successfactors:
+  - "jobs.boehringer-ingelheim.com|Boehringer Ingelheim"   # verifie 21 nov. 2026 (901 offres au sitemap)

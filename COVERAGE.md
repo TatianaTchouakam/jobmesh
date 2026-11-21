@@ -20,7 +20,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 47/58 live
+## Required ATS coverage — 48/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -70,7 +70,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 44 | Recruitee | ✅ | `recruitee` | 4,653 | keyless offers API |
 | 45 | Rippling | ✅ | `rippling` | 1,344 | keyless board API |
 | 46 | Rival | ✅ | `rival` | 15 | server-rendered list `jobs.silkroad.com/{Tenant}/{Board}` (sr-panel cards) · robots-clean |
-| 47 | SAP SuccessFactors | ⬜ | | | enterprise OData, auth |
+| 47 | SAP SuccessFactors | ✅ | `successfactors` | live | Career Site Builder: `/sitemap.xml` + schema.org **microdata** per `/job/{id}/` page (no token) · verified on Boehringer Ingelheim (901 in sitemap) |
 | 48 | SmartRecruiters | ✅ | `smartrecruiters` | 15,523 | keyless posting API (paginated) |
 | 49 | talentReef | ⬜ | | | |
 | 50 | Taleo | ✅ | `taleo` | 2,203 | careersection REST `jobboard/searchjobs` (keyless, needs X-Requested-With) · board = tenant\|portal |
@@ -128,7 +128,7 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 47 | 1 | 58 |
+| ATS | 48 | 1 | 58 |
 | Job boards | 16 | 0 | 20 |
 | **Total** | **60** | **1** | **78** |
 
