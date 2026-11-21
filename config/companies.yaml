@@ -4292,10 +4292,6 @@ taiwanjobs:
   - "700"   # Tainan
   - "802"   # Kaohsiung (92 offres verifie)
 
-# NAV Arbeidsplassen (Norway national job feed) — official JSON feed, explicit republish right (bonus).
-# Auto-uses NAV's public token; set NAV_TOKEN (free, email nav.team.arbeidsplassen@nav.no) for production.
-nav:
-  - "all"    # verifie 21 nov. 2026
 
 # Vantaa (City of Vantaa, Finland) — keyless open jobs JSON API (bonus). board ignored.
 vantaa:
