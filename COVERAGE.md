@@ -85,7 +85,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 13/20 live
+## Required job board platform coverage — 14/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -103,7 +103,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 12 | JobMount | ⬜ | | | |
 | 13 | CareerSiteCloud | ⬜ | | | |
 | 14 | JobBoard.com | ⬜ | | | |
-| 15 | Artha | ⬜ | | | reachable but pages are Cloudflare-protected (403) and the backend API (`api.arthajobboard.com`) exposes no keyless jobs endpoint — deferred |
+| 15 | Artha | ✅ | `artha` | 632 | keyless guest search API `jobs/search/guest` (Origin-scoped) · Knovator engine · board = host |
 | 16 | jobboardsoftware.com | ✅ | `exenzo` | | public JSON API {tenant}.api.exenzo.com/api/public/v1 · 3 boards |
 | 17 | jobBoardHQ | ✅ | `jobfeed` | live (5 boards) | public Indeed-format /jobs.xml per board · complete feed |
 | 18 | Nodex | ✅ | `nodex` | ~300 | sitemap.xml + per-posting schema.org JSON-LD · fabricjobs engine · board = host (cap 300; 586 at sitemap) |
@@ -129,8 +129,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
 | ATS | 45 | 1 | 58 |
-| Job boards | 13 | 0 | 20 |
-| **Total** | **58** | **1** | **78** |
+| Job boards | 14 | 0 | 20 |
+| **Total** | **59** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The live
 > platforms include the highest-volume, most widely deployed ATS —

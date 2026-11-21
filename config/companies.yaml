@@ -3884,3 +3884,7 @@ recruitcrm:
 # UN Careers (careers.un.org) — official UN job RSS feed (Inspira); board = feed host (bonus, hors 78)
 uncareers:
   - "careers.un.org"    # United Nations — verifie 21 nov. 2026 (458 offres au flux)
+
+# Artha / Knovator job-board platform (required #15) — guest search API, Origin = board host; board = host
+artha:
+  - "www.fpnajobs.com"    # FP&A Jobs — verifie 21 nov. 2026 (632 offres)
