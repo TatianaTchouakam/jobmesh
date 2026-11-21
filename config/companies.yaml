@@ -15,6 +15,26 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +19 retail/martech/space/EuropeSud verifie live (sweep 8, 21 nov. 2026) ---
+  - feverup
+  - braze
+  - astranis
+  - muonspace
+  - ursamajor
+  - mixpanel
+  - attentive
+  - spire
+  - customerio
+  - pendo
+  - olipop
+  - storyblok
+  - albedo
+  - capellaspace
+  - gymshark
+  - make
+  - pivotbio
+  - postscript
+  - liquiddeath
   # --- +9 hardware/govtech/LatAm/Afrique verifie live (sweep 7, 21 nov. 2026) ---
   - coreweave
   - machindustries
@@ -245,6 +265,10 @@ greenhouse:
   # (likely a private board). Re-add if you find the real board token.
 
 lever:
+  # --- +3 retail/martech/space/EuropeSud verifie live (sweep 8, 21 nov. 2026) ---
+  - loftorbital
+  - jobandtalent
+  - logrocket
   # --- +3 hardware/govtech/LatAm/Afrique verifie live (sweep 7, 21 nov. 2026) ---
   - hermeus
   - atomcomputing
@@ -320,6 +344,13 @@ lever:
   - entrata
 
 ashby:
+  # --- +6 retail/martech/space/EuropeSud verifie live (sweep 8, 21 nov. 2026) ---
+  - rothys
+  - amplitude
+  - sanity
+  - iterable
+  - fullstory
+  - zapier
   # --- +3 hardware/govtech/LatAm/Afrique verifie live (sweep 7, 21 nov. 2026) ---
   - cerebras
   - etched
