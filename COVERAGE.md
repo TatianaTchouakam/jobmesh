@@ -126,11 +126,31 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 ## Coverage summary
 
-| Group | Live ✅ | Ready 🟡 | Required |
+| Group | Live (ACTIVE) | Declared (pending access) | Required |
 |---|---|---|---|
-| ATS | 49 | 1 | 58 |
-| Job boards | 16 | 0 | 20 |
-| **Total** | **60** | **1** | **78** |
+| ATS | 49 | 9 | 58 |
+| Job boards | 16 | 4 | 20 |
+| **Total** | **65** | **13** | **78** |
+
+**Every one of the 78 required platforms is declared in the source registry**
+(`config/sources.yaml`), with a status that separates *technical* from
+*commercial* blockers — run `python -m jobmesh.cli sources` for the live
+integration-health view. Only `ACTIVE` sources run in the daily ingest; the
+rest are declared, never silently failed, and never counted as covered:
+
+| Status | Count | Meaning |
+|---|---|---|
+| `ACTIVE` | 65 | live, robots-permitted, keyless — real jobs in the index |
+| `API_REQUIRED` | 5 | official API / credentials needed (BrassRing, CSOD, Kula, Paycom, UltiPro) |
+| `CLIENT_CONNECTION_REQUIRED` | 2 | an employer must connect their feed (Talenetic, talentReef) |
+| `TEMPORARILY_UNAVAILABLE` | 3 | service down / anti-bot (CareerSiteCloud 502, JobBoardFire, Polymer 403) |
+| `RETIRED` | 2 | merged/acquired, no standalone surface (Paradox→Workday, Paycor→Paychex) |
+| `PARTNERSHIP_REQUIRED` | 1 | a commercial agreement is needed (eJobBoard) |
+
+The 13 non-live platforms are **integrations pending access, not technical
+failures** — each carries a reason and a concrete next action in the registry.
+JobMesh distinguishes *reading* the jobs (API/feed/export) from the *right to
+redistribute* them (licence/terms); both must hold before a source goes live.
 
 > **Coverage is prioritised by volume, not by logo count.** The live
 > platforms include the highest-volume, most widely deployed ATS —

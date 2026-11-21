@@ -76,6 +76,38 @@ def _cmd_stats(args) -> None:
         print(json.dumps(storage.stats(conn), indent=2, ensure_ascii=False))
 
 
+
+def _cmd_sources(args) -> None:
+    from . import sources as srcreg
+    data = srcreg.load_sources()
+    try:
+        with storage.session(args.db) as conn:
+            obp = storage.stats(conn).get("open_by_platform", {})
+    except Exception:
+        obp = {}
+    rows = srcreg.health(obp, data)
+    counts = srcreg.status_counts(data)
+    if getattr(args, "json", False):
+        print(json.dumps({"status_counts": counts, "sources": rows},
+                         indent=2, ensure_ascii=False))
+        return
+    order = {s: i for i, s in enumerate(srcreg.STATUSES)}
+    rows.sort(key=lambda r: (order.get(r["status"], 9), r["name"].lower()))
+    active = counts.get("ACTIVE", 0)
+    total = sum(counts.values())
+    print(f"JobMesh source registry — {active}/{total} required platforms ACTIVE (live)\n")
+    for r in rows:
+        if r["status"] == "ACTIVE":
+            live = r["live_open"]
+            tail = f"{live} open" if live is not None else "live"
+            print(f"  ACTIVE                      {r['name']:<22} {r['connector']:<16} {tail}")
+        else:
+            print(f"  {r['status']:<27} {r['name']:<22} -> {r['next_action'] or r['reason'] or ''}")
+    print("\nStatus summary: " + ", ".join(f"{k}={counts[k]}" for k in srcreg.STATUSES if k in counts))
+    print("Only ACTIVE sources run in the daily ingest; the rest are declared, not failed.")
+
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="jobmesh", description=__doc__)
     parser.add_argument("--db", default=storage.DEFAULT_DB, help="SQLite path")
@@ -97,6 +129,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_stats = sub.add_parser("stats", help="show index statistics")
     p_stats.set_defaults(func=_cmd_stats)
+
+    p_src = sub.add_parser("sources", help="integration status of all required platforms")
+    p_src.add_argument("--json", action="store_true", help="machine-readable output")
+    p_src.set_defaults(func=_cmd_sources)
 
     return parser
 

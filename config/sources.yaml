@@ -1,0 +1,106 @@
+# JobMesh source registry — the integration status of every REQUIRED platform.
+# Statuses (technical vs commercial are kept separate, on purpose):
+#   ACTIVE                       live, robots-permitted, keyless — real jobs in the index
+#   API_REQUIRED                 official API / credentials needed (no page-lifted token)
+#   PARTNERSHIP_REQUIRED         a commercial/publisher agreement is needed
+#   CLIENT_CONNECTION_REQUIRED   an employer must connect their own account/feed
+#   TEMPORARILY_UNAVAILABLE      service down / anti-bot / no functioning board right now
+#   RETIRED                      platform merged/acquired, no standalone public surface
+# Only ACTIVE sources run in the daily ingest. The rest are declared, not failed,
+# and never counted as covered. Bonus (non-78) sources live in companies.yaml.
+
+required_ats:
+  - { name: "ADP", connector: adp, status: ACTIVE }
+  - { name: "ApplicantPro", connector: isolvedhire, status: ACTIVE }
+  - { name: "Ashby", connector: ashby, status: ACTIVE }
+  - { name: "Avature", connector: avature, status: ACTIVE }
+  - { name: "BambooHR", connector: bamboohr, status: ACTIVE }
+  - { name: "BrassRing", connector: null, status: API_REQUIRED,
+      reason: "HomeSearch POST needs replayed session cookies; no robots-permitted feed", next_action: "Request Kenexa/BrassRing partner API or an employer-provided feed" }
+  - { name: "Breezy HR", connector: breezy, status: ACTIVE }
+  - { name: "CareerPlug", connector: careerplug, status: ACTIVE }
+  - { name: "Comeet", connector: comeet, status: ACTIVE }
+  - { name: "CSOD (Cornerstone)", connector: null, status: API_REQUIRED,
+      reason: "Only data route (api.csod.com/rec-job-search) needs a page-lifted bearer token", next_action: "Use the official Cornerstone API with client OAuth / granted access" }
+  - { name: "Dayforce", connector: dayforce, status: ACTIVE }
+  - { name: "Deel", connector: deel, status: ACTIVE }
+  - { name: "Dover", connector: dover, status: ACTIVE }
+  - { name: "Eightfold AI", connector: eightfold, status: ACTIVE }
+  - { name: "FirstStage", connector: firststage, status: ACTIVE }
+  - { name: "Freshteam", connector: freshteam, status: ACTIVE }
+  - { name: "Gem.com", connector: gem, status: ACTIVE }
+  - { name: "GoHire", connector: gohire, status: ACTIVE }
+  - { name: "Greenhouse", connector: greenhouse, status: ACTIVE }
+  - { name: "HiBob", connector: hibob, status: ACTIVE }
+  - { name: "HireBridge", connector: hirebridge, status: ACTIVE }
+  - { name: "HireHive", connector: hirehive, status: ACTIVE }
+  - { name: "Hireology", connector: hireology, status: ACTIVE }
+  - { name: "HiringThing", connector: hiringthing, status: ACTIVE }
+  - { name: "iCIMS", connector: icims, status: ACTIVE }
+  - { name: "iSolvedHire", connector: isolvedhire, status: ACTIVE }
+  - { name: "JazzHR", connector: jazzhr, status: ACTIVE }
+  - { name: "Jobvite", connector: jobvite, status: ACTIVE }
+  - { name: "JOIN.com", connector: join, status: ACTIVE }
+  - { name: "Kula.ai", connector: null, status: API_REQUIRED,
+      reason: "robots Disallow: /api/ blocks the only data route; list is SPA, no sitemap", next_action: "Request a partner feed/export or authorized API from the client" }
+  - { name: "Lever.co", connector: lever, status: ACTIVE }
+  - { name: "Manatal", connector: manatal, status: ACTIVE }
+  - { name: "Oracle Recruiting", connector: oracle, status: ACTIVE }
+  - { name: "PageUp", connector: pageup, status: ACTIVE }
+  - { name: "Paradox", connector: null, status: RETIRED,
+      reason: "Acquired by Workday; no standalone public job surface; client sites run on their own domains", next_action: "Integrate via Workday for clients that migrated" }
+  - { name: "Paycom", connector: null, status: API_REQUIRED,
+      reason: "Jobs load from a clientkey'd cross-subdomain API; no robots-permitted sitemap/JSON-LD", next_action: "Request official Paycom developer API credentials" }
+  - { name: "Paycor", connector: null, status: RETIRED,
+      reason: "Acquired by Paychex; recruitingbypaycor tenants redirect to client sites (often an ATS already covered)", next_action: "Integrate via Paychex / handle per client site" }
+  - { name: "Paylocity", connector: paylocity, status: ACTIVE }
+  - { name: "Personio", connector: personio, status: ACTIVE }
+  - { name: "Phenom People", connector: phenom, status: ACTIVE }
+  - { name: "Pinpoint", connector: pinpoint, status: ACTIVE }
+  - { name: "Polymer", connector: polymer, status: TEMPORARILY_UNAVAILABLE,
+      reason: "Connector built & offline-tested; api.polymer.co now returns 403 (anti-bot)", next_action: "Re-enable when the public API is reachable again" }
+  - { name: "Recooty", connector: recooty, status: ACTIVE }
+  - { name: "Recruitee", connector: recruitee, status: ACTIVE }
+  - { name: "Rippling", connector: rippling, status: ACTIVE }
+  - { name: "Rival", connector: rival, status: ACTIVE }
+  - { name: "SAP SuccessFactors", connector: successfactors, status: ACTIVE }
+  - { name: "SmartRecruiters", connector: smartrecruiters, status: ACTIVE }
+  - { name: "talentReef", connector: null, status: CLIENT_CONNECTION_REQUIRED,
+      reason: "sitemap+JSON-LD recipe ready, but no live public tenant found (21/11/2026)", next_action: "Ask a client employer for their official feed / integration" }
+  - { name: "Taleo", connector: taleo, status: ACTIVE }
+  - { name: "Teamtailor", connector: teamtailor, status: ACTIVE }
+  - { name: "Trakstar", connector: trakstar, status: ACTIVE }
+  - { name: "TriNet", connector: trinet, status: ACTIVE }
+  - { name: "UltiPro", connector: null, status: API_REQUIRED,
+      reason: "robots Disallow: */JobBoardView blocks the search/data route", next_action: "Use the official UKG Pro Recruiting Job Postings API or a client feed" }
+  - { name: "WeRecruit", connector: werecruit, status: ACTIVE }
+  - { name: "Workable", connector: workable, status: ACTIVE }
+  - { name: "Workday", connector: workday, status: ACTIVE }
+  - { name: "Zoho Recruit", connector: zohorecruit, status: ACTIVE }
+
+required_boards:
+  - { name: "Niceboard", connector: niceboard, status: ACTIVE }
+  - { name: "WP Job Manager", connector: jobfeed, status: ACTIVE }
+  - { name: "JobKit", connector: jobfeed, status: ACTIVE }
+  - { name: "Jobboardly", connector: jobfeed, status: ACTIVE }
+  - { name: "Jobiqo", connector: jobiqo, status: ACTIVE }
+  - { name: "JBoard.io", connector: jobfeed, status: ACTIVE }
+  - { name: "JobBoardFire", connector: null, status: TEMPORARILY_UNAVAILABLE,
+      reason: "Only live board is behind Cloudflare with 0 jobs; all feed paths 404", next_action: "Re-check for an authorized, functioning board" }
+  - { name: "SmartJobBoard", connector: jobfeed, status: ACTIVE }
+  - { name: "JobBoard.io", connector: jobfeed, status: ACTIVE }
+  - { name: "Wiley Madgex", connector: jobfeed, status: ACTIVE }
+  - { name: "Talenetic", connector: null, status: CLIENT_CONNECTION_REQUIRED,
+      reason: "No active client board found on the public web", next_action: "Request a live tenant / official feed from a client" }
+  - { name: "JobMount", connector: jobmount, status: ACTIVE }
+  - { name: "CareerSiteCloud", connector: null, status: TEMPORARILY_UNAVAILABLE,
+      reason: "Service returns 502 (offline across repeated checks)", next_action: "Re-check later; integrate once the service is back" }
+  - { name: "JobBoard.com", connector: jobboardcom, status: ACTIVE }
+  - { name: "Artha", connector: artha, status: ACTIVE }
+  - { name: "jobboardsoftware.com", connector: exenzo, status: ACTIVE }
+  - { name: "jobBoardHQ", connector: jobfeed, status: ACTIVE }
+  - { name: "Nodex", connector: nodex, status: ACTIVE }
+  - { name: "eJobBoard", connector: null, status: PARTNERSHIP_REQUIRED,
+      reason: "No client names or live tenant published anywhere", next_action: "Request client references and an official access" }
+  - { name: "ejobsitesoftware.com", connector: jobfeed, status: ACTIVE }
+
