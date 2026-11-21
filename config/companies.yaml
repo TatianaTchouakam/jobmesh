@@ -15,6 +15,9 @@
 # failure), so it never breaks the run.
 
 greenhouse:
+  # --- +2 verifies en live (navigateur, 21 nov. 2026) ---
+  - okta            # Okta — identity / security, US (~370)
+  - twilio          # Twilio — cloud comms, US (~110)
   # NB: benchling / warbyparker / niantic / deepmind / grammarly retires le 13 nov. 2026 — 404 sur l'API publique greenhouse (US+EU) au run (slug page carriere != token API).
   # --- +9 gros employeurs verifies (tokens confirmes sur board public greenhouse, 13 nov. 2026) ---
   - doordashusa     # DoorDash — livraison / tech, US (~2000)
@@ -3896,3 +3899,7 @@ jobboardcom:
 # MyCareersFuture (Singapore national portal) — keyless public jobs API (bonus, hors 78)
 mycareersfuture:
   - "mycareersfuture.gov.sg"    # Singapore MyCareersFuture — verifie 21 nov. 2026 (81k offres, cappe 5000)
+
+# EURES (EU/EEA job mobility portal) — keyless public search API (bonus, hors 78)
+eures:
+  - "eures"    # European Union EURES — verifie 21 nov. 2026 (1.9M offres, cappe 5000)
