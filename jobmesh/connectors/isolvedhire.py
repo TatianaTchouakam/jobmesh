@@ -28,6 +28,14 @@ _LDJSON = re.compile(
     r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', re.S)
 
 
+def _first_address(job_location) -> dict:
+    if isinstance(job_location, list):
+        job_location = job_location[0] if job_location else {}
+    if isinstance(job_location, dict):
+        return job_location.get("address") or {}
+    return {}
+
+
 class IsolvedHireConnector(Connector):
     platform = "isolvedhire"
 
@@ -65,7 +73,7 @@ class IsolvedHireConnector(Connector):
         if not data:
             return None
         org = data.get("hiringOrganization") or {}
-        loc = ((data.get("jobLocation") or {}).get("address")) or {}
+        loc = _first_address(data.get("jobLocation"))
         location = ", ".join(
             p for p in (loc.get("addressLocality"), loc.get("addressRegion"),
                         loc.get("addressCountry")) if p) or None

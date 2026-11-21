@@ -60,3 +60,39 @@ def test_sitemap_and_jsonld():
     assert a["1902333"].source_url == "https://acme.isolvedhire.com/jobs/1902333.html"
     assert "Do AI Engineer" in (a["1902333"].description or "")
     assert a["1828998"].title == "Data Analyst"
+
+
+SITEMAP_LIST = """<?xml version='1.0'?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://acme.isolvedhire.com/jobs/777.html</loc></url>
+</urlset>"""
+
+_LD = (
+    '{"@context":"http://schema.org/","@type":"JobPosting","title":"Multi",'
+    '"url":"https://acme.isolvedhire.com/jobs/777.html",'
+    '"identifier":{"@type":"PropertyValue","name":"acme","sameAs":"777"},'
+    '"hiringOrganization":{"@type":"Organization","name":"Acme"},'
+    '"jobLocation":[{"@type":"Place","address":{"@type":"PostalAddress",'
+    '"addressLocality":"Dallas","addressRegion":"TX","addressCountry":"US"}},'
+    '{"@type":"Place","address":{"addressLocality":"Austin"}}]}'
+)
+_PAGE_LIST = '<html><script type="application/ld+json">%s</script></html>' % _LD
+
+
+class _SessionList:
+    def __init__(self):
+        self.headers = {}
+
+    def get(self, url, timeout=None, **k):
+        if url.endswith("/robots.txt"):
+            return _Resp("", status=404)
+        if url.endswith("/sitemap.xml"):
+            return _Resp(SITEMAP_LIST)
+        return _Resp(_PAGE_LIST)
+
+
+def test_joblocation_as_list_does_not_crash():
+    c = IsolvedHireConnector("acme", session=_SessionList())
+    jobs = c.fetch()
+    assert len(jobs) == 1
+    assert jobs[0].location == "Dallas, TX, US"
