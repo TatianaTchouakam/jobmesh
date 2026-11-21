@@ -20,12 +20,12 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 46/58 live
+## Required ATS coverage — 47/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
 | 1 | ADP | ✅ | `adp` | 8 | public keyless Career Center feed (`/public/`) · {cid}+{ccId} per company |
-| 2 | ApplicantPro | ⬜ | | | |
+| 2 | ApplicantPro | ✅ | `isolvedhire` | live | **= isolved Talent Acquisition** — isolved completed the ApplicantPro rebrand (press, 2025-03); same engine, indexed via `{tenant}.isolvedhire.com` sitemap+JSON-LD. Legacy `*.applicantpro.com`/`*.iapplicants.com` now redirect/retired (521) |
 | 3 | Ashby | ✅ | `ashby` | 5,046 | keyless board API |
 | 4 | Avature | ✅ | `avature` | live | public RSS feed at {tenant}.avature.net/careers/SearchJobs/feed/ (HTML page is bot-challenged) |
 | 5 | BambooHR | ✅ | `bamboohr` | 3 | keyless careers API |
@@ -128,7 +128,7 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 46 | 1 | 58 |
+| ATS | 47 | 1 | 58 |
 | Job boards | 16 | 0 | 20 |
 | **Total** | **60** | **1** | **78** |
 
@@ -194,4 +194,4 @@ obeys each source's robots.txt. It reads only public, unauthenticated endpoints 
 site's own front end calls, and every job links back to the employer's posting.
 **Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
 name; although a generic `User-agent: *` rule would still permit us, crawling it would go
-against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API. **Cornerstone / CSOD** — the careersite's only job-data route (`*.api.csod.com/rec-job-search`) requires a bearer token extracted from the page and replayed; that is a lifted credential, not a cleanly public keyless endpoint like Dayforce's anonymous CSRF handshake, so CSOD is excluded on principle. **rexx systems** (bonus, not in the 78) — robots.txt names automated clients (python-requests, Scrapy, aiohttp, axios) with `Disallow: /`; although our `JobmeshBot` is not named and a public Atom feed is declared, the operator's intent is clearly anti-aggregator, so for consistency with Jobylon it is left out. **Stonefish** (UK university ATS; bonus) — its robots.txt names job-aggregators that “scrape job adverts and re-publish” and disallows them; that describes exactly what an index does, so despite a public RSS feed it is left out for the same reason. **Umantis** (Haufe/Abacus; bonus) — robots.txt opens with a `User-agent: * / Disallow: /` group, so it is excluded despite reachable vacancy pages.
+against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API. **Cornerstone / CSOD** — the careersite's only job-data route (`*.api.csod.com/rec-job-search`) requires a bearer token extracted from the page and replayed; that is a lifted credential, not a cleanly public keyless endpoint like Dayforce's anonymous CSRF handshake, so CSOD is excluded on principle. **Paycom**, **BrassRing** (Kenexa) and **SAP SuccessFactors** — each exposes a job-list endpoint, but none is cleanly keyless: Paycom's `job-posting-previews/search` needs a per-session client key in its headers, BrassRing's `HomeSearch` POST needs the home page's session cookies, and SuccessFactors uses DWR calls requiring a page-generated `scriptSessionId` + CSRF token. All three would mean lifting and replaying a session credential — the same bar that excludes CSOD — so they are left out on principle; no robots-permitted public feed (RSS/JSON) was found for any of them. **rexx systems** (bonus, not in the 78) — robots.txt names automated clients (python-requests, Scrapy, aiohttp, axios) with `Disallow: /`; although our `JobmeshBot` is not named and a public Atom feed is declared, the operator's intent is clearly anti-aggregator, so for consistency with Jobylon it is left out. **Stonefish** (UK university ATS; bonus) — its robots.txt names job-aggregators that “scrape job adverts and re-publish” and disallows them; that describes exactly what an index does, so despite a public RSS feed it is left out for the same reason. **Umantis** (Haufe/Abacus; bonus) — robots.txt opens with a `User-agent: * / Disallow: /` group, so it is excluded despite reachable vacancy pages.
