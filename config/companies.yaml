@@ -181,6 +181,12 @@ lever:
   - entrata
 
 ashby:
+  - hex
+  - watershed
+  - clay
+  - baseten
+  - perplexity
+  - anysphere
   - nerdwallet      # NerdWallet — fintech / media, US (~27) [verifie 13 nov. 2026]
   # --- Monde / continents (verifie en direct) ---
   - andela   # Afrique (7)
@@ -285,6 +291,14 @@ breezy:
   - vetsez
 
 recruitee:   # ATS — subdomain from {company}.recruitee.com — all verified live
+  - scoutbee
+  - usabilla
+  - mollie
+  - framer
+  - channable
+  - bynder
+  - mambu
+  - trengo
   - univeit
   - mittwaldcmservicegmbhcokg
   - terrascan
@@ -321,6 +335,14 @@ recruitee:   # ATS — subdomain from {company}.recruitee.com — all verified l
 
 # --- Job boards (one public feed each, many companies; "all" = whole feed) ---
 personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.personio.de)
+  - getsafe
+  - mediamarkt
+  - vay
+  - demodesk
+  - relayr
+  - everphone
+  - fernride
+  - tourradar
   - circus
   - wandelbots
   - 1komma5grad
@@ -638,6 +660,12 @@ smartjobboard: []
 # JOIN (join.com) — public keyless Next.js career pages; board = slug
 # maintained by scripts/discover_join.py (bounded sitemap discovery)
 join:
+  - sievo
+  - tourlane
+  - McMakler
+  - clark
+  - bryter
+  - pliant
   - 08haselmaeuse
   - 10gatecom
   - 19-03de
