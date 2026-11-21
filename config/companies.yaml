@@ -3874,3 +3874,7 @@ nodex:
 # TalentLyft ({board}.talentlyft.com) — sitemap.xml + per-posting JSON-LD; board = full host (bonus, hors 78)
 talentlyft:
   - "riverwalkertalentcareers.talentlyft.com"    # Riverwalker Talent — verifie 21 nov. 2026
+
+# Recruit CRM (recruitcrm.io) — keyless agency jobs API; board = account name (bonus, hors 78)
+recruitcrm:
+  - "Intver_Global"    # Intver Global — verifie 21 nov. 2026 (5 offres)
