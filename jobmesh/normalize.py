@@ -11,6 +11,8 @@ import html
 import re
 import unicodedata
 from typing import Optional
+from datetime import datetime
+from email.utils import parsedate_to_datetime
 
 # Matches any HTML tag so we can strip it out.
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -240,3 +242,36 @@ def make_dedup_key(title: str, company: str, location: Optional[str]) -> str:
         first = re.split(r"[,/|]", location)[0]
         parts.append(_slug(first))
     return ":".join(p for p in parts if p)
+
+
+def normalize_date(raw: Optional[str]) -> Optional[str]:
+    """Return a posting date as an ISO-8601 string, whatever format the
+    source used (ISO, RFC 2822 from RSS/Atom feeds, or a few common date
+    layouts). Consistent ISO strings are what let postings from different
+    platforms sort by recency correctly. Returns None when missing or
+    unparseable, so callers fall back to first_seen."""
+    if not raw:
+        return None
+    s = str(raw).strip()
+    if not s:
+        return None
+    # Already ISO-8601 (accept a trailing Z).
+    try:
+        return datetime.fromisoformat(s.replace("Z", "+00:00")).isoformat()
+    except Exception:
+        pass
+    # RFC 2822, e.g. "Wed, 9 Sep 2026 8:06:45 GMT" (RSS/Atom feeds).
+    try:
+        dt = parsedate_to_datetime(s)
+        if dt is not None:
+            return dt.isoformat()
+    except Exception:
+        pass
+    # A few common explicit layouts.
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d.%m.%Y", "%m/%d/%Y",
+                "%d %b %Y", "%d %B %Y"):
+        try:
+            return datetime.strptime(s, fmt).isoformat()
+        except Exception:
+            continue
+    return None

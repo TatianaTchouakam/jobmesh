@@ -16,6 +16,7 @@ from .normalize import (
     normalize_workplace,
     normalize_category,
     normalize_level,
+    normalize_date,
 )
 
 
@@ -72,6 +73,8 @@ class Job:
         # Detect seniority/experience level from the title and job type.
         if self.level is None:
             self.level = normalize_level(self.title, self.employment_type)
+        # Put the posting date into ISO-8601 so sources sort by recency.
+        self.posted_at = normalize_date(self.posted_at)
 
     @property
     def uid(self) -> str:
