@@ -269,7 +269,7 @@ def normalize_date(raw: Optional[str]) -> Optional[str]:
         pass
     # A few common explicit layouts.
     for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d.%m.%Y", "%m/%d/%Y",
-                "%d %b %Y", "%d %B %Y"):
+                "%d %b %Y", "%d %B %Y", "%b %d, %Y", "%B %d, %Y"):
         try:
             return datetime.strptime(s, fmt).isoformat()
         except Exception:

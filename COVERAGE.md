@@ -20,7 +20,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 45/58 live
+## Required ATS coverage — 46/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -57,7 +57,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 31 | Lever.co | ✅ | `lever` | 3,184 | keyless board API |
 | 32 | Manatal | ✅ | `manatal` | 236 (2 boards) | keyless DRF API `careers-page.com/api/v1.0/c/{tenant}/jobs/`; more boards addable |
 | 33 | Oracle Recruiting | ✅ | `oracle` | 2,400 | keyless CX API |
-| 34 | PageUp | 🟡 | `pageup` | connector ready (JSON-LD), but list page is bot-challenged to plain requests — needs headless render |
+| 34 | PageUp | ✅ | `pageup` | public per-client RSS `/{id}/cw/en/rss` (job: namespaced fields) · verified on Monash Univ (69) |
 | 35 | Paradox | ⬜ | | | |
 | 36 | Paycom | ⬜ | | | |
 | 37 | Paycor | ⬜ | | | |
@@ -85,7 +85,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 15/20 live
+## Required job board platform coverage — 16/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -100,7 +100,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 9 | JobBoard.io | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
 | 10 | Wiley Madgex | ✅ | `jobfeed` | | public RSS feed {board}/jobsrss/ · verified on Nature Careers |
 | 11 | Talenetic | ⬜ | | | |
-| 12 | JobMount | ⬜ | | | |
+| 12 | JobMount | ✅ | `jobmount` | public per-category RSS `{host}/{slug}?rss` · verified on AWC JobNet (7 categories) |
 | 13 | CareerSiteCloud | ⬜ | | | |
 | 14 | JobBoard.com | ✅ | `jobboardcom` | live | per-sector RSS `/jobs/rss/?params=SectorIds=N` (rate-limited, retried) · board = host |
 | 15 | Artha | ✅ | `artha` | 632 | keyless guest search API `jobs/search/guest` (Origin-scoped) · Knovator engine · board = host |
@@ -128,8 +128,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live ✅ | Ready 🟡 | Required |
 |---|---|---|---|
-| ATS | 45 | 1 | 58 |
-| Job boards | 15 | 0 | 20 |
+| ATS | 46 | 1 | 58 |
+| Job boards | 16 | 0 | 20 |
 | **Total** | **60** | **1** | **78** |
 
 > **Coverage is prioritised by volume, not by logo count.** The live

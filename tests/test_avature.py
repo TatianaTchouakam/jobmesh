@@ -52,7 +52,7 @@ def test_parses_rss():
     assert a.company == "Delta"
     assert a.source_job_id == "33793"
     assert a.source_url == "https://delta.avature.net/careers/JobDetail/Flight-Attendant/33793"
-    assert a.posted_at.startswith("Fri, 18 Aug 2023")
+    assert a.posted_at.startswith("2023-08-18")  # normalized to ISO
     assert a.source_platform == "avature" and a.source_board == "delta"
     assert jobs[1].remote is True        # "Remote ..." in title
 

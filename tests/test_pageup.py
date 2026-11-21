@@ -1,67 +1,62 @@
-"""PageUp connector — offline: listing -> per-job JSON-LD JobPosting."""
-import json
+"""Offline test: PageUp per-client RSS (job: namespaced fields, company from board)."""
 from jobmesh.connectors.pageup import PageUpConnector
 
-ROBOTS = ("User-agent: *\nDisallow: /api/\nDisallow: /me/\n"
-          "Disallow: /jobs/search?query=\n")
-
-
-def _listing(slugs):
-    links = ('<a href="/jobs/search">Search</a><a href="/jobs/filter">Filter</a>'
-             + "".join(f'<a href="/jobs/{s}">Role</a>' for s in slugs))
-    return f"<html><body>{links}</body></html>"
-
-
-def _jobpage(title, city, country, org, emp="FULL_TIME"):
-    ld = {"@context": "https://schema.org/", "@type": "JobPosting", "title": title,
-          "description": "<p>Build things</p>", "datePosted": "2026-11-02",
-          "employmentType": emp,
-          "hiringOrganization": {"@type": "Organization", "name": org},
-          "jobLocation": {"@type": "Place", "address": {"@type": "PostalAddress",
-                          "addressLocality": city, "addressCountry": country}}}
-    return f'<html><head><script type="application/ld+json">{json.dumps(ld)}</script></head></html>'
+_RSS = """<?xml version="1.0"?>
+<rss xmlns:job="urn:job" xmlns:a10="http://www.w3.org/2005/Atom"><channel>
+<item>
+  <guid>https://careers.pageuppeople.com/513/cw/en/job/701817</guid>
+  <link>https://careers.pageuppeople.com/513/cw/en/job/701817</link>
+  <title>Indigenous PhD Opportunity &amp; Return</title>
+  <description>Be part of a team...</description>
+  <pubDate>Fri, 20 Nov 2026 01:30:00 Z</pubDate>
+  <job:refNo>701817</job:refNo>
+  <job:description>&lt;h3&gt;Full role&lt;/h3&gt;</job:description>
+  <job:applyLink>https://secure.dc2.pageuppeople.com/apply/513/gateway?lJobID=701817</job:applyLink>
+  <job:location>Campus|Caulfield campus</job:location>
+  <job:workType>Fixed-term (Full-time)</job:workType>
+  <job:category>Academic|Scholarship</job:category>
+</item>
+<item>
+  <link>https://careers.pageuppeople.com/513/cw/en/job/701900</link>
+  <title>Remote Research Fellow</title>
+  <job:refNo>701900</job:refNo>
+  <job:location>Remote|Work from home</job:location>
+  <job:workType>Continuing (Full-time)</job:workType>
+</item>
+</channel></rss>"""
 
 
 class _Resp:
-    def __init__(self, text, status=200):
-        self.text = text
-        self.status_code = status
-
-    def raise_for_status(self):
-        if self.status_code >= 400:
-            from requests import RequestException
-            raise RequestException(str(self.status_code))
+    status_code = 200
+    def __init__(self, text): self.text = text
+    def raise_for_status(self): pass
 
 
-class _FakeSession:
-    def __init__(self, listing, jobs, robots=ROBOTS):
-        self.headers = {}
-        self._listing = listing
-        self._jobs = jobs
-        self._robots = robots
-
+class _Session:
+    headers = {}
     def get(self, url, timeout=None, **k):
-        if url.endswith("/robots.txt"):
-            return _Resp(self._robots)
-        if url.endswith("/"):
-            return _Resp(self._listing)
-        for slug, html in self._jobs.items():
-            if url.endswith(f"/jobs/{slug}"):
-                return _Resp(html)
-        return _Resp("", status=404)
+        if url.endswith("robots.txt"):
+            return _Resp("User-agent: *\nDisallow: /api/\n")
+        assert url == "https://careers.pageuppeople.com/513/cw/en/rss"
+        return _Resp(_RSS)
 
 
-def test_listing_to_jsonld():
-    jobs = {"finance-business-partner-australia": _jobpage("Finance Business Partner", "Melbourne", "AU", "PageUp"),
-            "account-executive-usa": _jobpage("Account Executive", "New York", "US", "PageUp")}
-    c = PageUpConnector("pupcareers",
-                        session=_FakeSession(_listing(list(jobs)), jobs))
-    got = c.fetch()
-    assert len(got) == 2   # search/filter links excluded
-    a = next(j for j in got if j.source_job_id == "finance-business-partner-australia")
-    assert a.title == "Finance Business Partner"
-    assert a.company == "PageUp"
-    assert a.location == "Melbourne, AU"
-    assert a.source_url == "https://pupcareers.pageuppeople.com/jobs/finance-business-partner-australia"
-    assert a.source_platform == "pageup" and a.source_board == "pupcareers"
-    assert "Build things" in (a.description or "")
+def test_pageup_rss():
+    jobs = PageUpConnector("513|Monash University", session=_Session()).fetch()
+    assert len(jobs) == 2
+    a = jobs[0]
+    assert a.source_job_id == "701817"
+    assert a.company == "Monash University"
+    assert a.title == "Indigenous PhD Opportunity & Return"
+    assert a.location == "Caulfield campus"
+    assert a.category == "Other"  # model normalizes "Scholarship" -> Other
+    assert a.apply_url.endswith("lJobID=701817")
+    assert a.source_url.endswith("/job/701817")
+    assert a.posted_at and a.posted_at.startswith("2026-11-20")
+    b = jobs[1]
+    assert b.company == "Monash University" and b.remote is True
+
+
+def test_pageup_company_fallback():
+    jobs = PageUpConnector("513", session=_Session()).fetch()
+    assert jobs[0].company == "PageUp employer"

@@ -3903,3 +3903,17 @@ mycareersfuture:
 # EURES (EU/EEA job mobility portal) — keyless public search API (bonus, hors 78)
 eures:
   - "eures"    # European Union EURES — verifie 21 nov. 2026 (1.9M offres, cappe 5000)
+
+# PageUp (ATS #34/78) — public per-client RSS feed (clientId|Company)
+pageup:
+  - "513|Monash University"    # verifie 21 nov. 2026 (69 offres, /513/cw/en/rss)
+
+# JobMount (job board #12/78) — public per-category RSS, {host}/{slug}?rss
+jobmount:
+  - "jobnet.wacities.org/public-works-maintenance"   # AWC JobNet — verifie 21 nov. 2026
+  - "jobnet.wacities.org/engineering"
+  - "jobnet.wacities.org/administrative"
+  - "jobnet.wacities.org/parks-recreation"
+  - "jobnet.wacities.org/planning-community-development"
+  - "jobnet.wacities.org/utilities"
+  - "jobnet.wacities.org/clerk"

@@ -1,78 +1,125 @@
-"""PageUp connector — public, server-rendered career sites with JSON-LD.
+"""PageUp connector — public per-client RSS job feed.
 
-PageUp hosts each customer's career site at ``{tenant}.pageuppeople.com``
-(some run on custom domains). The listing page server-renders a link to
-every job (``/jobs/{slug}``), and each job page embeds a clean schema.org
-``JobPosting`` in a ``<script type="application/ld+json">`` block. We read
-the listing, collect the job URLs, then fetch each and reuse the shared
-JSON-LD parser.
+PageUp People hosts each customer on ``careers.pageuppeople.com/{clientId}/``
+and publishes a rich public RSS feed at ``/{clientId}/cw/en/rss`` (declared
+``application/rss+xml``). Each <item> carries namespaced ``job:`` fields:
 
-robots.txt allows ``/jobs/{slug}`` detail pages (only ``/api/``, ``/me/``
-and ``/jobs/search?query=`` are disallowed), so our shared robots guard
-permits the crawl. A board is the tenant subdomain prefix (e.g.
-"pupcareers"). No key, no CSRF.
+    <link>https://careers.pageuppeople.com/513/cw/en/job/701817</link>
+    <title>...</title>
+    <job:refNo>701817</job:refNo>
+    <job:location>Campus|Caulfield campus</job:location>
+    <job:workType>Fixed-term (Full-time)</job:workType>
+    <job:applyLink>https://secure.dc2.pageuppeople.com/apply/...</job:applyLink>
+    <job:category>Academic|Scholarship</job:category>
+    <pubDate>Fri, 20 Nov 2026 01:30:00 Z</pubDate>
+
+This public feed avoids the bot-challenged HTML listing entirely. The client
+name is not in the feed, so ``board`` is "clientId|Company"
+(e.g. "513|Monash University"); with no "|", company falls back. robots.txt
+on careers.pageuppeople.com disallows only /api/, /me/ and /jobs/search.
 """
 
 from __future__ import annotations
 
 import re
+from email.utils import parsedate_to_datetime
 
 import requests
 
-from ..models import now_iso
+from ..models import Job, now_iso
+from ..normalize import html_to_text, detect_remote, make_dedup_key
 from ..robots import allowed as robots_allowed, USER_AGENT
 from .base import Connector
-from .careersite import parse_jobpostings, posting_to_job
 
 TIMEOUT = 25
-MAX_JOBS = 400
-# job detail slugs; skip the listing/filter/search utility paths
-_JOB_RE = re.compile(r'href="(/jobs/(?!search|filter|favourite)[a-z0-9][a-z0-9-]{4,})"', re.IGNORECASE)
+MAX_JOBS = 1000
+
+_ITEM = re.compile(r"<item\b[^>]*>(.*?)</item>", re.IGNORECASE | re.DOTALL)
+
+
+def _tag(block: str, name: str) -> str | None:
+    m = re.search(rf"<{name}\b[^>]*>(.*?)</{name}>", block, re.IGNORECASE | re.DOTALL)
+    if not m:
+        return None
+    val = m.group(1).strip()
+    cd = re.match(r"^<!\[CDATA\[(.*?)\]\]>$", val, re.DOTALL)
+    if cd:
+        val = cd.group(1).strip()
+    return val or None
+
+
+def _unescape(s: str | None) -> str | None:
+    if not s:
+        return s
+    import html
+    return html.unescape(s)
+
+
+def _after_pipe(s: str | None) -> str | None:
+    if not s:
+        return None
+    return s.split("|")[-1].strip() or None
+
+
+def _date(s: str | None) -> str | None:
+    if not s:
+        return None
+    try:
+        return parsedate_to_datetime(s.replace(" Z", " +0000")).isoformat()
+    except (TypeError, ValueError):
+        return None
 
 
 class PageUpConnector(Connector):
     platform = "pageup"
 
     def __init__(self, board: str, session: requests.Session | None = None):
-        super().__init__(board)
+        client, _, company = board.partition("|")
+        super().__init__(client.strip())
+        self._company = company.strip() or "PageUp employer"
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
-        self._base = f"https://{board}.pageuppeople.com"
+        self._url = f"https://careers.pageuppeople.com/{client.strip()}/cw/en/rss"
 
-    def fetch(self) -> list:
-        if not robots_allowed(f"{self._base}/", self._session):
+    def fetch(self) -> list[Job]:
+        if not robots_allowed(self._url, self._session):
             return []
-        resp = self._session.get(f"{self._base}/", timeout=TIMEOUT)
+        resp = self._session.get(self._url, timeout=TIMEOUT)
         resp.raise_for_status()
-        paths: list[str] = []
-        seen_paths: set[str] = set()
-        for m in _JOB_RE.finditer(resp.text):
-            path = m.group(1)
-            if path not in seen_paths:
-                seen_paths.add(path)
-                paths.append(path)
-        fetched_at = now_iso()
-        jobs = []
+        at = now_iso()
+        jobs: list[Job] = []
         seen: set[str] = set()
-        for path in paths[:MAX_JOBS]:
-            url = f"{self._base}{path}"
-            if not robots_allowed(url, self._session):
+        for block in _ITEM.findall(resp.text):
+            link = _tag(block, "link")
+            ref = _tag(block, "job:refNo") or (link.rsplit("/", 1)[-1] if link else None)
+            if not ref or ref in seen:
                 continue
-            try:
-                page = self._session.get(url, timeout=TIMEOUT)
-                page.raise_for_status()
-            except requests.RequestException:
-                continue
-            slug = path.rsplit("/", 1)[-1]
-            for posting in parse_jobpostings(page.text):
-                job = posting_to_job(posting, self.platform, self.board, fetched_at, url)
-                if job is None:
-                    continue
-                job.source_job_id = slug
-                job.source_url = url
-                job.apply_url = url
-                if job.source_job_id in seen:
-                    continue
-                seen.add(job.source_job_id)
-                jobs.append(job)
+            seen.add(ref)
+            title = _unescape(_tag(block, "title")) or "(untitled)"
+            loc = _after_pipe(_unescape(_tag(block, "job:location")))
+            cat = _after_pipe(_unescape(_tag(block, "job:category")))
+            work = _unescape(_tag(block, "job:workType"))
+            apply_link = _tag(block, "job:applyLink") or link
+            desc = _tag(block, "job:description") or _tag(block, "description")
+            jobs.append(Job(
+                source_platform=self.platform,
+                source_board=self.board,
+                source_job_id=str(ref),
+                title=title,
+                company=self._company,
+                location=loc,
+                description=html_to_text(desc) if desc else None,
+                source_url=link or apply_link,
+                apply_url=apply_link,
+                employment_type=work,
+                category=cat,
+                remote=detect_remote(f"{loc or ''} {work or ''} {title}"),
+                posted_at=_date(_tag(block, "pubDate")),
+                dedup_key=make_dedup_key(title, self._company, loc),
+                first_seen=at,
+                last_checked=at,
+                is_open=True,
+            ))
+            if len(jobs) >= MAX_JOBS:
+                break
         return jobs

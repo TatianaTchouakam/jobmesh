@@ -58,7 +58,7 @@ def test_taleo_paginates_maps_and_builds_urls():
     assert last.company == "HDR"
     assert last.source_url == "https://hdr.taleo.net/careersection/ex/jobdetail.ftl?job=198078"
     assert last.apply_url == last.source_url
-    assert last.posted_at == "Nov 20, 2026"
+    assert last.posted_at == "2026-11-20T00:00:00"  # normalized to ISO
     first = jobs[0]
     assert first.location == "United States-Colorado-Englewood"
     assert first.source_job_id == "700000"
