@@ -148,6 +148,10 @@ bonus_sources:
 
   - { name: "africarrieres", connector: africarrieres, status: ACTIVE, note: "Pan-African Francophone/multilingual board; per-country sitemaps + schema.org JSON-LD, cite-friendly robots, keyless (seeded: Cameroon, Cote d'Ivoire, Senegal, Mali)" }
 
+  - { name: "arbeitnow", connector: arbeitnow, status: ACTIVE, note: "Germany/EU board; public keyless job-board-api, fully permissive robots" }
+
+  - { name: "jobicy", connector: jobicy, status: ACTIVE, note: "Worldwide remote jobs; public keyless v2 API (cursor), cite-friendly robots" }
+
 # Keyed/optional sources — worldwide reach, activated with the user's own
 # free API credentials (env vars). Not auto-seeded in the daily ingest.
 keyed_sources:

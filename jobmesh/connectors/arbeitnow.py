@@ -1,10 +1,11 @@
-"""Arbeitnow connector (job board, Germany/EU).
+"""Arbeitnow connector (job board) — Germany / EU.
 
-Reads the public Arbeitnow API (no key):
-    https://www.arbeitnow.com/api/job-board-api
+Reads Arbeitnow's public, keyless "job-board-api":
+    https://www.arbeitnow.com/api/job-board-api?page=N
 
-Returns {"data": [...], "links": {"next": url}} and is paginated; this
-reads a few pages. The `board` argument is ignored; use "all" in config.
+Returns {"data": [...], "links": {...}, "meta": {...}}, paginated (300/page).
+robots.txt is fully permissive (``User-agent: * / Disallow:``); only a
+tracking query param is disallowed. The board argument is ignored; use "all".
 """
 
 from __future__ import annotations
@@ -15,12 +16,19 @@ import requests
 
 from ..models import Job, now_iso
 from ..normalize import html_to_text, detect_remote, make_dedup_key
+from ..robots import allowed as robots_allowed, USER_AGENT
 from .base import Connector
 
 API = "https://www.arbeitnow.com/api/job-board-api"
-USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 25
-MAX_PAGES = 4
+MAX_PAGES = 10
+
+
+def _iso(ts) -> str | None:
+    try:
+        return datetime.fromtimestamp(int(ts), timezone.utc).isoformat()
+    except (TypeError, ValueError, OSError):
+        return None
 
 
 class ArbeitnowConnector(Connector):
@@ -30,50 +38,50 @@ class ArbeitnowConnector(Connector):
         super().__init__(board)
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
+        self._session.headers.setdefault("Accept", "application/json")
 
     def fetch(self) -> list[Job]:
+        if not robots_allowed(API, self._session):
+            return []
         at = now_iso()
-        jobs, url = [], API
-        for _ in range(MAX_PAGES):
-            resp = self._session.get(url, timeout=TIMEOUT)
-            resp.raise_for_status()
-            body = resp.json()
-            for d in body.get("data", []):
-                jobs.append(self._to_job(d, at))
-            url = (body.get("links") or {}).get("next")
-            if not url:
+        jobs: list[Job] = []
+        seen: set[str] = set()
+        for page in range(1, MAX_PAGES + 1):
+            try:
+                resp = self._session.get(API, params={"page": page}, timeout=TIMEOUT)
+                resp.raise_for_status()
+            except requests.RequestException:
                 break
+            data = resp.json().get("data") or []
+            if not data:
+                break
+            for d in data:
+                job = self._to_job(d, at)
+                if job.source_job_id in seen:
+                    continue
+                seen.add(job.source_job_id)
+                jobs.append(job)
         return jobs
 
     def _to_job(self, d: dict, at: str) -> Job:
         title = d.get("title") or "(untitled)"
         company = d.get("company_name") or "Unknown"
-        location = d.get("location") or None
-        url = d.get("url")
+        location = d.get("location")
+        slug = d.get("slug") or d.get("url") or f"{company}:{title}"
+        types = d.get("job_types") or []
         remote = bool(d.get("remote"))
-        job_types = d.get("job_types") or []
-        tags = d.get("tags") or []
         return Job(
             source_platform=self.platform, source_board=self.board,
-            source_job_id=str(d.get("slug")),
+            source_job_id=str(slug),
             title=title, company=company, location=location,
             description=html_to_text(d.get("description")),
-            source_url=url, apply_url=url,
+            source_url=d.get("url"), apply_url=d.get("url"),
             salary=None,
-            employment_type=(job_types[0] if job_types else None),
-            workplace_type=("remote" if remote else None),
-            category=(tags[0] if tags else None),
-            remote=remote if remote else detect_remote(location),
-            posted_at=_epoch_to_iso(d.get("created_at")),
+            employment_type=types[0] if types else None,
+            workplace_type="remote" if remote else None,
+            category=None,
+            remote=remote or detect_remote(location),
+            posted_at=_iso(d.get("created_at")),
             dedup_key=make_dedup_key(title, company, location),
             first_seen=at, last_checked=at, is_open=True,
         )
-
-
-def _epoch_to_iso(sec) -> str | None:
-    if not sec:
-        return None
-    try:
-        return datetime.fromtimestamp(int(sec), tz=timezone.utc).isoformat()
-    except (ValueError, OSError, TypeError):
-        return None
