@@ -4303,3 +4303,13 @@ vantaa:
 # page; robots permits the listing + detail pages. Keyless, no CSRF.
 minajobs:
   - cm.minajobs.net
+
+# Africarrieres (africarrieres.com) — pan-African, multilingual job board.
+# Per-country/-language sitemaps; schema.org JobPosting JSON-LD on every
+# /{country}/{lang}/emplois/{slug} page. robots welcomes citing search
+# robots (Content-Signal: search=yes). Keyless. Board = {cc}-{lang}.
+africarrieres:
+  - cm-fr
+  - ci-fr
+  - sn-fr
+  - ml-fr
