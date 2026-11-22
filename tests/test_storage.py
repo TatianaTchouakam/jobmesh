@@ -51,3 +51,32 @@ def test_failed_fetch_does_not_close(tmp_path):
         storage.log_fetch(conn, "greenhouse", "acme", "failure", error="timeout")
         # No close_absent call on failure -> both stay open.
         assert len(storage.search(conn, open_only=True)) == 2
+
+
+def test_incomplete_fetch_does_not_mass_close(tmp_path):
+    """A throttled fetch returning far fewer than are open must NOT close the
+    rest (guards against false mass-closures like MinaJobs 399 -> 73)."""
+    db = str(tmp_path / "t.db")
+    with storage.session(db) as conn:
+        # Seed 30 open postings for one board.
+        storage.upsert_jobs(conn, [_job(str(i)) for i in range(30)])
+        assert storage.count(conn, open_only=True) == 30
+
+        # Next run sees only 5 of them (throttled). Guard should skip closing.
+        seen = {f"greenhouse:acme:{i}" for i in range(5)}
+        closed = storage.close_absent(conn, "greenhouse", "acme", seen)
+        assert closed == 0
+        assert storage.count(conn, open_only=True) == 30
+
+
+def test_normal_shrink_still_closes(tmp_path):
+    """A healthy fetch that still returns most postings closes the few absent
+    ones (guard only trips on a drastic, throttling-sized drop)."""
+    db = str(tmp_path / "t.db")
+    with storage.session(db) as conn:
+        storage.upsert_jobs(conn, [_job(str(i)) for i in range(30)])
+        # Next run sees 28 of 30 -> 2 genuinely gone, well above the 50% floor.
+        seen = {f"greenhouse:acme:{i}" for i in range(28)}
+        closed = storage.close_absent(conn, "greenhouse", "acme", seen)
+        assert closed == 2
+        assert storage.count(conn, open_only=True) == 28

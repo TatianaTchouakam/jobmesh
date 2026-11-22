@@ -14,12 +14,15 @@ same schema maps cleanly onto Postgres later.
 
 from __future__ import annotations
 
+import logging
 import os
 import sqlite3
 from contextlib import contextmanager
 from typing import Iterable, Iterator, Optional
 
 from .models import Job, now_iso
+
+log = logging.getLogger(__name__)
 
 # DB location is env-configurable so a deploy can point it at a
 # persistent disk (e.g. Render: JOBMESH_DB=/var/data/jobmesh.db).
@@ -204,7 +207,23 @@ def close_absent(
         (platform, board),
     ).fetchall()
 
+    open_before = len(rows)
     to_close = [r["uid"] for r in rows if r["uid"] not in seen_uids]
+
+    # Guard against false mass-closures from an incomplete/throttled fetch.
+    # If a board that currently has many open postings suddenly returns far
+    # fewer than half of them, the fetch was almost certainly rate-limited or
+    # cut short (not a genuine mass-expiry), so keep the existing postings open
+    # rather than closing real jobs. A later healthy fetch closes any that are
+    # truly gone.
+    if open_before >= 20 and len(seen_uids) < open_before * 0.5:
+        log.warning(
+            "close_absent: incomplete fetch for %s/%s (%d seen vs %d open) \u2014 "
+            "skipping close of %d postings to avoid false closures",
+            platform, board, len(seen_uids), open_before, len(to_close),
+        )
+        return 0
+
     for uid in to_close:
         conn.execute(
             "UPDATE jobs SET is_open=0, last_checked=?, last_changed=? "

@@ -18,6 +18,7 @@ permitted. A board is the host (default "cm.minajobs.net").
 from __future__ import annotations
 
 import re
+import time
 
 import requests
 
@@ -29,6 +30,8 @@ from .careersite import parse_jobpostings, posting_to_job
 TIMEOUT = 25
 MAX_PAGES = 70
 MAX_JOBS = 700
+REQUEST_DELAY = 0.25   # polite pause between requests (seconds)
+RETRIES = 3            # attempts per request on transient errors/throttling
 DEFAULT_HOST = "cm.minajobs.net"
 
 # /emplois/{slug}-{numericId} — detail links; the trailing number is the id.
@@ -54,18 +57,39 @@ class MinaJobsConnector(Connector):
         self._session.headers["Accept-Encoding"] = "gzip, deflate"
         self._base = f"https://{self._host}"
 
+    def _get(self, url: str):
+        """GET with polite pacing and retry/backoff on transient errors
+        (timeouts, dropped connections, and 429/5xx throttling). Returns the
+        response, or None if every attempt failed."""
+        for attempt in range(RETRIES):
+            time.sleep(REQUEST_DELAY)
+            try:
+                resp = self._session.get(url, timeout=TIMEOUT)
+                if resp.status_code == 429 or resp.status_code >= 500:
+                    time.sleep(1.5 * (attempt + 1))  # back off, then retry
+                    continue
+                resp.raise_for_status()
+                return resp
+            except requests.RequestException:
+                time.sleep(1.0 * (attempt + 1))
+        return None
+
     def _collect_urls(self) -> list[str]:
         paths: list[str] = []
         seen_ids: set[str] = set()
+        empty_streak = 0
         for page in range(1, MAX_PAGES + 1):
             url = f"{self._base}/emplois?page={page}"
             if not robots_allowed(url, self._session):
                 break
-            try:
-                resp = self._session.get(url, timeout=TIMEOUT)
-                resp.raise_for_status()
-            except requests.RequestException:
-                break
+            resp = self._get(url)
+            # A failed or job-less page may just be throttling, not the true end
+            # of the list: tolerate two in a row before stopping pagination.
+            if resp is None:
+                empty_streak += 1
+                if empty_streak >= 2:
+                    break
+                continue
             new = 0
             for m in _JOB_RE.finditer(resp.text):
                 path, jid = m.group(1), m.group(2)
@@ -75,7 +99,11 @@ class MinaJobsConnector(Connector):
                 paths.append(path)
                 new += 1
             if new == 0:
-                break
+                empty_streak += 1
+                if empty_streak >= 2:
+                    break
+                continue
+            empty_streak = 0
             if len(paths) >= MAX_JOBS:
                 break
         return paths[:MAX_JOBS]
@@ -97,10 +125,8 @@ class MinaJobsConnector(Connector):
             job_id = mid.group(1) if mid else path
             if not robots_allowed(url, self._session):
                 continue
-            try:
-                page = self._session.get(url, timeout=TIMEOUT)
-                page.raise_for_status()
-            except requests.RequestException:
+            page = self._get(url)
+            if page is None:
                 continue
             for posting in parse_jobpostings(page.text):
                 job = posting_to_job(posting, self.platform, self._host, at, url)
