@@ -787,6 +787,7 @@ devitjobs:
 # connector to v2 to re-enable.
 reliefweb:
   - all
+  - Cameroon
 
 # Rise (joinrise.io) — cross-employer remote/tech feed (public JSON, no token).
 # Paused: their API currently returns 504 Gateway Timeout. The connector is
@@ -4296,3 +4297,9 @@ taiwanjobs:
 # Vantaa (City of Vantaa, Finland) — keyless open jobs JSON API (bonus). board ignored.
 vantaa:
   - "all"    # verifie 21 nov. 2026 (37 offres)
+
+# MinaJobs (cm.minajobs.net) — largest general job board in Cameroon.
+# Server-rendered schema.org JobPosting JSON-LD on every /emplois/{slug}-{id}
+# page; robots permits the listing + detail pages. Keyless, no CSRF.
+minajobs:
+  - cm.minajobs.net

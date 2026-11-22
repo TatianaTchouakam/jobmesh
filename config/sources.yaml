@@ -144,6 +144,8 @@ bonus_sources:
 
   - { name: "vantaa", connector: vantaa, status: ACTIVE, note: "Finland — City of Vantaa open jobs JSON API, keyless" }
 
+  - { name: "minajobs", connector: minajobs, status: ACTIVE, note: "Cameroon — MinaJobs, largest general CM job board; schema.org JobPosting JSON-LD, keyless" }
+
 # Keyed/optional sources — worldwide reach, activated with the user's own
 # free API credentials (env vars). Not auto-seeded in the daily ingest.
 keyed_sources:

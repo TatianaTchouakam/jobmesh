@@ -10,7 +10,8 @@ mostly non-tech roles (programme, logistics, health, WASH, finance, M&E).
         &limit=100&offset=0&sort[]=date.created:desc
 
 `appname` is just a courtesy identifier (not a secret). `board` is
-ignored; use "all".
+"all" for worldwide, or a country name (e.g. "Cameroon") to pull only that
+country's jobs via the official country filter.
 
 Docs: https://apidoc.reliefweb.int/
 """
@@ -26,11 +27,12 @@ from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
 
 API = "https://api.reliefweb.int/v2/jobs"
-# ReliefWeb now requires a PRE-APPROVED appname on every request (free; request
-# one at https://apidoc.reliefweb.int/). Set it as an env var so we never ship a
-# shared/guessable name. Until it is set, this connector stays out of config.
+# ReliefWeb requires a PRE-APPROVED appname on every request (free; request one
+# at https://apidoc.reliefweb.int/). The appname is a courtesy identifier, not a
+# secret, so our approved name is the default; RELIEFWEB_APPNAME overrides it.
+DEFAULT_APPNAME = "jobmesh-world-rw-k7m3q92FgL"
 def _appname() -> str:
-    return (os.environ.get("RELIEFWEB_APPNAME") or "").strip()
+    return (os.environ.get("RELIEFWEB_APPNAME") or DEFAULT_APPNAME).strip()
 USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 TIMEOUT = 30
 LIMIT = 100
@@ -71,13 +73,15 @@ class ReliefWebConnector(Connector):
         at = now_iso()
         jobs: list[Job] = []
         for page in range(MAX_PAGES):
-            resp = self._session.get(
-                API,
-                params={"appname": appname, "profile": "full",
-                        "limit": LIMIT, "offset": page * LIMIT,
-                        "sort[]": "date.created:desc"},
-                timeout=TIMEOUT,
-            )
+            params = {"appname": appname, "profile": "full",
+                      "limit": LIMIT, "offset": page * LIMIT,
+                      "sort[]": "date.created:desc"}
+            # A board other than "all" is treated as a country name: pull only
+            # that country's jobs (e.g. "Cameroon") via the official filter.
+            if self.board and self.board.lower() != "all":
+                params["filter[field]"] = "country"
+                params["filter[value]"] = self.board
+            resp = self._session.get(API, params=params, timeout=TIMEOUT)
             resp.raise_for_status()
             data = resp.json()
             batch = data.get("data") or []
