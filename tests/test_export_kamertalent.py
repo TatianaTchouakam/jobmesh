@@ -43,13 +43,16 @@ def test_exclusions_and_format():
     assert o["source_id"] == "jobmesh-greenhouse" and o["source_ref"] == "acme:1"
     assert o["pays_iso3"] == "CMR" and o["date_publication"] == "2026-11-20" and o["date_limite"] is None
     assert o["lien"] == "https://boards.example.com/acme/1"
-    for excluded in ("minajobs", "uncareers", "jooble"):
+    for excluded in ("minajobs", "uncareers", "jooble", "usajobs"):
         assert to_kamertalent({**_job("2", "Douala", platform=excluded).to_dict(), "is_open": 1}) is None
     assert to_kamertalent({**row, "is_open": 0}) is None
     stage = to_kamertalent({**_job("3", "Accra, Ghana", title="Finance Intern").to_dict(), "is_open": 1})
     assert stage["type_offre"] == "stage"
     d = to_kamertalent({**_job("4", "Remote - Worldwide").to_dict(), "is_open": 1})
-    assert d["pays_iso3"] is None and d["ville"] == "À distance"
+    assert d["pays_iso3"] is None and d["ville"] == "À distance · Remote - Worldwide"
+    for filler in ("Don’t see what you’re looking for?", "Don't see what you are looking for?",
+                   "Talent Pool: Future Opportunities", "General Application"):
+        assert to_kamertalent({**_job("5", "Remote - Worldwide", title=filler).to_dict(), "is_open": 1}) is None
 
 
 def test_export_file_read_only(tmp_path):

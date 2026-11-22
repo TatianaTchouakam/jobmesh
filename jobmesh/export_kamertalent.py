@@ -34,7 +34,12 @@ EXCLUDED_PLATFORMS = {
     "minajobs",   # robots.txt disallows automated access: never exported
     "uncareers",  # KamerTalent reads the official UN feed directly
     "jooble",     # partner API: its terms cover Jobmesh only
+    "usajobs",    # US federal jobs, reserved to US citizens
 }
+# Board placeholders and talent pools are not job offers.
+NOT_A_JOB = re.compile(r"(don.?t see what (you.?re|you are) looking for|general application|open application|"
+                       r"spontaneous application|candidature spontan|talent pool|talent community|future opportunities)",
+                       re.I)
 
 CAMEROON_CITIES = {
     "yaounde", "douala", "bafoussam", "garoua", "maroua", "bamenda", "buea", "bertoua", "ngaoundere",
@@ -163,7 +168,7 @@ def to_kamertalent(row: dict) -> Optional[dict]:
     if platform in EXCLUDED_PLATFORMS or not row.get("is_open", 1):
         return None
     link = row.get("source_url") or row.get("apply_url")
-    if not link or not row.get("title"):
+    if not link or not row.get("title") or NOT_A_JOB.search(row["title"]):
         return None
     country = africa_country(row.get("location"))
     diaspora = country is None and open_to_diaspora(row.get("location"))
@@ -177,7 +182,9 @@ def to_kamertalent(row: dict) -> Optional[dict]:
         "organisation": row.get("company"),
         "description": (row.get("description") or "")[:4000] or None,
         "pays_iso3": country,
-        "ville": ((row.get("location") or "")[:120] or None) if country else "À distance",
+        # remote: keep the stated scope so readers see who can apply ("À distance · Anywhere in the World")
+        "ville": ((row.get("location") or "")[:120] or None) if country
+                 else f"À distance · {(row.get('location') or '').strip()[:100]}",
         "type_offre": guess_type(row["title"], row.get("level"), row.get("employment_type")),
         "date_publication": _iso_date(row.get("posted_at")),  # the source's own date, never invented
         "date_limite": None,
