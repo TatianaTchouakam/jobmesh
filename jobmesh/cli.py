@@ -77,6 +77,17 @@ def _cmd_stats(args) -> None:
 
 
 
+def _cmd_paypal_setup(args) -> None:
+    """Create the PayPal product + 3 EUR/month plan once; prints the plan id to
+    put in PAYPAL_PLAN_ID. Needs PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET (and
+    PAYPAL_ENV=sandbox|live) in the environment."""
+    from . import paypal
+    out = paypal.bootstrap_plan()
+    print(json.dumps(out, indent=2))
+    print("\nSet this in your environment (and in Render):")
+    print(f"  PAYPAL_PLAN_ID={out['plan_id']}")
+
+
 def _cmd_sources(args) -> None:
     from . import sources as srcreg
     data = srcreg.load_sources()
@@ -140,6 +151,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_src = sub.add_parser("sources", help="integration status of all required platforms")
     p_src.add_argument("--json", action="store_true", help="machine-readable output")
     p_src.set_defaults(func=_cmd_sources)
+
+    p_pp = sub.add_parser("paypal-setup",
+                          help="create the PayPal 3 EUR/month plan (run once)")
+    p_pp.set_defaults(func=_cmd_paypal_setup)
 
     return parser
 

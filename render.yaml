@@ -37,3 +37,14 @@ services:
         sync: false
       - key: RELIEFWEB_APPNAME
         sync: false
+      # PayPal subscription billing (alongside Stripe). Create a REST app at
+      # developer.paypal.com, then run `python -m jobmesh.cli paypal-setup`
+      # once to get the plan id. Leave unset to simply hide the PayPal button.
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_PLAN_ID
+        sync: false
+      - key: PAYPAL_ENV
+        sync: false

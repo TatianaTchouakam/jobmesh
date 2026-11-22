@@ -62,6 +62,14 @@ try:
 except Exception:  # pragma: no cover
     pass
 
+# Jobmesh Pro billing via PayPal (subscription), alongside Stripe. Same guard:
+# a missing PayPal config never stops the API from starting.
+try:
+    from .paypal import router as _paypal_router
+    app.include_router(_paypal_router)
+except Exception:  # pragma: no cover
+    pass
+
 
 @app.get("/", include_in_schema=False)
 def home() -> FileResponse:
