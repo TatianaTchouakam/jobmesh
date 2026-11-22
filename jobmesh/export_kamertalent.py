@@ -109,9 +109,14 @@ ELSEWHERE = re.compile(r"\b(portugal|mexico|jalisco|spain|espana|chile|brazil|us
 # ", CA" is California, ", GA" Georgia, ", MA" Massachusetts...: for these, only a country name counts.
 US_STATE_CLASHES = {"CA", "GA", "MA", "NE", "SC", "SD", "TN"}
 REMOTE = re.compile(r"\b(remote|anywhere|worldwide|work from home|home-based|teletravail|a distance)\b")
-OPEN_TO_US = re.compile(r"\b(worldwide|anywhere|global|africa|afrique|emea)\b")
+# "Anywhere" alone means worldwide; "Anywhere in France" or "Anywhere, USA" does not.
+OPEN_TO_US = re.compile(r"\b(worldwide|global|africa|afrique|emea|anywhere in the world)\b")
+REMOTE_WORDS = re.compile(r"\b(remote|anywhere|home based|home-based|work from home|teletravail|a distance|"
+                          r"fully|100|only)\b|[^a-z]+")
 NOT_FOR_US = re.compile(r"\b(us only|usa only|united states only|u s only|uk only|eu only|europe only|"
-                        r"us based|based in the us|north america|latam|apac)\b")
+                        r"us based|based in the us|north america|latam|apac|usa|united states|canada|"
+                        r"europe|france|belgium|spain|germany|ukraine|poland|portugal|india|"
+                        r"anywhere in (?!the world)[a-z]+)\b")
 
 
 def _plain(text: Optional[str]) -> str:
@@ -140,9 +145,11 @@ def africa_country(location: Optional[str]) -> Optional[str]:
 
 
 def open_to_diaspora(location: Optional[str]) -> bool:
-    """Remote posting explicitly open worldwide, to Africa or to EMEA."""
+    """Remote posting explicitly open worldwide, to Africa or to EMEA (or "Remote / Anywhere" with nothing else)."""
     loc = _plain(location)
-    return bool(REMOTE.search(loc) and OPEN_TO_US.search(loc) and not NOT_FOR_US.search(loc))
+    if not REMOTE.search(loc) or NOT_FOR_US.search(loc):
+        return False
+    return bool(OPEN_TO_US.search(loc)) or loc.startswith("anywhere") and not REMOTE_WORDS.sub("", loc)
 
 
 def guess_type(title: str, level: Optional[str], employment: Optional[str]) -> str:

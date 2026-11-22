@@ -34,6 +34,11 @@ def test_diaspora_only_when_explicitly_open():
     assert open_to_diaspora("Remote, Africa")
     assert not open_to_diaspora("Remote - US only")
     assert not open_to_diaspora("Remote")                   # no stated scope: not exported
+    for ok in ("Home based - Worldwide", "Anywhere in the World", "Remote, Global", "EMEA - Remote", "Anywhere"):
+        assert open_to_diaspora(ok), ok
+    for leak in ("Anywhere, USA", "ANYWHERE USA", "Anywhere in France", "Anywhere in France, Belgium, Spain",
+                 "Ukraine Anywhere", "Remote - Europe", "Remote, Canada"):  # seen in the real index
+        assert not open_to_diaspora(leak), leak
     assert not open_to_diaspora("Paris, France")
 
 
