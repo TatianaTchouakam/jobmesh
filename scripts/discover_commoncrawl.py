@@ -83,13 +83,21 @@ def cc_urls(s: requests.Session, api: str, pattern: str, limit: int) -> list[str
     if pattern.startswith("*."):
         params["url"] = pattern[2:]
         params["matchType"] = "domain"
-    time.sleep(1.0)  # one request per second to Common Crawl
-    try:
-        r = s.get(api, params=params, timeout=60)
-    except requests.RequestException as exc:
-        log(f"   index error: {exc}")
-        return []
-    if r.status_code == 404:  # no capture for this pattern
+    r = None
+    # The public index is often overloaded (503/504): wait and retry, politely.
+    for wait in (2, 15, 45):
+        time.sleep(wait)
+        try:
+            r = s.get(api, params=params, timeout=120)
+        except requests.RequestException as exc:
+            log(f"   index error: {str(exc).splitlines()[0][:100]} (retrying)")
+            r = None
+            continue
+        if r.status_code in (429, 500, 502, 503, 504):
+            log(f"   index HTTP {r.status_code} (retrying in a moment)")
+            continue
+        break
+    if r is None or r.status_code == 404:  # nothing captured, or still unreachable
         return []
     if r.status_code >= 400:
         log(f"   index HTTP {r.status_code}")
@@ -149,7 +157,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", choices=sorted(TARGETS))
     ap.add_argument("--max", type=int, default=60, help="candidates checked per platform")
-    ap.add_argument("--indexes", type=int, default=3, help="how many recent crawls to search")
+    ap.add_argument("--indexes", type=int, default=2, help="how many recent crawls to search")
+    ap.add_argument("--limit", type=int, default=1000, help="index captures read per pattern")
     args = ap.parse_args()
 
     s = requests.Session()
@@ -166,7 +175,7 @@ def main() -> int:
         urls: list[str] = []
         for api in apis:
             for pattern in spec["hosts"]:
-                urls += cc_urls(s, api, pattern, 3000)
+                urls += cc_urls(s, api, pattern, args.limit)
         cands = candidates(platform, urls)[: args.max]
         log(f"   {len(urls)} captures, {len(cands)} candidate employers")
         for c in cands:
