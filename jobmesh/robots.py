@@ -67,6 +67,10 @@ def _longest_match_allowed(rp: RobotFileParser, ua_token: str, url: str) -> bool
         if entry is None:
             entry = rp.default_entry
         if entry is None:
+            # Python 3.14+ keeps the "*" group in rp.entries (Entry.applies_to
+            # no longer matches it), so look it up explicitly.
+            entry = next((e for e in rp.entries if "*" in e.useragents), None)
+        if entry is None:
             return True
         best_len, best_allow = -1, True
         for rl in entry.rulelines:
