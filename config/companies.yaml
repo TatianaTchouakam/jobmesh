@@ -4134,6 +4134,7 @@ jazzhr:
 # iCIMS — {portal}.icims.com; public sitemap.xml + per-posting JSON-LD (?in_iframe=1)
 icims:
   - careers-brightspring
+  - jobs-jhpiego   # Jhpiego (ONG sante mondiale, Afrique) — sitemap + JSON-LD via ?in_iframe=1, robots OK, verifie 23 nov. 2026 (77 offres)
 
 # Phenom People — career site on the employer host; sitemap.xml + schema.org JobPosting
 phenom:
