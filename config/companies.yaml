@@ -4138,6 +4138,7 @@ icims:
 # Phenom People — career site on the employer host; sitemap.xml + schema.org JobPosting
 phenom:
   - careers.freedommortgage.com
+  - orange.jobs   # Orange (dont Orange Cameroun) — robots.txt et sitemap verifies 22 nov. 2026
 
 # Jobiqo — job boards on the Jobiqo platform; sitemap.xml + schema.org JobPosting
 jobiqo:
@@ -4270,6 +4271,9 @@ herp:
 # SAP SuccessFactors (ATS #47/78) — Career Site Builder: sitemap + schema.org microdata (no token). board = host|Company
 successfactors:
   - "jobs.boehringer-ingelheim.com|Boehringer Ingelheim"   # verifie 21 nov. 2026 (901 offres au sitemap)
+  - "jobs.cmacgm-group.com|CMA CGM"   # CMA CGM / CEVA (Douala, Kribi) — robots.txt et sitemap verifies 22 nov. 2026
+  - "jobs.plan-international.org|Plan International"   # NGO mondiale (dev/humanitaire, Afrique) — sitemap+microdata verifies 23 nov. 2026 (27 offres)
+  - "careers.mota-engil.com|Mota-Engil"   # BTP/infra, forte presence Afrique — sitemap+microdata verifies 23 nov. 2026 (317 offres)
 
 # GoHire (ATS #18/78) — hosted careers: sitemap.txt + schema.org JSON-LD per job (no token). board = careers host
 gohire:
