@@ -99,6 +99,7 @@ from .keka import KekaConnector
 from .herp import HerpConnector
 from .minajobs import MinaJobsConnector
 from .africarrieres import AfricarrieresConnector
+from .jobboardfire import JobBoardFireConnector
 from .successfactors import SuccessFactorsConnector
 from .gohire import GoHireConnector
 from .kula import KulaConnector
@@ -202,6 +203,7 @@ REGISTRY: dict[str, type[Connector]] = {
     HerpConnector.platform: HerpConnector,
     MinaJobsConnector.platform: MinaJobsConnector,
     AfricarrieresConnector.platform: AfricarrieresConnector,
+    JobBoardFireConnector.platform: JobBoardFireConnector,
     SuccessFactorsConnector.platform: SuccessFactorsConnector,
     GoHireConnector.platform: GoHireConnector,
     KulaConnector.platform: KulaConnector,

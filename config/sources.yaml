@@ -84,8 +84,7 @@ required_boards:
   - { name: "Jobboardly", connector: jobfeed, status: ACTIVE }
   - { name: "Jobiqo", connector: jobiqo, status: ACTIVE }
   - { name: "JBoard.io", connector: jobfeed, status: ACTIVE }
-  - { name: "JobBoardFire", connector: null, status: TEMPORARILY_UNAVAILABLE,
-      reason: "Only live board is behind Cloudflare with 0 jobs; all feed paths 404", next_action: "SYNDICATION_PENDING — ask for a centralized published-jobs feed, not the per-owner mgmt API (see PARTNERSHIPS.md)" }
+  - { name: "JobBoardFire", connector: jobboardfire, status: ACTIVE }
   - { name: "SmartJobBoard", connector: jobfeed, status: ACTIVE }
   - { name: "JobBoard.io", connector: jobfeed, status: ACTIVE }
   - { name: "Wiley Madgex", connector: jobfeed, status: ACTIVE }

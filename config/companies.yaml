@@ -4325,3 +4325,10 @@ polymer:
   - prospera          # Próspera — verifie live 23 nov. 2026 (4 offres)
   - curious           # Curious (editeur de Polymer) — verifie live 23 nov. 2026 (4 offres)
   - foray-bioscience  # Foray Bioscience — slug valide (200), 0 offre ouverte ce jour
+
+# JobBoardFire (jobboardfire.com) — niche boards (publishers/communities) with
+# Google-for-Jobs: each board exposes /sitemap-jobs.xml and schema.org JobPosting
+# JSON-LD on every detail page. Keyless, robots-honoured. Board = board host.
+jobboardfire:
+  - jobs.productmarketingalliance.com
+  - jobs.trellis.net

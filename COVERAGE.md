@@ -85,7 +85,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 16/20 live
+## Required job board platform coverage — 17/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -95,7 +95,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 4 | Jobboardly | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
 | 5 | Jobiqo | ✅ | `jobiqo` | 66 | `sitemap.xml` + schema.org JobPosting per posting · Jobiqo-hosted site host |
 | 6 | JBoard.io | ✅ | `jobfeed` | live | public RSS {board}/rss/jobs · verified on 4 live boards |
-| 7 | JobBoardFire | ⬜ | | | |
+| 7 | JobBoardFire | ✅ | `jobboardfire` | | per-board `/sitemap-jobs.xml` + schema.org JSON-LD · verified on PMA + Trellis boards |
 | 8 | SmartJobBoard | ✅ | `jobfeed` | 680+ | public `/rss` feed · verified on 20 live boards |
 | 9 | JobBoard.io | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
 | 10 | Wiley Madgex | ✅ | `jobfeed` | | public RSS feed {board}/jobsrss/ · verified on Nature Careers |
@@ -129,8 +129,8 @@ URL into `config/companies.yaml`. New boards are discovered with
 | Group | Live (ACTIVE) | Declared (pending access) | Required |
 |---|---|---|---|
 | ATS | 50 | 8 | 58 |
-| Job boards | 16 | 4 | 20 |
-| **Total** | **67** | **11** | **78** |
+| Job boards | 17 | 3 | 20 |
+| **Total** | **68** | **10** | **78** |
 
 **Every one of the 78 required platforms is declared in the source registry**
 (`config/sources.yaml`), with a status that separates *technical* from
@@ -143,7 +143,7 @@ rest are declared, never silently failed, and never counted as covered:
 | `ACTIVE` | 67 | live, robots-permitted, keyless — real jobs in the index |
 | `API_REQUIRED` | 4 | official API / credentials needed (BrassRing, CSOD, Paycom, UltiPro) |
 | `CLIENT_CONNECTION_REQUIRED` | 2 | an employer must connect their feed (Talenetic, talentReef) |
-| `TEMPORARILY_UNAVAILABLE` | 2 | service down (CareerSiteCloud 502, JobBoardFire) |
+| `TEMPORARILY_UNAVAILABLE` | 1 | service down (CareerSiteCloud 502) |
 | `RETIRED` | 2 | merged/acquired, no standalone surface (Paradox→Workday, Paycor→Paychex) |
 | `PARTNERSHIP_REQUIRED` | 1 | a commercial agreement is needed (eJobBoard) |
 
