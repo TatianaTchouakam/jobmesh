@@ -14,14 +14,13 @@ import requests
 
 from ..models import Job, now_iso
 from ..normalize import detect_remote, make_dedup_key
+from ..robots import allowed as robots_allowed, USER_AGENT
 from .base import Connector
 
 API_ROOT = "https://api.polymer.co/v1/hire/organizations"
-# Polymer's API rejects non-browser User-Agents (403), so present as a real browser.
-USER_AGENT = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-)
+# Polymer publishes a public, keyless per-organization jobs API (documented at
+# developer.polymer.co). Our transparent JobmeshBot UA is accepted (verified
+# 200), and robots.txt is empty (no restriction) — no spoofing needed.
 TIMEOUT = 20
 
 
@@ -32,13 +31,13 @@ class PolymerConnector(Connector):
         super().__init__(board)
         self._session = session or requests.Session()
         self._session.headers.setdefault("User-Agent", USER_AGENT)
-        self._session.headers.setdefault("Accept", "application/json, text/plain, */*")
-        self._session.headers.setdefault("Accept-Language", "en-US,en;q=0.9")
-        self._session.headers.setdefault("Origin", "https://app.polymer.co")
-        self._session.headers.setdefault("Referer", "https://app.polymer.co/")
+        self._session.headers.setdefault("Accept", "application/json")
 
     def fetch(self) -> list[Job]:
-        resp = self._session.get(f"{API_ROOT}/{self.board}/jobs", timeout=TIMEOUT)
+        url = f"{API_ROOT}/{self.board}/jobs"
+        if not robots_allowed(url, self._session):
+            return []
+        resp = self._session.get(url, timeout=TIMEOUT)
         resp.raise_for_status()
         data = resp.json()
         items = data.get("items") or data.get("jobs") or []

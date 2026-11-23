@@ -56,8 +56,8 @@ required_ats:
   - { name: "Personio", connector: personio, status: ACTIVE }
   - { name: "Phenom People", connector: phenom, status: ACTIVE }
   - { name: "Pinpoint", connector: pinpoint, status: ACTIVE }
-  - { name: "Polymer", connector: polymer, status: TEMPORARILY_UNAVAILABLE,
-      reason: "Connector built & offline-tested; api.polymer.co now returns 403 (anti-bot)", next_action: "DIAGNOSTIC_PENDING — public API 403 anti-bot; ask support@polymer.co to whitelist JobmeshBot (see PARTNERSHIPS.md)" }
+  - { name: "Polymer", connector: polymer, status: ACTIVE,
+      note: "Public keyless per-org jobs API (api.polymer.co/v1/hire/organizations/{slug}/jobs); transparent JobmeshBot UA accepted (200), robots empty. Verified live 23 nov. 2026." }
   - { name: "Recooty", connector: recooty, status: ACTIVE }
   - { name: "Recruitee", connector: recruitee, status: ACTIVE }
   - { name: "Rippling", connector: rippling, status: ACTIVE }

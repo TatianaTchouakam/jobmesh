@@ -20,7 +20,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 50/58 live
+## Required ATS coverage — 51/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -65,7 +65,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 39 | Personio | ✅ | `personio` | 1,129 | keyless XML feed |
 | 40 | Phenom People | ✅ | `phenom` | live | `sitemap.xml` + schema.org JobPosting per posting · employer career-site host |
 | 41 | Pinpoint | ✅ | `pinpoint` | 3 | keyless API |
-| 42 | Polymer | ⚠️ | `polymer` | built, blocked | connector built & verified; api.polymer.co now 403 (anti-bot) — board disabled |
+| 42 | Polymer | ✅ | `polymer` | live | public keyless per-org API `api.polymer.co/v1/hire/organizations/{slug}/jobs` · transparent JobmeshBot UA (200), robots empty · board = org slug (e.g. prospera) |
 | 43 | Recooty | ✅ | `recooty` | 308 (platform-wide) | one public sitemap + schema.org JSON-LD; no per-tenant discovery |
 | 44 | Recruitee | ✅ | `recruitee` | 4,653 | keyless offers API |
 | 45 | Rippling | ✅ | `rippling` | 1,344 | keyless board API |
@@ -130,7 +130,7 @@ URL into `config/companies.yaml`. New boards are discovered with
 |---|---|---|---|
 | ATS | 50 | 8 | 58 |
 | Job boards | 16 | 4 | 20 |
-| **Total** | **66** | **12** | **78** |
+| **Total** | **67** | **11** | **78** |
 
 **Every one of the 78 required platforms is declared in the source registry**
 (`config/sources.yaml`), with a status that separates *technical* from
@@ -140,10 +140,10 @@ rest are declared, never silently failed, and never counted as covered:
 
 | Status | Count | Meaning |
 |---|---|---|
-| `ACTIVE` | 66 | live, robots-permitted, keyless — real jobs in the index |
+| `ACTIVE` | 67 | live, robots-permitted, keyless — real jobs in the index |
 | `API_REQUIRED` | 4 | official API / credentials needed (BrassRing, CSOD, Paycom, UltiPro) |
 | `CLIENT_CONNECTION_REQUIRED` | 2 | an employer must connect their feed (Talenetic, talentReef) |
-| `TEMPORARILY_UNAVAILABLE` | 3 | service down / anti-bot (CareerSiteCloud 502, JobBoardFire, Polymer 403) |
+| `TEMPORARILY_UNAVAILABLE` | 2 | service down (CareerSiteCloud 502, JobBoardFire) |
 | `RETIRED` | 2 | merged/acquired, no standalone surface (Paradox→Workday, Paycor→Paychex) |
 | `PARTNERSHIP_REQUIRED` | 1 | a commercial agreement is needed (eJobBoard) |
 

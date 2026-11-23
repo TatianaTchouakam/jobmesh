@@ -4318,3 +4318,10 @@ africarrieres:
   - ci-fr
   - sn-fr
   - ml-fr
+
+# Polymer (api.polymer.co) — public keyless per-org jobs API (ATS #/78).
+# board = organization slug. Verified live 23 nov. 2026 (JobmeshBot UA, 200).
+polymer:
+  - prospera          # Próspera — verifie live 23 nov. 2026 (4 offres)
+  - curious           # Curious (editeur de Polymer) — verifie live 23 nov. 2026 (4 offres)
+  - foray-bioscience  # Foray Bioscience — slug valide (200), 0 offre ouverte ce jour
