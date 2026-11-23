@@ -51,7 +51,7 @@ required_ats:
   - { name: "Paycom", connector: null, status: API_REQUIRED,
       reason: "Jobs load from a clientkey'd cross-subdomain API; no robots-permitted sitemap/JSON-LD", next_action: "API_REQUEST_PENDING — Paycom developer/partner API; robots allows /api/ats/job-postings/, lock is a page-JWT (see PARTNERSHIPS.md)" }
   - { name: "Paycor", connector: null, status: RETIRED,
-      reason: "Acquired by Paychex; recruitingbypaycor tenants redirect to client sites (often an ATS already covered)", next_action: "PARTNERSHIP_PENDING — Paychex partner job API/feed (see PARTNERSHIPS.md)" }
+      reason: "No central feed; each employer publishes its own public ATOM feed (Paycor Recruiting, ex-Newton). Connector `paycor` shipped and tested offline; no employer verified live yet", next_action: "DISCOVERY_PENDING — run scripts/discover_commoncrawl.py --only paycor, seed verified clientIds, then set ACTIVE" }
   - { name: "Paylocity", connector: paylocity, status: ACTIVE }
   - { name: "Personio", connector: personio, status: ACTIVE }
   - { name: "Phenom People", connector: phenom, status: ACTIVE }

@@ -60,7 +60,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 34 | PageUp | ✅ | `pageup` | public per-client RSS `/{id}/cw/en/rss` (job: namespaced fields) · verified on Monash Univ (69) |
 | 35 | Paradox | 🟡 | | | acquired by Workday; client sites run on their own domains (often another ATS already indexed here); no standalone Paradox public job surface found (verified 21/11) |
 | 36 | Paycom | ⛔ | | | jobs load from a clientkey'd cross-subdomain API (`portal-applicant-tracking…`); the robots-allowed `/api/ats/job-postings/` path 404s and the real search endpoint needs a portal clientkey replayed; no sitemap or server-rendered JSON-LD — excluded on the zero-token principle (verified 21/11) |
-| 37 | Paycor | 🟡 | | | acquired by Paychex; `recruitingbypaycor.com` tenants redirect to client sites (often an ATS already covered here); no standalone public job surface (verified 21/11) |
+| 37 | Paycor | 🟡 | `paycor` | | connector ready: public per-client ATOM feed (Paycor Recruiting, ex-Newton), read from the employer's careers page; tested offline · live employers being discovered with `scripts/discover_commoncrawl.py` (Common Crawl index + robots + open-jobs check) |
 | 38 | Paylocity | ✅ | `paylocity` | 582 | keyless public board; window.pageData JSON at recruiting.paylocity.com/Recruiting/Jobs/All/{companyId} |
 | 39 | Personio | ✅ | `personio` | 1,129 | keyless XML feed |
 | 40 | Phenom People | ✅ | `phenom` | live | `sitemap.xml` + schema.org JobPosting per posting · employer career-site host |
@@ -192,6 +192,7 @@ kept because they add real, deduplicated jobs: `arbeitnow`, `bundesagentur`
 python3 -m jobmesh.cli ingest     # refresh every board
 python3 -m jobmesh.cli stats      # the snapshot above
 python3 scripts/test_feeds.py     # discover & validate new SmartJobBoard / WPJM feeds
+python3 scripts/discover_commoncrawl.py   # find live tenants (Paycor, talentReef, Talenetic, CareerSiteCloud, eJobBoard)
 ```
 
 ## Roadmap (next connectors, by feasibility)

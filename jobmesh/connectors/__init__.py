@@ -102,6 +102,7 @@ from .africarrieres import AfricarrieresConnector
 from .jobboardfire import JobBoardFireConnector
 from .successfactors import SuccessFactorsConnector
 from .gohire import GoHireConnector
+from .paycor import PaycorConnector
 from .kula import KulaConnector
 from .taiwanjobs import TaiwanJobsConnector
 from .vantaa import VantaaConnector
@@ -206,6 +207,7 @@ REGISTRY: dict[str, type[Connector]] = {
     JobBoardFireConnector.platform: JobBoardFireConnector,
     SuccessFactorsConnector.platform: SuccessFactorsConnector,
     GoHireConnector.platform: GoHireConnector,
+    PaycorConnector.platform: PaycorConnector,
     KulaConnector.platform: KulaConnector,
     TaiwanJobsConnector.platform: TaiwanJobsConnector,
     VantaaConnector.platform: VantaaConnector,
