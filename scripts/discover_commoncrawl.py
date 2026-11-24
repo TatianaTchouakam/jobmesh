@@ -284,13 +284,13 @@ def main() -> int:
                     got = cc_urls(s, api, pattern, args.limit)
                 elif args.source == "s3":
                     got = cc_urls_s3(s, index_id, pattern, args.limit)
-                else:  # auto: S3 first (API is frequently overloaded), then API
+                else:  # auto: S3 first; the API is only a fallback when S3 is unreachable
                     try:
+                        # S3 reachable (even with 0 hits) is authoritative: don't
+                        # wait on the overloaded API just because a pattern was empty.
                         got = cc_urls_s3(s, index_id, pattern, args.limit)
-                    except Exception as exc:  # noqa: BLE001
-                        log(f"   S3 index error: {str(exc).splitlines()[0][:100]}")
-                        got = []
-                    if not got:
+                    except Exception as exc:  # noqa: BLE001 — index unreachable, try the API
+                        log(f"   S3 index unreachable: {str(exc).splitlines()[0][:100]} (trying API)")
                         got = cc_urls(s, api, pattern, args.limit)
                 urls += got
         cands = candidates(platform, urls)[: args.max]
