@@ -100,8 +100,6 @@ from .herp import HerpConnector
 from .minajobs import MinaJobsConnector
 from .africarrieres import AfricarrieresConnector
 from .jobboardfire import JobBoardFireConnector
-from .csod import CsodConnector
-from .brassring import BrassRingConnector
 from .successfactors import SuccessFactorsConnector
 from .gohire import GoHireConnector
 from .paycor import PaycorConnector
@@ -207,8 +205,6 @@ REGISTRY: dict[str, type[Connector]] = {
     MinaJobsConnector.platform: MinaJobsConnector,
     AfricarrieresConnector.platform: AfricarrieresConnector,
     JobBoardFireConnector.platform: JobBoardFireConnector,
-    CsodConnector.platform: CsodConnector,
-    BrassRingConnector.platform: BrassRingConnector,
     SuccessFactorsConnector.platform: SuccessFactorsConnector,
     GoHireConnector.platform: GoHireConnector,
     PaycorConnector.platform: PaycorConnector,

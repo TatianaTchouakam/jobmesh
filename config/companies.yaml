@@ -4332,16 +4332,3 @@ polymer:
 jobboardfire:
   - jobs.productmarketingalliance.com
   - jobs.trellis.net
-
-# CSOD (Cornerstone) — token-free: public job-detail pages carry schema.org
-# JobPosting JSON-LD; detail URLs enumerated from Common Crawl. board = tenant.
-csod:
-  - iata
-  - worldbankgroup
-  - cqc
-  - ontariotechu
-
-# BrassRing (Kenexa/IBM) — token-free job-detail JSON-LD; detail URLs from
-# Common Crawl. board = "partnerid|siteid".
-brassring:
-  - "26639|5507"

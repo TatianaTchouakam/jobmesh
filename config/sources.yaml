@@ -16,12 +16,12 @@ required_ats:
   - { name: "Avature", connector: avature, status: ACTIVE }
   - { name: "BambooHR", connector: bamboohr, status: ACTIVE }
   - { name: "BrassRing", connector: null, status: API_REQUIRED,
-      reason: "Public search + job-detail pages carry schema.org JobPosting JSON-LD in server HTML (verified 24/11 on Bechtel); robots.txt absent. Token-free JSON-LD connector viable.", next_action: "BUILD_PENDING — token-free JSON-LD connector (search/detail pages); verify >=2 employers, then ACTIVE" }
+      reason: "Detail page returns the ~900 KB SPA bundle; JobPosting JSON-LD is client-rendered, so a plain JobmeshBot HTTP fetch parses 0 JobPostings (verified 24/11 on Bechtel). No token-free HTTP route.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD); JS render / UA-spoof excluded" }
   - { name: "Breezy HR", connector: breezy, status: ACTIVE }
   - { name: "CareerPlug", connector: careerplug, status: ACTIVE }
   - { name: "Comeet", connector: comeet, status: ACTIVE }
   - { name: "CSOD (Cornerstone)", connector: null, status: API_REQUIRED,
-      reason: "Job-detail pages carry schema.org JobPosting JSON-LD in server HTML (verified 24/11 on IATA; robots Crawl-delay 10, no Disallow). No sitemap -> enumerate jobs from public links / Common Crawl.", next_action: "BUILD_PENDING — token-free JSON-LD detail connector + public-link enumeration; verify >=2 employers" }
+      reason: "Careersite is a SPA; JobPosting JSON-LD is client-rendered. A plain JobmeshBot HTTP fetch of a detail page returns only the ~5 KB shell with no JSON-LD (verified 24/11 on IATA). No token-free HTTP route; JS render / UA-spoof excluded.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD)" }
   - { name: "Dayforce", connector: dayforce, status: ACTIVE }
   - { name: "Deel", connector: deel, status: ACTIVE }
   - { name: "Dover", connector: dover, status: ACTIVE }
