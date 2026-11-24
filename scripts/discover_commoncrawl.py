@@ -27,6 +27,7 @@ Then paste the whole "KEEP THESE" block back.
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import re
 import sys
@@ -111,6 +112,104 @@ def cc_urls(s: requests.Session, api: str, pattern: str, limit: int) -> list[str
     return out
 
 
+# --- S3-direct index reader (bypasses the overloaded index.commoncrawl.org API) ---
+# Reads the published CDX index straight from data.commoncrawl.org: find the
+# right shard+byte-range for a SURT prefix in cluster.idx, then range-GET and
+# gunzip only that block. Same data as the API, different (robust) front door.
+
+_S3_BASE = "https://data.commoncrawl.org/cc-index/collections/{idx}/indexes/"
+_CLUSTER: dict[str, list] = {}
+
+
+def _surt_range(pattern: str):
+    """(surt_prefix, host, domain_match) for a CDX pattern."""
+    if pattern.startswith("*."):
+        host, path, domain_match = pattern[2:], "", True
+    else:
+        parts = pattern.split("/", 1)
+        host = parts[0]
+        path = "/" + parts[1] if len(parts) > 1 else ""
+        domain_match = False
+    surt_host = ",".join(reversed(host.split(".")))
+    if domain_match:
+        prefix = surt_host
+    else:
+        prefix = surt_host + ")" + path.replace("*", "")
+    return prefix, host, domain_match
+
+
+def _cluster(s: requests.Session, idx: str) -> list:
+    if idx in _CLUSTER:
+        return _CLUSTER[idx]
+    url = _S3_BASE.format(idx=idx) + "cluster.idx"
+    r = s.get(url, timeout=120)
+    r.raise_for_status()
+    rows = []
+    for line in r.text.splitlines():
+        parts = line.split("\t")
+        if len(parts) < 4:
+            continue
+        key, cdxfile, offset, length = parts[0], parts[1], parts[2], parts[3]
+        try:
+            rows.append((key, cdxfile, int(offset), int(length)))
+        except ValueError:
+            continue
+    _CLUSTER[idx] = rows
+    return rows
+
+
+def _blocks_for(rows: list, prefix: str) -> list:
+    end = prefix + "\xff"
+    out = []
+    for i, (key, cdxfile, offset, length) in enumerate(rows):
+        nxt = rows[i + 1][0] if i + 1 < len(rows) else "\xff"
+        if key < end and nxt > prefix:
+            out.append((cdxfile, offset, length))
+    return out
+
+
+def cc_urls_s3(s: requests.Session, idx: str, pattern: str, limit: int) -> list[str]:
+    prefix, host, domain_match = _surt_range(pattern)
+    rows = _cluster(s, idx)
+    base = _S3_BASE.format(idx=idx)
+    urls: list[str] = []
+    for cdxfile, offset, length in _blocks_for(rows, prefix):
+        headers = {"Range": f"bytes={offset}-{offset + length - 1}"}
+        try:
+            r = s.get(base + cdxfile, headers=headers, timeout=120)
+        except requests.RequestException as exc:
+            log(f"   S3 range error: {str(exc).splitlines()[0][:80]}")
+            continue
+        if r.status_code not in (200, 206):
+            continue
+        try:
+            data = gzip.decompress(r.content)
+        except OSError:
+            continue
+        for line in data.decode("utf-8", "replace").splitlines():
+            if not line.startswith(prefix):
+                continue
+            try:
+                _, _, jtxt = line.split(" ", 2)
+                rec = json.loads(jtxt)
+            except (ValueError, KeyError):
+                continue
+            if rec.get("status") not in ("200", 200):
+                continue
+            u = rec.get("url")
+            if not u:
+                continue
+            if domain_match:
+                h = urlparse(u).netloc.lower()
+                if h != host and not h.endswith("." + host):
+                    continue
+            urls.append(u)
+            if len(urls) >= limit:
+                return urls
+    return urls
+
+
+
 def candidates(platform: str, urls: list[str]) -> list[str]:
     """One candidate per employer: a Paycor clientId, or a tenant host."""
     found: dict[str, None] = {}
@@ -159,6 +258,8 @@ def main() -> int:
     ap.add_argument("--max", type=int, default=60, help="candidates checked per platform")
     ap.add_argument("--indexes", type=int, default=2, help="how many recent crawls to search")
     ap.add_argument("--limit", type=int, default=1000, help="index captures read per pattern")
+    ap.add_argument("--source", choices=("auto", "api", "s3"), default="auto",
+                    help="auto: try S3 index first (API often 504s), fall back to API")
     args = ap.parse_args()
 
     s = requests.Session()
@@ -174,8 +275,24 @@ def main() -> int:
         log(f"\n== {platform}")
         urls: list[str] = []
         for api in apis:
+            index_id = api.rstrip("/").rsplit("/", 1)[-1]
+            if index_id.endswith("-index"):
+                index_id = index_id[: -len("-index")]
             for pattern in spec["hosts"]:
-                urls += cc_urls(s, api, pattern, args.limit)
+                got: list[str] = []
+                if args.source == "api":
+                    got = cc_urls(s, api, pattern, args.limit)
+                elif args.source == "s3":
+                    got = cc_urls_s3(s, index_id, pattern, args.limit)
+                else:  # auto: S3 first (API is frequently overloaded), then API
+                    try:
+                        got = cc_urls_s3(s, index_id, pattern, args.limit)
+                    except Exception as exc:  # noqa: BLE001
+                        log(f"   S3 index error: {str(exc).splitlines()[0][:100]}")
+                        got = []
+                    if not got:
+                        got = cc_urls(s, api, pattern, args.limit)
+                urls += got
         cands = candidates(platform, urls)[: args.max]
         log(f"   {len(urls)} captures, {len(cands)} candidate employers")
         for c in cands:
