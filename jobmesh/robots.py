@@ -71,7 +71,11 @@ def _longest_match_allowed(rp: RobotFileParser, ua_token: str, url: str) -> bool
             # no longer matches it), so look it up explicitly.
             entry = next((e for e in rp.entries if "*" in e.useragents), None)
         if entry is None:
-            return True
+            # Couldn't identify the applicable group via urllib internals
+            # (their layout shifts between Python versions, e.g. the "*" group
+            # moved in 3.14). Defer to urllib's own canonical decision rather
+            # than assuming "allowed", so a blanket Disallow is always honoured.
+            return rp.can_fetch(ua_token, url)
         best_len, best_allow = -1, True
         for rl in entry.rulelines:
             if rl.applies_to(norm):
