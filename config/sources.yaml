@@ -16,12 +16,12 @@ required_ats:
   - { name: "Avature", connector: avature, status: ACTIVE }
   - { name: "BambooHR", connector: bamboohr, status: ACTIVE }
   - { name: "BrassRing", connector: null, status: API_REQUIRED,
-      reason: "HomeSearch POST needs replayed session cookies; no robots-permitted feed", next_action: "PARTNERSHIP_PENDING — IBM BrassRing 'Job Board Aggregator Integration' (see PARTNERSHIPS.md)" }
+      reason: "Public search + job-detail pages carry schema.org JobPosting JSON-LD in server HTML (verified 24/11 on Bechtel); robots.txt absent. Token-free JSON-LD connector viable.", next_action: "BUILD_PENDING — token-free JSON-LD connector (search/detail pages); verify >=2 employers, then ACTIVE" }
   - { name: "Breezy HR", connector: breezy, status: ACTIVE }
   - { name: "CareerPlug", connector: careerplug, status: ACTIVE }
   - { name: "Comeet", connector: comeet, status: ACTIVE }
   - { name: "CSOD (Cornerstone)", connector: null, status: API_REQUIRED,
-      reason: "Only data route (api.csod.com/rec-job-search) needs a page-lifted bearer token", next_action: "PARTNERSHIP_PENDING — Cornerstone Technology Partner Program, free Pilot/Stage env (see PARTNERSHIPS.md)" }
+      reason: "Job-detail pages carry schema.org JobPosting JSON-LD in server HTML (verified 24/11 on IATA; robots Crawl-delay 10, no Disallow). No sitemap -> enumerate jobs from public links / Common Crawl.", next_action: "BUILD_PENDING — token-free JSON-LD detail connector + public-link enumeration; verify >=2 employers" }
   - { name: "Dayforce", connector: dayforce, status: ACTIVE }
   - { name: "Deel", connector: deel, status: ACTIVE }
   - { name: "Dover", connector: dover, status: ACTIVE }
@@ -49,7 +49,7 @@ required_ats:
   - { name: "Paradox", connector: null, status: RETIRED,
       reason: "Acquired by Workday; no standalone public job surface; client sites run on their own domains", next_action: "PARTNERSHIP_PENDING — Workday Recruiting partner feed; McHire tenant exists but detail pages are anti-bot 202 (see PARTNERSHIPS.md)" }
   - { name: "Paycom", connector: null, status: API_REQUIRED,
-      reason: "Jobs load from a clientkey'd cross-subdomain API; no robots-permitted sitemap/JSON-LD", next_action: "API_REQUEST_PENDING — Paycom developer/partner API; robots allows /api/ats/job-postings/, lock is a page-JWT (see PARTNERSHIPS.md)" }
+      reason: "No sitemap, no server-rendered JSON-LD on client job pages; listing loads from a clientkey'd API. No token-free public route found (re-verified 24/11).", next_action: "EXCLUDED — no token-free route; API needs a per-session clientkey (not a public anonymous session)" }
   - { name: "Paycor", connector: null, status: RETIRED,
       reason: "Public per-client ATOM feed is real (verified 24/11: clientId 8a7883d0…, employer 'US Eye', 97 jobs) BUT recruitingbypaycor.com — and newton.newtonsoftware.com, which redirects to it — serve robots.txt 'User-agent: * / Disallow: /'. Honouring robots (RFC 9309), the feed is off-limits. Connector `paycor` shipped and tested offline.", next_action: "ROBOTS_BLOCKED — revisit only if a Paycor client exposes the feed on a host whose robots.txt permits reading" }
   - { name: "Paylocity", connector: paylocity, status: ACTIVE }
