@@ -51,7 +51,7 @@ required_ats:
   - { name: "Paycom", connector: null, status: API_REQUIRED,
       reason: "Jobs load from a clientkey'd cross-subdomain API; no robots-permitted sitemap/JSON-LD", next_action: "API_REQUEST_PENDING — Paycom developer/partner API; robots allows /api/ats/job-postings/, lock is a page-JWT (see PARTNERSHIPS.md)" }
   - { name: "Paycor", connector: null, status: RETIRED,
-      reason: "No central feed; each employer publishes its own public ATOM feed (Paycor Recruiting, ex-Newton). Connector `paycor` shipped and tested offline; no employer verified live yet", next_action: "DISCOVERY_PENDING — run scripts/discover_commoncrawl.py --only paycor, seed verified clientIds, then set ACTIVE" }
+      reason: "Public per-client ATOM feed is real (verified 24/11: clientId 8a7883d0…, employer 'US Eye', 97 jobs) BUT recruitingbypaycor.com — and newton.newtonsoftware.com, which redirects to it — serve robots.txt 'User-agent: * / Disallow: /'. Honouring robots (RFC 9309), the feed is off-limits. Connector `paycor` shipped and tested offline.", next_action: "ROBOTS_BLOCKED — revisit only if a Paycor client exposes the feed on a host whose robots.txt permits reading" }
   - { name: "Paylocity", connector: paylocity, status: ACTIVE }
   - { name: "Personio", connector: personio, status: ACTIVE }
   - { name: "Phenom People", connector: phenom, status: ACTIVE }
