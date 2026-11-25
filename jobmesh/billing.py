@@ -81,6 +81,40 @@ def pro_checkout(request: Request):
     return {"url": session.url}
 
 
+@router.post("/pro/checkout-once")
+def pro_checkout_once(request: Request):
+    """One-off 3 EUR payment (not a subscription). Enables wallet methods such
+    as PayPal that aren't cleared for recurring charges yet; the existing
+    /pro/success handler issues the same signed Pro key (~30-day validity)."""
+    stripe = _stripe()
+    if stripe is None:
+        return JSONResponse(
+            {"error": "Billing is not configured (STRIPE_SECRET_KEY missing)."},
+            status_code=503)
+    base = _base_url(request)
+    try:
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "unit_amount": PRICE_EUR_CENTS,
+                    "product_data": {
+                        "name": "Jobmesh Premium — accès 1 mois",
+                        "description": "CSV export of filtered results + full API access",
+                    },
+                },
+                "quantity": 1,
+            }],
+            success_url=f"{base}/pro/success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{base}/?pro=cancelled",
+            allow_promotion_codes=True,
+        )
+    except Exception as exc:  # surface Stripe errors cleanly
+        return JSONResponse({"error": str(exc)}, status_code=400)
+    return {"url": session.url}
+
+
 @router.get("/pro/success")
 def pro_success(session_id: str = Query(...)):
     stripe = _stripe()

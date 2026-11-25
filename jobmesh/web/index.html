@@ -409,6 +409,7 @@
         <p style="font-size:14.5px;color:var(--muted);margin:0">Higher limits &amp; full pagination on <code>/jobs</code> (free tier: 50 results/request).</p></div>
     </div>
     <button type="button" id="goPro" style="background:linear-gradient(135deg,var(--gold-1),var(--gold-2));color:#fff;border:0;border-radius:12px;padding:13px 26px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer">Passer &agrave; Premium &mdash; 3&nbsp;&euro;/mois</button>
+    <div style="margin-top:12px"><button type="button" id="goProOnce" style="background:#fff;color:var(--gold-2);border:1px solid var(--gold-2);border-radius:12px;padding:11px 22px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">Payer une fois &mdash; 3&nbsp;&euro; (PayPal ou carte)</button><div style="font-size:12px;color:var(--soft);margin-top:7px">Acc&egrave;s Premium 1&nbsp;mois, sans abonnement.</div></div>
     <div id="ppWrap" style="display:none;max-width:360px;margin:16px auto 0">
       <div style="display:flex;align-items:center;gap:12px;color:var(--soft);font-size:12px;margin:4px 0 12px"><span style="flex:1;height:1px;background:var(--line)"></span>ou<span style="flex:1;height:1px;background:var(--line)"></span></div>
       <div id="paypal-btns"></div>
@@ -1151,6 +1152,14 @@ runSearch();
       if(d && d.url){ window.location=d.url; return; }
       alert((d&&d.error)||"Billing not available yet."); gp.disabled=false; gp.textContent=old;
     }).catch(function(){ alert("Could not start checkout."); gp.disabled=false; gp.textContent=old; });
+  });
+  var gpo=document.getElementById("goProOnce");
+  if(gpo) gpo.addEventListener("click",function(){
+    gpo.disabled=true; var oldo=gpo.textContent; gpo.textContent="\u2026";
+    fetch("/pro/checkout-once",{method:"POST"}).then(function(r){return r.json();}).then(function(d){
+      if(d && d.url){ window.location=d.url; return; }
+      alert((d&&d.error)||"Billing not available yet."); gpo.disabled=false; gpo.textContent=oldo;
+    }).catch(function(){ alert("Could not start checkout."); gpo.disabled=false; gpo.textContent=oldo; });
   });
   // --- PayPal subscription button (rendered only when configured) ---
   var ppWrap=document.getElementById("ppWrap");
