@@ -918,6 +918,13 @@ comeet:
   - kaltura/E2.00D     # Kaltura   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - coralogix/06.004   # Coralogix
   - solaredge/71.00A   # SolarEdge
+  - vastdata/43.001           # VAST Data (266) — +vérifié live 26/11
+  - comm-it/76.008            # CommIT (124)
+  - abra_rnd/15.007           # abra (101)
+  - team8/61.003              # Team8 (50)
+  - covenantindustries/3B.00F # Covenant Industries (35)
+  - artlist/85.003            # Artlist (27)
+  - port/59.004               # Port (24)
 #   - "30.005:LE_TOKEN_PUBLIC:Nom Societe"
 
 # --- careersite : moteur JSON-LD (schema.org JobPosting) ---
