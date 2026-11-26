@@ -4999,6 +4999,22 @@ sitemapjsonld:
   # JSON-LD rendu serveur (le '+' du type MIME est encode en entite). Societe
   # par offre. Pas d'interdiction d'acces automatise. Verifie live 26/11/2026.
   - "https://jobdanmark.dk/sitemap"
+  # NZ Government Jobs — portail emploi secteur public NZ. robots '*' n'interdit
+  # que des routes /jobtools ; pages /jobs/{id} autorisees, JobPosting JSON-LD
+  # rendu serveur. Societe = agence publique. Verifie live 26/11/2026.
+  - "https://jobs.govt.nz/sitemap_index.xml"
+  # Werken voor Nederland — emplois gouvernement neerlandais. sitemap dedie
+  # ~1,3k /vacatures/{slug}, JobPosting JSON-LD serveur, societe = ministere.
+  # robots permissif. Verifie live 26/11/2026.
+  - "https://www.werkenvoornederland.nl/sitemap-vacatures.xml"
+  # Just Join IT — board IT polonais. sitemap /sitemaps/active-jobs.xml,
+  # pages /job-offer/{slug} autorisees (robots declare les sitemaps),
+  # JobPosting JSON-LD serveur. Verifie live 26/11/2026.
+  - "https://justjoin.it/sitemaps/active-jobs.xml"
+  # VueJobs — board Vue/Nuxt. Le flux /feed est Disallow par robots, mais les
+  # pages /jobs/{slug} sont autorisees et portent un JobPosting JSON-LD rendu
+  # serveur ; on passe donc par le sitemap (~1k offres). Verifie live 26/11/2026.
+  - "https://vuejobs.com/sitemap.xml"
 
 smartjobboard: []
 #   - "https://academiccareers.com"
