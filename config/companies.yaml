@@ -4014,9 +4014,6 @@ hibob:
 # CareerPlug (careerplug.com) — server-rendered JSON-LD ItemList at {tenant}.careerplug.com/jobs
 careerplug:
   - cplugjobs   # CareerPlug's own board
-  - alphagraphics-careers   # AlphaGraphics   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
-  - sir-speedy-careers      # Sir Speedy
-  - postnet-careers         # PostNet
 
 # Jobvite (jobs.jobvite.com) — server-rendered listing, paginated ?p=N; board = company slug
 jobvite:
@@ -4220,7 +4217,6 @@ trinet:
   - "22943-cabaletta-bio-inc"    # Cabaletta Bio — verifie 21 nov. 2026 (6 offres)
   - "20517-summit-technologies-inc"   # Summit Technologies   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "23964-medacta-usa-inc"           # Medacta USA
-  - "162192-original-syndicate"       # Original Syndicate
 
 # Trakstar Hire (ex-Recruiterbox) — public careers {sub}.hire.trakstar.com; board = subdomain
 trakstar:
@@ -4239,9 +4235,7 @@ rival:
 # WeRecruit (careers.werecruit.io) — embedded JSON in server HTML; board = account slug
 werecruit:
   - "atlantis"    # Atlantis — verifie 21 nov. 2026 (1 offre)
-  - "alcatel-submarine-networks"   # Alcatel Submarine Networks   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "unseenlabs"                   # Unseenlabs
-  - "japan-experience"             # Japan Experience
 
 # FirstStage (firststage.co) — server-rendered /jobs card list; board = subdomain
 firststage:

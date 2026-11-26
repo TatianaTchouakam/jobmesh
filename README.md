@@ -20,7 +20,7 @@ it through a documented API. Each job links back to its original posting.
 ### Current status
 
 - 🌍 **~193,000 open postings** (270,000+ tracked incl. closed) across 6 continents
-- 🔌 **68 of the 78 required platforms live** · **18,000+ duplicate postings** grouped by deduplication
+- 🔌 **67 of the 78 required platforms live** · **18,000+ duplicate postings** grouped by deduplication
 - 🏛️ **2 national employment agencies live**: 🇩🇪 Bundesagentur für Arbeit · 🇸🇪 Sweden (JobTech)
 - 🏢 **~28,700 companies · ~6,700 boards** worldwide
 - ✅ **Official public APIs & feeds (REST / RSS / JSON-LD)** — no blind HTML scraping, no login-walled data
@@ -156,7 +156,7 @@ Scheduling locally (hourly example):
 
 | Category | Status |
 |---|---|
-| ATS platforms (Greenhouse, SmartRecruiters, Lever, Ashby, Workable, Workday, Oracle, …) | ✅ 51 live of the 58 required |
+| ATS platforms (Greenhouse, SmartRecruiters, Lever, Ashby, Workable, Workday, Oracle, …) | ✅ 50 live of the 58 required |
 | Job board platforms (SmartJobBoard, Niceboard, JobBoardFire, Artha, …) | ✅ 17 live of the 20 required |
 | National employment agencies (🇩🇪 Bundesagentur für Arbeit, 🇸🇪 Sweden JobTech) | ✅ 2 live |
 | Extra sources beyond the required 78 | ✅ 36 bonus (arbeitnow, remote boards, national feeds, …) |

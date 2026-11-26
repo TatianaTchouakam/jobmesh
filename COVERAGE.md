@@ -11,7 +11,7 @@
 | Total postings tracked (open + closed) | 270,388 |
 | Closed postings detected & marked | 77,310 |
 | Duplicate open postings grouped (dedup) | 18,557 |
-| Required platforms live | **68 / 78** (51 ATS + 17 job boards) |
+| Required platforms live | **67 / 78** (50 ATS + 17 job boards) |
 | Companies indexed | 28,737 |
 | Source boards indexed | 6,706 |
 | Bonus sources (beyond the 78) | 36 |
@@ -22,7 +22,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 51/58 live
+## Required ATS coverage — 50/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -33,7 +33,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 5 | BambooHR | ✅ | `bamboohr` | 3 | keyless careers API |
 | 6 | BrassRing | ⛔ | | | detail page returns the ~900 KB SPA bundle; `JobPosting` JSON-LD is client-rendered, so a plain JobmeshBot HTTP fetch parses 0 (verified 24/11 on Bechtel) — no token-free HTTP route |
 | 7 | Breezy HR | ✅ | `breezy` | 1,360 | keyless board API |
-| 8 | CareerPlug | ✅ | `careerplug` | live (1 board) | server-rendered JSON-LD ItemList at `{tenant}.careerplug.com/jobs`; full desc, salary |
+| 8 | CareerPlug | ⛔ | | | careers page switched to client-rendered (verified 26/11 on alphagraphics-careers): /jobs no longer embeds JobPosting JSON-LD, no public JSON/RSS endpoint — no token-free route |
 | 9 | Comeet | ✅ | `comeet` | live (1 board) | keyless hosted page `comeet.com/jobs/{company}/{uid}` (no token); more boards addable |
 | 10 | CSOD (Cornerstone) | ⛔ | | | careersite is a SPA; `JobPosting` JSON-LD is client-rendered — a plain JobmeshBot HTTP fetch of a detail page gets only the ~5 KB shell (verified 24/11 on IATA) — no token-free HTTP route |
 | 11 | Dayforce | ✅ | `dayforce` | 1 | public CSRF handshake (`/api/auth/csrf`) + POST `/api/geo/{ns}/jobposting/search` · robots: content signals only |

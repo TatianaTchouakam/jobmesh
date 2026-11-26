@@ -18,7 +18,7 @@ required_ats:
   - { name: "BrassRing", connector: null, status: API_REQUIRED,
       reason: "Detail page returns the ~900 KB SPA bundle; JobPosting JSON-LD is client-rendered, so a plain JobmeshBot HTTP fetch parses 0 JobPostings (verified 24/11 on Bechtel). No token-free HTTP route.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD); JS render / UA-spoof excluded" }
   - { name: "Breezy HR", connector: breezy, status: ACTIVE }
-  - { name: "CareerPlug", connector: careerplug, status: ACTIVE }
+  - { name: "CareerPlug", connector: careerplug, status: API_REQUIRED, reason: "Careers page switched to client-rendered: the /jobs listing no longer embeds schema.org JobPosting JSON-LD and exposes no public JSON/RSS endpoint (verified 26/11 on alphagraphics-careers.careerplug.com — 62 jobs in the DOM, 0 JSON-LD blocks, /jobs.json 406). No token-free HTTP route.", next_action: "EXCLUDED — regressed to client-rendered; revisit if a server-rendered feed or public API returns" }
   - { name: "Comeet", connector: comeet, status: ACTIVE }
   - { name: "CSOD (Cornerstone)", connector: null, status: API_REQUIRED,
       reason: "Careersite is a SPA; JobPosting JSON-LD is client-rendered. A plain JobmeshBot HTTP fetch of a detail page returns only the ~5 KB shell with no JSON-LD (verified 24/11 on IATA). No token-free HTTP route; JS render / UA-spoof excluded.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD)" }
