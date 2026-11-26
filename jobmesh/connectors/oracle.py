@@ -51,10 +51,11 @@ class OracleConnector(Connector):
         self._session.headers.setdefault("User-Agent", USER_AGENT)
         self._session.headers.setdefault("Accept", "application/json")
         parts = (board or "").split(":")
-        if len(parts) < 2:
+        if not parts or not parts[0]:
             raise ValueError(
-                f"Oracle board must be 'host:site[:Company]', got {board!r}")
-        self.host, self.site = parts[0], parts[1]
+                f"Oracle board must be 'host[:site[:Company]]', got {board!r}")
+        self.host = parts[0]
+        self.site = parts[1] if len(parts) > 1 else ""   # optional: public API works without it
         self.company = parts[2] if len(parts) > 2 and parts[2] else None
 
     def fetch(self) -> list[Job]:
@@ -62,8 +63,10 @@ class OracleConnector(Connector):
         jobs: list[Job] = []
         offset = 0
         for _ in range(MAX_PAGES):
-            finder = (f"findReqs;siteNumber={self.site},limit={PAGE},"
-                      f"offset={offset},sortBy=POSTING_DATES_DESC")
+            finder = "findReqs;"
+            if self.site:
+                finder += f"siteNumber={self.site},"
+            finder += f"limit={PAGE},offset={offset},sortBy=POSTING_DATES_DESC"
             url = (f"https://{self.host}/hcmRestApi/resources/latest/"
                    f"recruitingCEJobRequisitions")
             resp = self._session.get(
