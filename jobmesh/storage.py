@@ -90,7 +90,125 @@ CREATE TABLE IF NOT EXISTS meta (
 """
 
 
-def connect(db_path: str = DEFAULT_DB) -> sqlite3.Connection:
+# --- optional Turso / libSQL embedded-replica backend --------------------
+# When JOBMESH_DB_URL is set, the local SQLite file becomes an embedded replica
+# of a Turso database: pulled on a cold start and pushed after writes, so the
+# index survives redeploys on an ephemeral host. Every query still runs against
+# the local file; a thin wrapper keeps sqlite3.Row-style access (row["col"],
+# dict(row), iteration, lastrowid) working, so no app query code changes.
+
+_WRITE_PREFIXES = ("insert", "update", "delete", "replace", "create", "alter", "drop")
+
+
+class _Row:
+    """sqlite3.Row-like view over a tuple, with name and index access."""
+    __slots__ = ("_idx", "_vals")
+
+    def __init__(self, idx: dict, vals):
+        self._idx = idx
+        self._vals = tuple(vals)
+
+    def __getitem__(self, key):
+        return self._vals[self._idx[key]] if isinstance(key, str) else self._vals[key]
+
+    def keys(self):
+        return list(self._idx)
+
+    def __iter__(self):
+        return iter(self._vals)
+
+    def __len__(self):
+        return len(self._vals)
+
+
+class _Cursor:
+    def __init__(self, cur):
+        self._cur = cur
+        self._idx = None
+
+    def _index(self):
+        if self._idx is None:
+            self._idx = {d[0]: i for i, d in enumerate(self._cur.description or ())}
+        return self._idx
+
+    def _wrap(self, row):
+        return None if row is None else _Row(self._index(), row)
+
+    def fetchone(self):
+        return self._wrap(self._cur.fetchone())
+
+    def fetchall(self):
+        return [self._wrap(r) for r in self._cur.fetchall()]
+
+    def __iter__(self):
+        for r in self._cur.fetchall():
+            yield self._wrap(r)
+
+    @property
+    def lastrowid(self):
+        return self._cur.lastrowid
+
+
+class _LibsqlConn:
+    """Minimal sqlite3-compatible facade over a libSQL embedded-replica conn."""
+
+    def __init__(self, raw):
+        self._raw = raw
+        self._dirty = False
+
+    def execute(self, sql, params=()):
+        if sql.lstrip().lower().startswith(_WRITE_PREFIXES):
+            self._dirty = True
+        return _Cursor(self._raw.execute(sql, params))
+
+    def executemany(self, sql, seq_of_params):
+        self._dirty = True
+        self._raw.executemany(sql, list(seq_of_params))
+
+    def executescript(self, script: str):
+        self._dirty = True
+        for stmt in script.split(";"):
+            if stmt.strip():
+                self._raw.execute(stmt)
+
+    def commit(self):
+        self._raw.commit()
+
+    def sync(self):
+        self._raw.sync()
+
+    def close(self):
+        try:
+            if self._dirty:
+                self._raw.commit()
+                self._raw.sync()
+        finally:
+            closer = getattr(self._raw, "close", None)
+            if callable(closer):
+                closer()
+
+
+def _connect_libsql(db_path: str, url: str):
+    import libsql_experimental as libsql  # imported only when the backend is on
+
+    token = os.getenv("JOBMESH_DB_TOKEN")
+    cold = (not os.path.exists(db_path)) or os.path.getsize(db_path) == 0
+    raw = libsql.connect(db_path, sync_url=url, auth_token=token)
+    if cold:
+        raw.sync()  # pull the whole database from Turso on a cold start
+    conn = _LibsqlConn(raw)
+    conn.executescript(_SCHEMA)  # idempotent (CREATE ... IF NOT EXISTS)
+    _migrate(conn)
+    conn._raw.commit()
+    conn._raw.sync()  # push the schema / migrations on first deploy
+    conn._dirty = False
+    return conn
+
+
+def connect(db_path: str = DEFAULT_DB):
+    url = os.getenv("JOBMESH_DB_URL")
+    if url:
+        return _connect_libsql(db_path, url)
     # timeout: wait (don't error) if another connection holds the write lock.
     conn = sqlite3.connect(db_path, timeout=30)
     conn.row_factory = sqlite3.Row

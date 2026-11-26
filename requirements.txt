@@ -2,6 +2,7 @@ requests>=2.31
 PyYAML>=6.0
 fastapi>=0.110
 uvicorn[standard]>=0.29
+libsql-experimental>=0.0.40   # only used when JOBMESH_DB_URL is set (Turso persistence)
 
 # Dev / tests
 pytest>=8.0

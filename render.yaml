@@ -28,6 +28,10 @@ services:
         value: "2000"
       - key: INGEST_INTERVAL_HOURS  # background self-refresh cadence (hours)
         value: "6"
+      - key: JOBMESH_DB_URL        # Turso libSQL URL — set to enable persistence (unset = local SQLite)
+        sync: false
+      - key: JOBMESH_DB_TOKEN      # Turso auth token (secret)
+        sync: false
       - key: INGEST_WORKERS         # fetch concurrency — I/O-bound; retries cover transient drops
         value: "8"
       # Optional keys for keyed sources (leave unset to skip those sources)

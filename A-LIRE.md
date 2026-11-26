@@ -1,3 +1,44 @@
+# À LIRE — persistance Turso (26/11/2026)
+
+Correctif du point 3 (« Closed detected : 0 »). La base SQLite est désormais une
+**réplique locale d'une base Turso** (libSQL) : tirée au démarrage, poussée
+après écriture → elle **survit aux redéploiements**. Activée seulement si
+`JOBMESH_DB_URL` est défini ; sinon, SQLite local comme avant. Aucun code de
+requête n'a changé (un petit adaptateur garde `row["col"]`, `dict(r)`, etc.).
+
+## 1) Tester EN LOCAL d'abord (sur ton Mac, rien en prod)
+
+```bash
+cd ~/projects/Vaya/jobmesh
+export JOBMESH_DB_URL="libsql://jobmesh-tatianatchouakam.aws-eu-west-1.turso.io"
+export JOBMESH_DB_TOKEN="<ton token Turso>"
+
+rm -f jobmesh.db jobmesh.db-*                 # repartir propre
+.venv/bin/python -m jobmesh.cli ingest        # écrit dans Turso
+.venv/bin/python -m jobmesh.cli stats         # affiche les chiffres
+```
+
+Puis **la preuve de persistance** — on efface la base locale et on relit :
+
+```bash
+rm -f jobmesh.db jobmesh.db-*
+.venv/bin/python -m jobmesh.cli stats
+```
+
+Si `stats` **réaffiche les chiffres** alors que le fichier local a été supprimé,
+c'est gagné : les données ont été rechargées depuis Turso. Dis-moi le résultat.
+
+## 2) Activer en PROD (seulement après que le test local marche)
+
+Dans le dashboard **Render → Environment**, ajouter :
+- `JOBMESH_DB_URL` = l'URL libSQL ci-dessus
+- `JOBMESH_DB_TOKEN` = ton token (secret)
+
+puis « Manual Deploy ». Dès lors, le catalogue et l'historique des fermetures
+persistent entre les déploiements.
+
+---
+
 # À LIRE — fiabilisation du 26/11/2026 (après-midi)
 
 Après vérification de **jobmesh.world/status**. **Rien poussé** — tu fais `git push`. Tests verts (197).
