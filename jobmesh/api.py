@@ -890,7 +890,13 @@ def _maybe_start_refresher() -> None:
                             boards = {p: bl[:n] for p, bl in boards.items()}
                         started = time.time()
                         with storage.session(DB_PATH) as conn:
-                            results = _ingest(conn, boards)
+                            from .rotation import apply_rotation
+                            import json as _json
+                            idx = int(storage.get_meta(conn, "rotation_index", "0") or "0")
+                            run_boards, rot_info = apply_rotation(boards, idx)
+                            storage.set_meta(conn, "rotation_index", str(idx + 1))
+                            storage.set_meta(conn, "rotation_info", _json.dumps(rot_info))
+                            results = _ingest(conn, run_boards)
                             storage.record_ingest_run(
                                 conn, results, started, time.time())
                         try:

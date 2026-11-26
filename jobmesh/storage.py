@@ -14,6 +14,7 @@ same schema maps cleanly onto Postgres later.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import sqlite3
@@ -570,6 +571,19 @@ def record_ingest_run(conn: sqlite3.Connection, results, started_ts: float,
     set_meta(conn, "last_ingest_failed_sources", json.dumps(failed))
 
 
+def _rotation_info(conn) -> dict | None:
+    """Parsed ``rotation_info`` meta (platforms fetched on a rotating schedule),
+    or None when nothing is rotating."""
+    raw = get_meta(conn, "rotation_info")
+    if not raw:
+        return None
+    try:
+        info = json.loads(raw)
+    except (ValueError, TypeError):
+        return None
+    return info or None
+
+
 def stats(conn: sqlite3.Connection) -> dict:
     """Headline numbers about the current index."""
     total = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
@@ -621,6 +635,7 @@ def stats(conn: sqlite3.Connection) -> dict:
         "refresh_interval_hours": (
             float(os.getenv("INGEST_INTERVAL_HOURS"))
             if os.getenv("INGEST_INTERVAL_HOURS") else None),
+        "rotation": _rotation_info(conn),
     }
 
 

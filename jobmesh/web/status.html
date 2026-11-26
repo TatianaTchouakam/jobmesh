@@ -140,7 +140,15 @@ async function load(){
     }
     const everyTxt=iv?`every ${iv%1===0?iv:iv.toFixed(1)} hours`:"every few hours";
     const ingTxt=s.ingesting?` · <b style="color:var(--gold2)">update in progress\u2026</b>`:"";
-    $("upd").innerHTML=`<b>Last refreshed:</b> ${ago(s.last_updated)}${dur}${failTxt}${nextTxt}${ingTxt}. Refreshes automatically ${everyTxt}.`;
+    let rotTxt="";
+    if(s.rotation){
+      const parts=Object.entries(s.rotation).map(([p,r])=>{
+        const every=iv?` (each board ~every ${Math.round(r.shards*iv)} h)`:"";
+        return `${p}: 1/${r.shards} of ${r.total_boards} boards per cycle${every}`;
+      });
+      if(parts.length)rotTxt=`<br><span style="color:var(--muted);font-size:12.5px">Rotating schedule — ${parts.join("; ")}. Fetched politely within each platform's rate limits.</span>`;
+    }
+    $("upd").innerHTML=`<b>Last refreshed:</b> ${ago(s.last_updated)}${dur}${failTxt}${nextTxt}${ingTxt}. Refreshes automatically ${everyTxt}.${rotTxt}`;
 
     ROWS=src.sources||[];
     $("covhead").textContent=`${src.active} of ${src.required_total} required platforms live (${src.ats_total} ATS + ${src.boards_total} job boards)`;

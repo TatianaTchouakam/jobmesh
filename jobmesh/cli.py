@@ -36,7 +36,13 @@ def _cmd_ingest(args) -> None:
             return
         _started = _time.time()
         with storage.session(args.db) as conn:
-            results = ingest(conn, boards)
+            from .rotation import apply_rotation
+            import json as _json
+            _idx = int(storage.get_meta(conn, "rotation_index", "0") or "0")
+            _run_boards, _rot_info = apply_rotation(boards, _idx)
+            storage.set_meta(conn, "rotation_index", str(_idx + 1))
+            storage.set_meta(conn, "rotation_info", _json.dumps(_rot_info))
+            results = ingest(conn, _run_boards)
             storage.record_ingest_run(conn, results, _started, _time.time())
 
     ok = [r for r in results if r.status == "success"]

@@ -36,6 +36,7 @@ import requests
 
 from ..models import Job, now_iso
 from ..normalize import detect_remote, make_dedup_key
+from ..ratelimit import get_limiter, parse_retry_after, RateLimited
 from .base import Connector
 
 USER_AGENT = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -96,8 +97,16 @@ class WorkdayConnector(Connector):
         """
         body = {"appliedFacets": {}, "limit": PAGE,
                 "offset": offset, "searchText": ""}
+        # Workday rate-limits by IP per cluster (wd1, wd3, wd5, ...). Every
+        # request goes through the shared per-cluster limiter so we never
+        # burst a cluster. A 429 is surfaced (not retried in place) so the
+        # pipeline can set this board aside and pick it up later in the cycle.
+        limiter = get_limiter("workday")
         for attempt in range(3):
-            resp = self._session.post(url, json=body, timeout=TIMEOUT)
+            with limiter.slot(self.wd):
+                resp = self._session.post(url, json=body, timeout=TIMEOUT)
+            if resp.status_code == 429:
+                raise RateLimited(retry_after=parse_retry_after(resp))
             resp.raise_for_status()
             try:
                 return resp.json()
