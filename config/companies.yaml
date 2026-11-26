@@ -731,6 +731,13 @@ pinpoint:        # ATS (find token at {company}.pinpointhq.com) — best-effort,
   - superiorgroup      # Superior (51 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - trilongroup        # Trilon Group
   - crcna              # Christian Reformed Church
+  - continentalserves   # +employeur vérifié live 26/11 (54)
+  - skims             # SKIMS (68)
+  - impulsespace      # Impulse Space (212)
+  - upway             # Upway (82)
+  - sobencc           # Soben/Accenture (8)
+  - bobsredmill       # Bob's Red Mill (13)
+  - girlsontherun     # Girls on the Run (8)
 
 # softgarden — ATS very common in Germany/DACH. Public career feed at
 # https://{slug}.career.softgarden.de/jobs.feed.json — slug is the employer's
@@ -4137,6 +4144,11 @@ isolvedhire:
   - halvik             # Halvik   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - jeeter             # Jeeter
   - sachealth          # SAC Health
+  - imperialcleaning   # +employeur vérifié live 26/11 (92)
+  - martinbakeramerica  # Martin Baker America (5)
+  - ahima             # AHIMA (5)
+  - stevenslee        # Stevens & Lee (3)
+  - veritasfunding    # Veritas Funding (1)
 
 # JazzHR — {board}.applytojob.com; keyless server-rendered careers page
 jazzhr:
@@ -4242,6 +4254,13 @@ hiringthing:
   - "laborrocket"             # Labor Rocket   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "timberline-bank"         # Timberline Bank
   - "arona-home-essentials"   # Arona Home Essentials
+  - "sinacola"   # +employeur vérifié live 26/11 (36)
+  - "es-mfg"            # ES MFG (25)
+  - "demco"             # Demco (14)
+  - "yoursmartsource"   # Your SmartSource (13)
+  - "wholesaleproduce"  # Wholesale Produce Supply (9)
+  - "everest-search-partners-llc"  # Everest Search Partners (7)
+  - "oppco"             # Opportunity Communities (2)
 
 # Nodex / fabricjobs job-board platform — sitemap.xml + per-posting JSON-LD; board = full host
 nodex:
