@@ -126,8 +126,8 @@ async def _http_exc_handler(request: Request, exc: StarletteHTTPException):
     accept = request.headers.get("accept", "")
     if exc.status_code == 404 and "text/html" in accept:
         return HTMLResponse(_error_page(404, "Page not found"), status_code=404)
-    return JSONResponse({"error": exc.detail or "error", "status": exc.status_code},
-                        status_code=exc.status_code)
+    return JSONResponse({"error": exc.detail or "error", "status": exc.status_code,
+                         "request_id": _req_id(request)}, status_code=exc.status_code)
 
 
 @app.exception_handler(Exception)
@@ -135,7 +135,8 @@ async def _unhandled_handler(request: Request, exc: Exception):
     accept = request.headers.get("accept", "")
     if "text/html" in accept:
         return HTMLResponse(_error_page(500, "Something went wrong"), status_code=500)
-    return JSONResponse({"error": "internal server error", "status": 500}, status_code=500)
+    return JSONResponse({"error": "internal server error", "status": 500,
+                         "request_id": _req_id(request)}, status_code=500)
 
 
 @app.get("/stats")
@@ -177,7 +178,9 @@ def get_sources() -> dict:
     data = srcreg.load_sources()
     with storage.session(DB_PATH) as conn:
         obp = storage.stats(conn).get("open_by_platform", {})
+        last = storage.last_fetch_by_platform(conn)
     rows = srcreg.health(obp, data)
+    _attach_last_read(rows, last)
     counts = srcreg.status_counts(data)
     return {
         "status_counts": counts,
@@ -216,6 +219,90 @@ SAMPLE_NOTE_ASCII = "Free sample - full export with Jobmesh Premium"  # latin-1 
 def _pro_payload(api_key, x_api_key):
     """Return the signed-key payload if a valid Pro key is supplied, else None."""
     return pro.verify_key(api_key or x_api_key)
+
+
+# --- Rate limiting, request id and source "last read" ----------------------
+import time as _time
+import uuid as _uuid
+from collections import defaultdict as _defaultdict, deque as _deque
+
+RATE_WINDOW = 60
+RATE_FREE = int(os.getenv("RATE_LIMIT_FREE", "240"))      # requests/min without a key
+RATE_PRO = int(os.getenv("RATE_LIMIT_PRO", "2400"))       # requests/min with a Premium key
+RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "1") != "0"
+_rl_hits = _defaultdict(_deque)
+_RL_INCLUDE = ("/jobs", "/export", "/changes", "/companies", "/suggest",
+               "/filter-values", "/stats", "/sources", "/coverage",
+               "/facets", "/geo", "/mcp")
+_RL_EXCLUDE = ("/jobs/in", "/jobs/role", "/jobs/type")
+
+
+def _api_path(path: str) -> bool:
+    for e in _RL_EXCLUDE:
+        if path == e or path.startswith(e + "/"):
+            return False
+    for i in _RL_INCLUDE:
+        if path == i or path.startswith(i + "/"):
+            return True
+    return False
+
+
+def _req_id(request) -> str:
+    return getattr(getattr(request, "state", None), "request_id", None) or _uuid.uuid4().hex[:16]
+
+
+def _attach_last_read(rows, last):
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    for row in rows:
+        ts = last.get(row.get("connector"))
+        row["last_read"] = ts
+        hrs = None
+        if ts:
+            try:
+                dt = datetime.fromisoformat(ts)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                hrs = round((now - dt).total_seconds() / 3600, 1)
+            except Exception:
+                hrs = None
+        row["last_read_hours_ago"] = hrs
+
+
+@app.middleware("http")
+async def _rate_limit_mw(request: Request, call_next):
+    rid = request.headers.get("x-request-id") or _uuid.uuid4().hex[:16]
+    request.state.request_id = rid
+    if not _api_path(request.url.path):
+        resp = await call_next(request)
+        resp.headers["X-Request-Id"] = rid
+        return resp
+    key = request.headers.get("x-api-key") or request.query_params.get("api_key")
+    is_pro = bool(key) and _pro_payload(key, key) is not None
+    ident = ("k:" + key) if is_pro else ("ip:" + (request.client.host if request.client else "?"))
+    limit = RATE_PRO if is_pro else RATE_FREE
+    now = _time.time()
+    dq = _rl_hits[ident]
+    while dq and dq[0] <= now - RATE_WINDOW:
+        dq.popleft()
+    if RATE_LIMIT_ENABLED and len(dq) >= limit:
+        reset = int(dq[0] + RATE_WINDOW)
+        resp = JSONResponse(
+            {"error": "rate limit exceeded", "request_id": rid,
+             "limit": limit, "window_seconds": RATE_WINDOW}, status_code=429)
+        resp.headers["X-RateLimit-Limit"] = str(limit)
+        resp.headers["X-RateLimit-Remaining"] = "0"
+        resp.headers["X-RateLimit-Reset"] = str(reset)
+        resp.headers["Retry-After"] = str(max(1, reset - int(now)))
+        resp.headers["X-Request-Id"] = rid
+        return resp
+    dq.append(now)
+    resp = await call_next(request)
+    resp.headers["X-RateLimit-Limit"] = str(limit)
+    resp.headers["X-RateLimit-Remaining"] = str(max(0, limit - len(dq)))
+    resp.headers["X-RateLimit-Reset"] = str(int(now + RATE_WINDOW))
+    resp.headers["X-Request-Id"] = rid
+    return resp
 
 
 @app.get("/jobs")

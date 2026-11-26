@@ -778,3 +778,12 @@ def change_type(row: dict) -> str:
     if row.get("first_seen") and row.get("first_seen") == row.get("last_changed"):
         return "new"
     return "modified"
+
+
+def last_fetch_by_platform(conn: sqlite3.Connection, status: str = "success"):
+    """{platform: last successful ran_at} from fetch_log, for the /sources
+    "last read X h ago" display."""
+    rows = conn.execute(
+        "SELECT platform, MAX(ran_at) AS last FROM fetch_log "
+        "WHERE status = ? GROUP BY platform", (status,)).fetchall()
+    return {r["platform"]: r["last"] for r in rows if r["last"]}
