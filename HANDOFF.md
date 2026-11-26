@@ -15,12 +15,10 @@ See also: [README.md](README.md) (architecture & quickstart) and
 
 ## Deployment
 
-- **Host:** Render — one free **web service**, auto-deploys from GitHub `main`.
-- **Build:** `pip install -r requirements.txt && python -m jobmesh.cli ingest`
+- **Host:** Render — one **Standard web service** (2 GB RAM, always on) with a **10 GB persistent disk** at `/var/data`, auto-deploys from GitHub `main`.
+- **Build:** `pip install -r requirements.txt` (the index is **not** rebuilt at build; a background thread ingests at runtime onto the disk).
 - **Start:** `uvicorn jobmesh.api:app --host 0.0.0.0 --port $PORT`
-- **Database:** `jobmesh.db` (SQLite) is **git-ignored and rebuilt by the
-  ingest at each deploy** — the service ships stateless; the index is
-  reconstructed from `config/companies.yaml`.
+- **Database:** `jobmesh.db` (SQLite) lives on the **persistent disk** (`JOBMESH_DB=/var/data/jobmesh.db`), so the index **survives redeploys**; a background thread refreshes it every `INGEST_INTERVAL_HOURS` (4) with per-chunk commits.
 - **Domain:** `jobmesh.world` (registrar IONOS) → DNS pointed at Render.
 - **Keep-alive:** a free **UptimeRobot** monitor pings the service every 5 min
   so the free instance does not spin down (avoids cold-start latency).
@@ -45,9 +43,13 @@ last refresh. A fetch failure is logged, never treated as all-jobs-closed.
 
 | Item | Plan | Cost |
 |---|---|---|
-| Hosting (Render web service) | Free | **$0 / month** |
-| Keep-alive (UptimeRobot) | Free | **$0 / month** |
+| Hosting (Render web service) | Standard, 2 GB, always on | **≈ $25 / month** |
+| Persistent disk (Render, 10 GB) | $0.25 / GB·month | **≈ $2.5 / month** |
 | Domain `jobmesh.world` (IONOS) | Annual | **≈ €10–15 / year** |
+
+> It also runs on the **Free** plan (512 MB): set `INGEST_WORKERS=2` and
+> `INGEST_MAX_BOARDS` low so the ingest fits; the only trade-off is a smaller
+> catalogue. The Standard plan is only for a bigger index and headroom.
 | Data providers | Public APIs / feeds | **$0** |
 | **Total** | | **≈ $0 / month + domain** |
 

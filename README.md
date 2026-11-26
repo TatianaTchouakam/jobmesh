@@ -29,6 +29,27 @@ it through a documented API. Each job links back to its original posting.
 - 📋 Full per-platform status vs the 78 required sources: see **[COVERAGE.md](COVERAGE.md)**
 - 📦 Running, operating costs & dependencies: see **[HANDOFF.md](HANDOFF.md)**
 
+
+### Jobmesh at a glance
+
+Numbers are measured live; see [/status](https://jobmesh.world/status) for the
+current figures.
+
+| | Jobmesh |
+|---|---|
+| Open postings | ~121k (live, growing) · see [/status](https://jobmesh.world/status) |
+| Platforms | 67 / 78 live, each with the exact reason if not |
+| Refresh | every 4 h, shown per state |
+| Search API | ✅ documented at [/api](https://jobmesh.world/api) |
+| MCP server | ✅ official MCP Registry |
+| CSV **and** JSON feed | ✅ `/export.csv` + `/export.json` |
+| Deduplicated | ✅ |
+| Languages | EN / DE / FR |
+| Open source | ✅ MIT |
+
+Every role links back to its original posting; only public APIs and feeds are
+used, robots.txt is honoured, and a failed fetch is never counted as closed jobs.
+
 ### Features
 
 - Search bar with filters (keyword, location, remote, **posting date**)

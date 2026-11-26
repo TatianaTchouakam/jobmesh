@@ -23,3 +23,4 @@ config/.cc_discovery_cache.json
 
 # MCP registry CLI binary (downloaded locally, not part of the repo)
 mcp-publisher
+A-LIRE.md
