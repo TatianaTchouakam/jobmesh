@@ -1,6 +1,6 @@
 # Jobmesh — partner-access requests for the 10 remaining platforms
 
-Of the 78 required platforms, **68 are live**. The 10 below cannot be indexed
+Of the 78 required platforms, **67 are live**. The 10 below cannot be indexed
 through any clean, self-service public route — verified line by line, with
 robots.txt proof and live checks (see `COVERAGE.md`). They are **not technical
 failures**: each is an *integration pending access*. The right way in is an
@@ -25,6 +25,8 @@ alone is never enough.
 ---
 
 ## 1. Cornerstone (CSOD)
+
+**Status:** Partner request sent **26/11/2026** — awaiting reply.
 
 **Why gated:** the career sites are single-page apps; the `JobPosting` JSON-LD
 is rendered client-side, so a plain HTTP fetch returns only the shell — no
@@ -62,6 +64,8 @@ and a Pilot/Stage test environment.
 
 ## 2. BrassRing (Infinite / IBM Kenexa)
 
+**Status:** Partner request sent **26/11/2026** — awaiting reply.
+
 **Why gated:** candidate detail pages serve a ~900 KB SPA bundle; the
 `JobPosting` JSON-LD is client-rendered, so a plain HTTP fetch parses zero
 postings. No token-free HTTP route.
@@ -97,6 +101,8 @@ contact — ask to be accepted as a job-board **aggregation** provider.
 
 ## 3. UltiPro (UKG)
 
+**Status:** Partner request sent **26/11/2026** — awaiting reply.
+
 **Why gated:** `robots.txt` disallows `*/JobBoardView`, the search/data route —
 so it is off-limits to honour.
 **Channel:** UKG Developer Portal → partner job-board feed (ukg.com → Developer
@@ -129,6 +135,8 @@ so it is off-limits to honour.
 ---
 
 ## 4. Paycom
+
+**Status:** Not contacted — no public technical partner program (sales form only), verified **26/11/2026**.
 
 **Why gated:** no sitemap and no server-rendered JSON-LD on client job pages;
 listings load from a client-key'd API with no public anonymous route.
@@ -163,6 +171,8 @@ Partners). Ask for a partner job-distribution feed.
 
 ## 5. talentReef (Mitratech)
 
+**Status:** Already contacted earlier (before **26/11/2026**) — awaiting reply.
+
 **Why gated:** the sitemap + JSON-LD recipe is ready, but no live public tenant
 was found — a syndication feed is the clean multi-tenant route.
 **Channel:** Mitratech Partner Programs — `PartnerPrograms@Mitratech.com`
@@ -193,6 +203,8 @@ was found — a syndication feed is the clean multi-tenant route.
 ---
 
 ## 6. Paradox (Workday)
+
+**Status:** Pending — the Workday partner form requires a professional email; to be sent from **contact@jobmesh.world** (as of **26/11/2026**).
 
 **Why gated:** acquired by Workday; no standalone public job surface, and client
 sites run on their own domains.
@@ -226,6 +238,8 @@ a published-jobs partner feed for former Paradox / McHire tenants.
 
 ## 7. Paycor (Paychex)
 
+**Status:** Partner request (Paychex/Paycor) sent **26/11/2026** — awaiting reply.
+
 **Why gated:** a public per-client ATOM feed exists, but `recruitingbypaycor.com`
 (and `newton.newtonsoftware.com`, which redirects to it) serve
 `robots.txt: Disallow: /`. Honouring robots (RFC 9309), the feed is off-limits.
@@ -256,6 +270,8 @@ acquired Paycor). Ask for a partner feed on a host whose robots.txt permits it.
 ---
 
 ## 8. Talenetic
+
+**Status:** Partner request sent **26/11/2026** — awaiting reply.
 
 **Why gated:** no active client board found on the public web — a syndication
 partnership is the multi-tenant route.
@@ -288,6 +304,8 @@ partnership is the multi-tenant route.
 
 ## 9. CareerSiteCloud
 
+**Status:** Partner request sent **26/11/2026** — awaiting reply.
+
 **Why gated:** the service returns HTTP 502 across repeated checks (offline).
 **Channel:** CareerSiteCloud — free partner XML export (careersitecloud.com →
 Contact). Do **not** buy the ~$1,000/mo backfill; ask only for a free partner
@@ -319,6 +337,8 @@ export once the service is back up.
 ---
 
 ## 10. eJobBoard
+
+**Status:** Cannot contact — ejobboard.com is a parked GoDaddy domain with no reachable vendor, verified **26/11/2026**.
 
 **Why gated:** no client names or live tenant are published anywhere — only a
 negotiated feed can give multi-tenant access.

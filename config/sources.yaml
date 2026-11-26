@@ -16,12 +16,12 @@ required_ats:
   - { name: "Avature", connector: avature, status: ACTIVE }
   - { name: "BambooHR", connector: bamboohr, status: ACTIVE }
   - { name: "BrassRing", connector: null, status: API_REQUIRED,
-      reason: "Detail page returns the ~900 KB SPA bundle; JobPosting JSON-LD is client-rendered, so a plain JobmeshBot HTTP fetch parses 0 JobPostings (verified 24/11 on Bechtel). No token-free HTTP route.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD); JS render / UA-spoof excluded" }
+      reason: "Detail page returns the ~900 KB SPA bundle; JobPosting JSON-LD is client-rendered, so a plain JobmeshBot HTTP fetch parses 0 JobPostings (verified 24/11 on Bechtel). No token-free HTTP route.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD); JS render / UA-spoof excluded", request_status: "Partner request sent 26/11/2026" }
   - { name: "Breezy HR", connector: breezy, status: ACTIVE }
   - { name: "CareerPlug", connector: careerplug, status: API_REQUIRED, reason: "Careers page switched to client-rendered: the /jobs listing no longer embeds schema.org JobPosting JSON-LD and exposes no public JSON/RSS endpoint (verified 26/11 on alphagraphics-careers.careerplug.com — 62 jobs in the DOM, 0 JSON-LD blocks, /jobs.json 406). No token-free HTTP route.", next_action: "EXCLUDED — regressed to client-rendered; revisit if a server-rendered feed or public API returns" }
   - { name: "Comeet", connector: comeet, status: ACTIVE }
   - { name: "CSOD (Cornerstone)", connector: null, status: API_REQUIRED,
-      reason: "Careersite is a SPA; JobPosting JSON-LD is client-rendered. A plain JobmeshBot HTTP fetch of a detail page returns only the ~5 KB shell with no JSON-LD (verified 24/11 on IATA). No token-free HTTP route; JS render / UA-spoof excluded.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD)" }
+      reason: "Careersite is a SPA; JobPosting JSON-LD is client-rendered. A plain JobmeshBot HTTP fetch of a detail page returns only the ~5 KB shell with no JSON-LD (verified 24/11 on IATA). No token-free HTTP route; JS render / UA-spoof excluded.", next_action: "EXCLUDED — no token-free HTTP route (SPA, client-rendered JSON-LD)", request_status: "Partner request sent 26/11/2026" }
   - { name: "Dayforce", connector: dayforce, status: ACTIVE }
   - { name: "Deel", connector: deel, status: ACTIVE }
   - { name: "Dover", connector: dover, status: ACTIVE }
@@ -47,11 +47,11 @@ required_ats:
   - { name: "Oracle Recruiting", connector: oracle, status: ACTIVE }
   - { name: "PageUp", connector: pageup, status: ACTIVE }
   - { name: "Paradox", connector: null, status: RETIRED,
-      reason: "Acquired by Workday; no standalone public job surface; client sites run on their own domains", next_action: "PARTNERSHIP_PENDING — Workday Recruiting partner feed; McHire tenant exists but detail pages are anti-bot 202 (see PARTNERSHIPS.md)" }
+      reason: "Acquired by Workday; no standalone public job surface; client sites run on their own domains", next_action: "PARTNERSHIP_PENDING — Workday Recruiting partner feed; McHire tenant exists but detail pages are anti-bot 202 (see PARTNERSHIPS.md)", request_status: "Partner request pending — Workday form requires a professional email; to be sent from contact@jobmesh.world (26/11/2026)" }
   - { name: "Paycom", connector: null, status: API_REQUIRED,
-      reason: "No sitemap, no server-rendered JSON-LD on client job pages; listing loads from a clientkey'd API. No token-free public route found (re-verified 24/11).", next_action: "EXCLUDED — no token-free route; API needs a per-session clientkey (not a public anonymous session)" }
+      reason: "No sitemap, no server-rendered JSON-LD on client job pages; listing loads from a clientkey'd API. No token-free public route found (re-verified 24/11).", next_action: "EXCLUDED — no token-free route; API needs a per-session clientkey (not a public anonymous session)", request_status: "Not contacted — no public technical partner program (sales form only), verified 26/11/2026" }
   - { name: "Paycor", connector: null, status: RETIRED,
-      reason: "Public per-client ATOM feed is real (verified 24/11: clientId 8a7883d0…, employer 'US Eye', 97 jobs) BUT recruitingbypaycor.com — and newton.newtonsoftware.com, which redirects to it — serve robots.txt 'User-agent: * / Disallow: /'. Honouring robots (RFC 9309), the feed is off-limits. Connector `paycor` shipped and tested offline.", next_action: "ROBOTS_BLOCKED — revisit only if a Paycor client exposes the feed on a host whose robots.txt permits reading" }
+      reason: "Public per-client ATOM feed is real (verified 24/11: clientId 8a7883d0…, employer 'US Eye', 97 jobs) BUT recruitingbypaycor.com — and newton.newtonsoftware.com, which redirects to it — serve robots.txt 'User-agent: * / Disallow: /'. Honouring robots (RFC 9309), the feed is off-limits. Connector `paycor` shipped and tested offline.", next_action: "ROBOTS_BLOCKED — revisit only if a Paycor client exposes the feed on a host whose robots.txt permits reading", request_status: "Partner request (Paychex/Paycor) sent 26/11/2026" }
   - { name: "Paylocity", connector: paylocity, status: ACTIVE }
   - { name: "Personio", connector: personio, status: ACTIVE }
   - { name: "Phenom People", connector: phenom, status: ACTIVE }
@@ -65,13 +65,13 @@ required_ats:
   - { name: "SAP SuccessFactors", connector: successfactors, status: ACTIVE }
   - { name: "SmartRecruiters", connector: smartrecruiters, status: ACTIVE }
   - { name: "talentReef", connector: null, status: CLIENT_CONNECTION_REQUIRED,
-      reason: "sitemap+JSON-LD recipe ready, but no live public tenant found (21/11/2026)", next_action: "SYNDICATION_PENDING — TalentReef XML job distribution / syndication feed (see PARTNERSHIPS.md)" }
+      reason: "sitemap+JSON-LD recipe ready, but no live public tenant found (21/11/2026)", next_action: "SYNDICATION_PENDING — TalentReef XML job distribution / syndication feed (see PARTNERSHIPS.md)", request_status: "Partner request already sent earlier (before 26/11/2026)" }
   - { name: "Taleo", connector: taleo, status: ACTIVE }
   - { name: "Teamtailor", connector: teamtailor, status: ACTIVE }
   - { name: "Trakstar", connector: trakstar, status: ACTIVE }
   - { name: "TriNet", connector: trinet, status: ACTIVE }
   - { name: "UltiPro", connector: null, status: API_REQUIRED,
-      reason: "robots Disallow: */JobBoardView blocks the search/data route", next_action: "PARTNERSHIP_PENDING — UKG Developer Portal partner job-board feed, avoids robots-blocked JobBoardView (see PARTNERSHIPS.md)" }
+      reason: "robots Disallow: */JobBoardView blocks the search/data route", next_action: "PARTNERSHIP_PENDING — UKG Developer Portal partner job-board feed, avoids robots-blocked JobBoardView (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
   - { name: "WeRecruit", connector: werecruit, status: ACTIVE }
   - { name: "Workable", connector: workable, status: ACTIVE }
   - { name: "Workday", connector: workday, status: ACTIVE }
@@ -89,17 +89,17 @@ required_boards:
   - { name: "JobBoard.io", connector: jobfeed, status: ACTIVE }
   - { name: "Wiley Madgex", connector: jobfeed, status: ACTIVE }
   - { name: "Talenetic", connector: null, status: CLIENT_CONNECTION_REQUIRED,
-      reason: "No active client board found on the public web", next_action: "PARTNERSHIP_PENDING — Talenetic XML/JSON syndication partnership, FeedOuts (see PARTNERSHIPS.md)" }
+      reason: "No active client board found on the public web", next_action: "PARTNERSHIP_PENDING — Talenetic XML/JSON syndication partnership, FeedOuts (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
   - { name: "JobMount", connector: jobmount, status: ACTIVE }
   - { name: "CareerSiteCloud", connector: null, status: TEMPORARILY_UNAVAILABLE,
-      reason: "Service returns 502 (offline across repeated checks)", next_action: "PROVIDER_CHECK_PENDING — 502 + daily health-check; free partner XML export, no $1000/mo backfill (see PARTNERSHIPS.md)" }
+      reason: "Service returns 502 (offline across repeated checks)", next_action: "PROVIDER_CHECK_PENDING — 502 + daily health-check; free partner XML export, no $1000/mo backfill (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
   - { name: "JobBoard.com", connector: jobboardcom, status: ACTIVE }
   - { name: "Artha", connector: artha, status: ACTIVE }
   - { name: "jobboardsoftware.com", connector: exenzo, status: ACTIVE }
   - { name: "jobBoardHQ", connector: jobfeed, status: ACTIVE }
   - { name: "Nodex", connector: nodex, status: ACTIVE }
   - { name: "eJobBoard", connector: null, status: PARTNERSHIP_REQUIRED,
-      reason: "No client names or live tenant published anywhere", next_action: "PARTNERSHIP_PENDING — negotiated XML feed only; active vendor (~$49/mo), no public tenant (see PARTNERSHIPS.md)" }
+      reason: "No client names or live tenant published anywhere", next_action: "PARTNERSHIP_PENDING — negotiated XML feed only; active vendor (~$49/mo), no public tenant (see PARTNERSHIPS.md)", request_status: "Cannot contact — ejobboard.com is a parked GoDaddy domain, no reachable vendor (verified 26/11/2026)" }
   - { name: "ejobsitesoftware.com", connector: jobfeed, status: ACTIVE }
 
 
