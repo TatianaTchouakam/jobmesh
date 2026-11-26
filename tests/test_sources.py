@@ -68,8 +68,9 @@ def test_no_inactive_source_is_seeded_for_live_ingest():
             assert c not in seeded, f"inactive connector {c} is seeded in companies.yaml"
 
 
-def test_active_count_is_67():
-    assert srcreg.status_counts().get("ACTIVE") == 67
+def test_active_count_is_69():
+    # CareerPlug and Paycom now have a working public job-pages route (Live).
+    assert srcreg.status_counts().get("ACTIVE") == 69
 
 
 def test_bonus_sources_are_real_and_seeded():
@@ -124,4 +125,4 @@ def test_no_public_route_status_is_valid_and_used():
     d = srcreg.load_sources()
     names = {p["name"] for p in srcreg.all_required(d)
              if p["status"] == "NO_PUBLIC_ROUTE"}
-    assert {"BrassRing", "Paycom", "UltiPro", "CSOD (Cornerstone)", "CareerPlug"} <= names
+    assert {"BrassRing", "UltiPro", "CSOD (Cornerstone)"} <= names

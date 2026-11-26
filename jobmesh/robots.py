@@ -18,11 +18,46 @@ import threading
 from urllib.parse import quote, unquote, urlparse, urlunparse
 from urllib.robotparser import RobotFileParser
 
+import re
+
 import requests
 
 # Real, identifiable agent with a contact URL (transparency).
 USER_AGENT = "JobmeshBot/0.1 (+https://github.com/TatianaTchouakam/jobmesh)"
 UA_TOKEN = "JobmeshBot"  # token robots.txt groups are matched against
+
+_WILDCARD_CACHE: dict[str, "re.Pattern"] = {}
+
+
+def _rule_matches(rule_path: str, norm: str) -> bool:
+    """RFC 9309 path matching for one rule line.
+
+    ``*`` matches any run of characters and ``$`` anchors the end. urllib's own
+    matcher only does a literal prefix test, so it misses the very common
+    ``Allow: */JobBoard/`` style (a leading/embedded wildcard) that operators
+    rely on. We honour the wildcards for such patterns and fall back to a plain
+    prefix test for ordinary paths.
+    """
+    # urllib percent-encodes the wildcard metacharacters when it parses the
+    # rule (``*`` -> ``%2A``, ``$`` -> ``%24``); restore them so we can honour
+    # them. The literal segments stay encoded, matching the encoded ``norm``.
+    rule_path = rule_path.replace("%2A", "*").replace("%2a", "*").replace("%24", "$")
+    if "*" not in rule_path and "$" not in rule_path:
+        return norm.startswith(rule_path)
+    rx = _WILDCARD_CACHE.get(rule_path)
+    if rx is None:
+        out = []
+        for ch in rule_path:
+            if ch == "*":
+                out.append(".*")
+            elif ch == "$":
+                out.append(r"\Z")
+            else:
+                out.append(re.escape(ch))
+        rx = re.compile("".join(out))
+        _WILDCARD_CACHE[rule_path] = rx
+    return rx.match(norm) is not None
+
 
 _cache: dict[str, RobotFileParser | None] = {}
 _lock = threading.Lock()
@@ -78,7 +113,7 @@ def _longest_match_allowed(rp: RobotFileParser, ua_token: str, url: str) -> bool
             return rp.can_fetch(ua_token, url)
         best_len, best_allow = -1, True
         for rl in entry.rulelines:
-            if rl.applies_to(norm):
+            if _rule_matches(rl.path, norm):
                 plen = len(rl.path)
                 if plen > best_len or (plen == best_len and rl.allowance and not best_allow):
                     best_len, best_allow = plen, rl.allowance

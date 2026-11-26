@@ -109,6 +109,10 @@ class ClusterLimiter:
             lock.release()
 
 
+# Per-platform default pacing (seconds between same-host requests). Page-per-job
+# platforms (CareerPlug) use a lighter pace than Workday's cluster API.
+_DEFAULT_INTERVALS = {"workday": 1.5, "careerplug": 0.4}
+
 _LIMITERS: dict[str, ClusterLimiter] = {}
 _LIMITERS_LOCK = threading.Lock()
 
@@ -126,7 +130,8 @@ def get_limiter(name: str) -> ClusterLimiter:
         if lim is None:
             up = name.upper()
             mi = float(os.getenv(f"{up}_MIN_INTERVAL",
-                                 os.getenv("CLUSTER_MIN_INTERVAL", "1.5")))
+                                 os.getenv("CLUSTER_MIN_INTERVAL",
+                                           str(_DEFAULT_INTERVALS.get(name, 1.5)))))
             mp = int(os.getenv(f"{up}_MAX_PARALLEL_CLUSTERS",
                                os.getenv("CLUSTER_MAX_PARALLEL", "2")))
             lim = ClusterLimiter(mi, mp)

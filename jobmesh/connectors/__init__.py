@@ -42,6 +42,7 @@ from .manatal import ManatalConnector
 from .hireology import HireologyConnector
 from .hibob import HibobConnector
 from .careerplug import CareerPlugConnector
+from .paycom import PaycomConnector
 from .jobvite import JobviteConnector
 from .zohorecruit import ZohoRecruitConnector
 from .freshteam import FreshteamConnector
@@ -147,6 +148,7 @@ REGISTRY: dict[str, type[Connector]] = {
     HireologyConnector.platform: HireologyConnector,
     HibobConnector.platform: HibobConnector,
     CareerPlugConnector.platform: CareerPlugConnector,
+    PaycomConnector.platform: PaycomConnector,
     JobviteConnector.platform: JobviteConnector,
     ZohoRecruitConnector.platform: ZohoRecruitConnector,
     FreshteamConnector.platform: FreshteamConnector,

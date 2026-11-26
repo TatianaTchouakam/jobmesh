@@ -11,7 +11,7 @@
 | Total postings tracked (open + closed) | 270,388 |
 | Closed postings detected & marked | 77,310 |
 | Duplicate open postings grouped (dedup) | 18,557 |
-| Required platforms live | **67 / 78** (50 ATS + 17 job boards) |
+| Required platforms live | **69 / 78** (52 ATS + 17 job boards) |
 | Companies indexed | 28,737 |
 | Source boards indexed | 6,706 |
 | Bonus sources (beyond the 78) | 36 |
@@ -22,7 +22,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required ATS coverage — 50/58 live
+## Required ATS coverage — 52/58 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -33,7 +33,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 5 | BambooHR | ✅ | `bamboohr` | 3 | keyless careers API |
 | 6 | BrassRing | ⛔ | | | detail page returns the ~900 KB SPA bundle; `JobPosting` JSON-LD is client-rendered, so a plain JobmeshBot HTTP fetch parses 0 (verified 24/11 on Bechtel) — no token-free HTTP route |
 | 7 | Breezy HR | ✅ | `breezy` | 1,360 | keyless board API |
-| 8 | CareerPlug | ⛔ | | | careers page switched to client-rendered (verified 26/11 on alphagraphics-careers): /jobs no longer embeds JobPosting JSON-LD, no public JSON/RSS endpoint — no token-free route |
+| 8 | CareerPlug | ✅ | `careerplug` | live | **public job pages + JSON-LD** — server-rendered `/jobs` list (paginated) → `/jobs/{id}` pages, each with a schema.org `JobPosting` JSON-LD (robots allows `/jobs`; `/apps/`,`/j/`,`/jobs.js` never touched) · board = employer subdomain (verified live 26/11/2026) |
 | 9 | Comeet | ✅ | `comeet` | live (1 board) | keyless hosted page `comeet.com/jobs/{company}/{uid}` (no token); more boards addable |
 | 10 | CSOD (Cornerstone) | ⛔ | | | careersite is a SPA; `JobPosting` JSON-LD is client-rendered — a plain JobmeshBot HTTP fetch of a detail page gets only the ~5 KB shell (verified 24/11 on IATA) — no token-free HTTP route |
 | 11 | Dayforce | ✅ | `dayforce` | 1 | public CSRF handshake (`/api/auth/csrf`) + POST `/api/geo/{ns}/jobposting/search` · robots: content signals only |
@@ -61,7 +61,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 33 | Oracle Recruiting | ✅ | `oracle` | 2,400 | keyless CX API |
 | 34 | PageUp | ✅ | `pageup` | public per-client RSS `/{id}/cw/en/rss` (job: namespaced fields) · verified on Monash Univ (69) |
 | 35 | Paradox | 🟡 | | | acquired by Workday; client sites run on their own domains (often another ATS already indexed here); no standalone Paradox public job surface found (verified 21/11) |
-| 36 | Paycom | ⛔ | | | no sitemap and no server-rendered JSON-LD on the client job pages; the listing loads from a clientkey'd API, so there is no public route to read — remains excluded (re-verified 24/11) |
+| 36 | Paycom | ✅ | `paycom` | live | **public job pages + JSON-LD** — `/v4/ats/web.php/portal/{key}/jobs/{id}` pages carry a `JobPosting` JSON-LD (robots `Disallow: /` + `Allow: /v4/ats/web.php/portal/`, allowed under RFC 9309 longest-match). No public listing, so posting ids come from the public URL index; a closed posting 404s (never mass-closes). Verified live 26/11/2026 |
 | 37 | Paycor | 🟡 | `paycor` | | connector ready: public per-client ATOM feed (Paycor Recruiting, ex-Newton), read from the employer's careers page; tested offline · live employers being discovered with `scripts/discover_commoncrawl.py` (Common Crawl index + robots + open-jobs check) |
 | 38 | Paylocity | ✅ | `paylocity` | 582 | keyless public board; window.pageData JSON at recruiting.paylocity.com/Recruiting/Jobs/All/{companyId} |
 | 39 | Personio | ✅ | `personio` | 1,129 | keyless XML feed |
@@ -143,7 +143,7 @@ rest are declared, never silently failed, and never counted as covered:
 | Status | Count | Meaning |
 |---|---|---|
 | `ACTIVE` | 67 | live, robots-permitted, keyless — real jobs in the index |
-| `API_REQUIRED` | 4 | official API / credentials needed (BrassRing, CSOD, Paycom, UltiPro) |
+| `NO_PUBLIC_ROUTE` | 3 | no token-free public job route (BrassRing, CSOD, UltiPro) |
 | `CLIENT_CONNECTION_REQUIRED` | 2 | an employer must connect their feed (Talenetic, talentReef) |
 | `TEMPORARILY_UNAVAILABLE` | 1 | service down (CareerSiteCloud 502) |
 | `RETIRED` | 2 | merged/acquired, no standalone surface (Paradox→Workday, Paycor→Paychex) |
@@ -221,4 +221,4 @@ or private key; a proxy or IP change to evade a block; bypassing Cloudflare, a C
 protection; any path a robots.txt disallows; and any site that names and refuses aggregators.
 **Excluded on purpose:** **Jobylon** — its robots.txt blocks job-aggregator crawlers by
 name; although a generic `User-agent: *` rule would still permit us, crawling it would go
-against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` but disallows `*/JobBoardView`, which is the search-results data route the job list depends on; there is no robots-permitted way to read the listing, so UltiPro is excluded despite a reachable endpoint. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API (re-verified 21/11: the listing is a SPA served only via `/api/`, and there is no sitemap, so there is no robots-permitted way to enumerate the jobs). **Cornerstone / CSOD** — the careersite is a SPA and the job-detail pages carry their `JobPosting` JSON-LD only after client-side rendering (served via UA-dynamic rendering to crawlers); a plain `JobmeshBot` HTTP fetch of a detail page receives only the ~5 KB shell with no JSON-LD (verified 24/11 on IATA). Reading it would need JS rendering or UA-spoofing, both excluded, and there is no sitemap — so there is no token-free HTTP route. **BrassRing** (Kenexa) — the job-detail page returns the ~900 KB SPA bundle; its `JobPosting` JSON-LD is client-rendered, so a plain `JobmeshBot` HTTP fetch parses zero JobPostings (verified 24/11 on Bechtel). Same bar as CSOD: no token-free HTTP route. **Paycom** — no sitemap and no server-rendered JSON-LD on the client job pages; the listing loads from a clientkey'd API, so there is no public route to read it, and it stays excluded (re-verified 24/11). (SAP SuccessFactors is live via its Career Site Builder sitemap + JobPosting microdata — see the table.) **rexx systems** (bonus, not in the 78) — robots.txt names automated clients (python-requests, Scrapy, aiohttp, axios) with `Disallow: /`; although our `JobmeshBot` is not named and a public Atom feed is declared, the operator's intent is clearly anti-aggregator, so for consistency with Jobylon it is left out. **Stonefish** (UK university ATS; bonus) — its robots.txt names job-aggregators that “scrape job adverts and re-publish” and disallows them; that describes exactly what an index does, so despite a public RSS feed it is left out for the same reason. **Umantis** (Haufe/Abacus; bonus) — robots.txt opens with a `User-agent: * / Disallow: /` group, so it is excluded despite reachable vacancy pages.
+against the operator's clear intent, so it is left out. **UKG / UltiPro** — `recruiting.ultipro.com/robots.txt` allows `*/JobBoard/` (the `OpportunityDetail` posting pages are permitted) and disallows only `*/JobBoardView` (the SPA search route); the posting pages are reachable and robots-clean. They are not yet Live because the posting payload is a JS-app object with no reliable open/closed signal (a closed posting still returns 200, just without data) and the sampled ids are stale — it needs a fresh posting-id discovery and an open-status rule before indexing, to avoid listing closed roles. **Kula.ai** — `careers.kula.ai/robots.txt` sets `Disallow: /api/`, and the only route that serves job data is `/api/internal/ats_job_posts`; the career page carries no job data in any robots-permitted HTML, so Kula is excluded despite a reachable API (re-verified 21/11: the listing is a SPA served only via `/api/`, and there is no sitemap, so there is no robots-permitted way to enumerate the jobs). **Cornerstone / CSOD** — the careersite is a SPA and the job-detail pages carry their `JobPosting` JSON-LD only after client-side rendering (served via UA-dynamic rendering to crawlers); a plain `JobmeshBot` HTTP fetch of a detail page receives only the ~5 KB shell with no JSON-LD (verified 24/11 on IATA). Reading it would need JS rendering or UA-spoofing, both excluded, and there is no sitemap — so there is no token-free HTTP route. **BrassRing** (Kenexa) — the job-detail page returns the ~900 KB SPA bundle; its `JobPosting` JSON-LD is client-rendered, so a plain `JobmeshBot` HTTP fetch parses zero JobPostings (verified 24/11 on Bechtel). Same bar as CSOD: no token-free HTTP route. (SAP SuccessFactors is live via its Career Site Builder sitemap + JobPosting microdata — see the table.) **rexx systems** (bonus, not in the 78) — robots.txt names automated clients (python-requests, Scrapy, aiohttp, axios) with `Disallow: /`; although our `JobmeshBot` is not named and a public Atom feed is declared, the operator's intent is clearly anti-aggregator, so for consistency with Jobylon it is left out. **Stonefish** (UK university ATS; bonus) — its robots.txt names job-aggregators that “scrape job adverts and re-publish” and disallows them; that describes exactly what an index does, so despite a public RSS feed it is left out for the same reason. **Umantis** (Haufe/Abacus; bonus) — robots.txt opens with a `User-agent: * / Disallow: /` group, so it is excluded despite reachable vacancy pages.
