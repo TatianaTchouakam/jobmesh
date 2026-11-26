@@ -410,11 +410,6 @@
     </div>
     <button type="button" id="goPro" style="background:linear-gradient(135deg,var(--gold-1),var(--gold-2));color:#fff;border:0;border-radius:12px;padding:13px 26px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer">Passer &agrave; Premium &mdash; 3&nbsp;&euro;/mois</button>
     <div style="margin-top:12px"><button type="button" id="goProOnce" style="background:#fff;color:var(--gold-2);border:1px solid var(--gold-2);border-radius:12px;padding:11px 22px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">Payer une fois &mdash; 3&nbsp;&euro; (PayPal ou carte)</button><div style="font-size:12px;color:var(--soft);margin-top:7px">Acc&egrave;s Premium 1&nbsp;mois, sans abonnement.</div></div>
-    <div id="ppWrap" style="display:none;max-width:360px;margin:16px auto 0">
-      <div style="display:flex;align-items:center;gap:12px;color:var(--soft);font-size:12px;margin:4px 0 12px"><span style="flex:1;height:1px;background:var(--line)"></span>ou<span style="flex:1;height:1px;background:var(--line)"></span></div>
-      <div id="paypal-btns"></div>
-      <div id="ppStat" style="font-size:13px;color:var(--gold-2);font-weight:700;margin-top:8px"></div>
-    </div>
     <div style="margin-top:18px;font-size:13px;color:var(--soft)">
       Already subscribed? Paste your key:
       <input id="prokeyin" placeholder="jm_..." style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:13px;min-width:220px;vertical-align:middle">
@@ -1161,32 +1156,6 @@ runSearch();
       alert((d&&d.error)||"Billing not available yet."); gpo.disabled=false; gpo.textContent=oldo;
     }).catch(function(){ alert("Could not start checkout."); gpo.disabled=false; gpo.textContent=oldo; });
   });
-  // --- PayPal subscription button (rendered only when configured) ---
-  var ppWrap=document.getElementById("ppWrap");
-  function onProKey(k){ setKey(k); if(inp) inp.value=k; show(); }
-  fetch("/pro/paypal/config").then(function(r){ return r.ok?r.json():null; }).then(function(cfg){
-    if(!cfg || !cfg.client_id || !cfg.plan_id) return;
-    var sc=document.createElement("script");
-    sc.src="https://www.paypal.com/sdk/js?client-id="+encodeURIComponent(cfg.client_id)+"&vault=true&intent=subscription&currency=EUR";
-    sc.onload=function(){
-      if(!window.paypal||!ppWrap) return;
-      ppWrap.style.display="block";
-      window.paypal.Buttons({
-        style:{layout:"horizontal",color:"gold",shape:"pill",label:"paypal",height:42},
-        createSubscription:function(data,actions){ return actions.subscription.create({plan_id:cfg.plan_id}); },
-        onApprove:function(data){
-          var st=document.getElementById("ppStat"); if(st) st.textContent="\u2026 validation";
-          fetch("/pro/paypal/verify?subscription_id="+encodeURIComponent(data.subscriptionID),{method:"POST"})
-            .then(function(r){return r.json();}).then(function(d){
-              if(d&&d.key){ onProKey(d.key); if(st) st.textContent="\u2713 Premium activ\u00e9 \u2014 cl\u00e9 enregistr\u00e9e sur cet appareil"; }
-              else if(st) st.textContent=(d&&d.error)||"Paiement non confirm\u00e9.";
-            }).catch(function(){ if(st) st.textContent="Erreur de v\u00e9rification."; });
-        },
-        onError:function(){ var st=document.getElementById("ppStat"); if(st) st.textContent="Erreur PayPal."; }
-      }).render("#paypal-btns");
-    };
-    document.head.appendChild(sc);
-  }).catch(function(){});
   var ex=document.getElementById("exportcsv");
   if(ex) ex.addEventListener("click",function(){
     var k=getKey();
