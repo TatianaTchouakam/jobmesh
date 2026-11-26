@@ -195,6 +195,31 @@ docker run -p 8000:8000 -v jobmesh-data:/data jobmesh
 docker run -v jobmesh-data:/data jobmesh python -m jobmesh.cli ingest
 ```
 
+## AI agents (MCP)
+
+Jobmesh ships a built-in **MCP server** (Model Context Protocol), so AI
+assistants and agents can query the live index directly — no account, no
+scraping, the same public data the website serves.
+
+- **Endpoint:** `POST https://jobmesh.world/mcp` — JSON-RPC 2.0 over
+  Streamable-HTTP.
+- **Tools:** `search_jobs` (role/skill, location, ISO-2 country, level,
+  category, remote), `index_stats`, `source_coverage`.
+- **No extra dependencies**, and registration is guarded so the MCP layer can
+  never stop the main API from starting.
+
+Check it is live:
+
+```bash
+curl -s https://jobmesh.world/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+Point any MCP-capable client at the endpoint URL and it can search the index on
+the user's behalf. A plain `GET /mcp` returns a short description and the tool
+list.
+
 ## Tests
 
 ```bash
