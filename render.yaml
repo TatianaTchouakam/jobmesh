@@ -24,12 +24,12 @@ services:
         sync: false
       - key: BASE_URL             # e.g. https://jobmesh.world
         sync: false
-      - key: INGEST_MAX_BOARDS     # optional: cap boards/platform to keep builds fast
-        sync: false
+      - key: INGEST_MAX_BOARDS     # per-platform board cap (free tier); 2000 lets most of join through
+        value: "2000"
       - key: INGEST_INTERVAL_HOURS  # background self-refresh cadence (hours)
         value: "6"
-      - key: INGEST_WORKERS         # fetch concurrency — conservative on free tier to avoid timeouts
-        value: "6"
+      - key: INGEST_WORKERS         # fetch concurrency — I/O-bound; retries cover transient drops
+        value: "8"
       # Optional keys for keyed sources (leave unset to skip those sources)
       - key: JOOBLE_API_KEY
         sync: false

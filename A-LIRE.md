@@ -35,6 +35,12 @@ Après vérification de **jobmesh.world/status**. **Rien poussé** — tu fais `
    c'est créé et je branche le code (petit commit, à ton nom).
 
 ## Divers
+- **Catalogue en ligne augmenté** : `INGEST_MAX_BOARDS` 1000 → **2000** et
+  `INGEST_WORKERS` → **8** (`render.yaml`). Laisse passer plus de `join`
+  (~3040 boards au lieu de 2040). Hausse mesurée : sur Render gratuit le
+  service s'endort après ~15 min, donc on évite un ingest trop long.
+  Le vrai gain viendra de **Turso** (base persistante) qui laissera le
+  catalogue s'accumuler entre les runs au lieu de repartir de zéro.
 - Binaire `mcp-publisher` ajouté au `.gitignore` (ne pas versionner).
 
 ---
