@@ -728,6 +728,9 @@ weworkremotely:
 
 pinpoint:        # ATS (find token at {company}.pinpointhq.com) — best-effort, verify live
   - workwithus
+  - superiorgroup      # Superior (51 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - trilongroup        # Trilon Group
+  - crcna              # Christian Reformed Church
 
 # softgarden — ATS very common in Germany/DACH. Public career feed at
 # https://{slug}.career.softgarden.de/jobs.feed.json — slug is the employer's
@@ -4002,6 +4005,9 @@ hibob:
 # CareerPlug (careerplug.com) — server-rendered JSON-LD ItemList at {tenant}.careerplug.com/jobs
 careerplug:
   - cplugjobs   # CareerPlug's own board
+  - alphagraphics-careers   # AlphaGraphics   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - sir-speedy-careers      # Sir Speedy
+  - postnet-careers         # PostNet
 
 # Jobvite (jobs.jobvite.com) — server-rendered listing, paginated ?p=N; board = company slug
 jobvite:
@@ -4126,10 +4132,16 @@ exenzo:
 # public sitemap.xml + per-posting schema.org JSON-LD; board = tenant subdomain
 isolvedhire:
   - isolved
+  - halvik             # Halvik   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - jeeter             # Jeeter
+  - sachealth          # SAC Health
 
 # JazzHR — {board}.applytojob.com; keyless server-rendered careers page
 jazzhr:
   - easeinc
+  - landing            # Landing   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - roots              # Invest with Roots
+  - constellationinc   # Constellation Inc
 
 # iCIMS — {portal}.icims.com; public sitemap.xml + per-posting JSON-LD (?in_iframe=1)
 icims:
@@ -4191,6 +4203,9 @@ hirebridge:
 # TriNet Hire (app.trinethire.com) — public career table /companies/{slug}/jobs; board = full slug
 trinet:
   - "22943-cabaletta-bio-inc"    # Cabaletta Bio — verifie 21 nov. 2026 (6 offres)
+  - "20517-summit-technologies-inc"   # Summit Technologies   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - "23964-medacta-usa-inc"           # Medacta USA
+  - "162192-original-syndicate"       # Original Syndicate
 
 # Trakstar Hire (ex-Recruiterbox) — public careers {sub}.hire.trakstar.com; board = subdomain
 trakstar:
@@ -4206,6 +4221,9 @@ rival:
 # WeRecruit (careers.werecruit.io) — embedded JSON in server HTML; board = account slug
 werecruit:
   - "atlantis"    # Atlantis — verifie 21 nov. 2026 (1 offre)
+  - "alcatel-submarine-networks"   # Alcatel Submarine Networks   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - "unseenlabs"                   # Unseenlabs
+  - "japan-experience"             # Japan Experience
 
 # FirstStage (firststage.co) — server-rendered /jobs card list; board = subdomain
 firststage:
@@ -4214,6 +4232,9 @@ firststage:
 # HiringThing ({sub}.hiringthing.com) — server-rendered /jobs cards; board = subdomain (or full white-label host)
 hiringthing:
   - "smart"    # SMART Reading — verifie 21 nov. 2026 (2 offres)
+  - "laborrocket"             # Labor Rocket   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - "timberline-bank"         # Timberline Bank
+  - "arona-home-essentials"   # Arona Home Essentials
 
 # Nodex / fabricjobs job-board platform — sitemap.xml + per-posting JSON-LD; board = full host
 nodex:
