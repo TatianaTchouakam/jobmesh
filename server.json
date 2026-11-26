@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.tatianatchouakam/jobmesh",
+  "name": "io.github.TatianaTchouakam/jobmesh",
   "title": "Jobmesh",
   "description": "Search a live, deduplicated index of jobs aggregated from dozens of ATS and job boards worldwide.",
   "version": "0.1.0",
