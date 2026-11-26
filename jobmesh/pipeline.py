@@ -140,7 +140,7 @@ def ingest(conn, boards: dict[str, list[str]]) -> list[BoardResult]:
         conn.commit()
         return results
 
-    chunk = max(workers * 4, 40)
+    chunk = max(workers * 2, 12)   # small chunks keep peak memory low and commit often
     for start in range(0, len(tasks), chunk):
         batch = tasks[start:start + chunk]
         with ThreadPoolExecutor(max_workers=workers) as pool:

@@ -30,12 +30,12 @@ services:
         sync: false
       - key: JOBMESH_DB            # SQLite path on the persistent disk
         value: "/var/data/jobmesh.db"
-      - key: INGEST_MAX_BOARDS     # per-platform board cap; 2000 lets most of join through
-        value: "2000"
+      - key: INGEST_MAX_BOARDS     # per-platform board cap; kept modest to fit 512 MB during ingest
+        value: "800"
       - key: INGEST_INTERVAL_HOURS  # background self-refresh cadence (hours)
         value: "6"
-      - key: INGEST_WORKERS         # fetch concurrency — kept low to fit the 512 MB instance
-        value: "4"
+      - key: INGEST_WORKERS         # fetch concurrency — low to cap concurrent memory on 512 MB
+        value: "2"
       # Optional keys for keyed sources (leave unset to skip those sources)
       - key: JOOBLE_API_KEY
         sync: false

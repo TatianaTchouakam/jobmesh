@@ -324,6 +324,7 @@ def _maybe_start_refresher() -> None:
 
         cap = os.getenv("INGEST_MAX_BOARDS")
         while True:
+            time.sleep(interval)   # wait first: let the web server boot and serve the on-disk index
             try:
                 with ingest_lock() as acquired:
                     if not acquired:
@@ -341,7 +342,6 @@ def _maybe_start_refresher() -> None:
                 log.info("scheduled index refresh complete")
             except Exception as exc:  # pragma: no cover - best effort
                 log.warning("scheduled index refresh failed: %s", exc)
-            time.sleep(interval)
 
     threading.Thread(target=_loop, name="jobmesh-refresher", daemon=True).start()
     log.info("background index refresh enabled: every %s h", raw)
