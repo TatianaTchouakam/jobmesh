@@ -10,6 +10,7 @@ from __future__ import annotations
 from .base import Connector
 # ATS connectors (per-company boards)
 from .greenhouse import GreenhouseConnector
+from .amazonjobs import AmazonJobsConnector
 from .lever import LeverConnector
 from .ashby import AshbyConnector
 from .workable import WorkableConnector
@@ -115,6 +116,7 @@ from .usajobs import UsaJobsConnector
 
 REGISTRY: dict[str, type[Connector]] = {
     GreenhouseConnector.platform: GreenhouseConnector,
+    AmazonJobsConnector.platform: AmazonJobsConnector,
     LeverConnector.platform: LeverConnector,
     AshbyConnector.platform: AshbyConnector,
     WorkableConnector.platform: WorkableConnector,

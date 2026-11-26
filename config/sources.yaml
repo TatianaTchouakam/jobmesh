@@ -107,6 +107,7 @@ required_boards:
 # the engine generalizes (national portals, remote boards, extra ATS).
 # ACTIVE and live, but NOT counted toward the 78 challenge score.
 bonus_sources:
+  - { name: "Amazon Jobs", connector: amazonjobs, status: ACTIVE, note: "public keyless search.json API (robots-allowed, /internal only); ~13k jobs" }
   - { name: "arbeitnow", connector: arbeitnow, status: ACTIVE, note: "Germany jobs API" }
   - { name: "bundesagentur", connector: bundesagentur, status: ACTIVE, note: "Germany — federal employment agency (Arbeitsagentur)" }
   - { name: "catsone", connector: catsone, status: ACTIVE, note: "CATS ATS (not in the 78)" }

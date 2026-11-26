@@ -2300,6 +2300,8 @@ reed:
 jobtech:
   - all
 
+amazonjobs:
+  - all
 remotive:
   - all
 arbeitnow:     # Germany / EU
