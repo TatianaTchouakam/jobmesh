@@ -82,6 +82,11 @@ CREATE TABLE IF NOT EXISTS feedback (
     lang       TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS meta (
+    key   TEXT PRIMARY KEY,
+    value TEXT
+);
 """
 
 
@@ -387,6 +392,48 @@ def location_counts(conn: sqlite3.Connection) -> dict[str, int]:
     return {r["loc"]: r["n"] for r in rows}
 
 
+def set_meta(conn: sqlite3.Connection, key: str, value) -> None:
+    """Store a small key/value fact about the index (e.g. last ingest time)."""
+    conn.execute(
+        "INSERT INTO meta(key, value) VALUES(?, ?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (key, None if value is None else str(value)),
+    )
+    conn.commit()
+
+
+def get_meta(conn: sqlite3.Connection, key: str, default=None):
+    """Read a meta value, or `default` if the key was never set."""
+    row = conn.execute("SELECT value FROM meta WHERE key=?", (key,)).fetchone()
+    return row[0] if row and row[0] is not None else default
+
+
+def record_ingest_run(conn: sqlite3.Connection, results, started_ts: float,
+                      finished_ts: float) -> None:
+    """Persist a one-line summary of an ingest run (for the status page and the
+    "last updated" display). `results` is a list of objects with .status,
+    .platform and .board. A board that failed to fetch is recorded as a fetch
+    failure, never as proof its jobs closed."""
+    import json
+    from datetime import datetime, timezone
+
+    def _iso(ts: float) -> str:
+        return datetime.fromtimestamp(ts, tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ")
+
+    failed = [f"{r.platform}/{r.board}" for r in results
+              if getattr(r, "status", None) == "failure"]
+    ok = [r for r in results if getattr(r, "status", None) == "success"]
+    set_meta(conn, "last_ingest_started", _iso(started_ts))
+    set_meta(conn, "last_ingest_finished", _iso(finished_ts))
+    set_meta(conn, "last_ingest_seconds",
+             f"{max(0.0, finished_ts - started_ts):.1f}")
+    set_meta(conn, "last_ingest_boards", str(len(results)))
+    set_meta(conn, "last_ingest_ok", str(len(ok)))
+    set_meta(conn, "last_ingest_failed", str(len(failed)))
+    set_meta(conn, "last_ingest_failed_sources", json.dumps(failed))
+
+
 def stats(conn: sqlite3.Connection) -> dict:
     """Headline numbers about the current index."""
     total = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
@@ -424,6 +471,16 @@ def stats(conn: sqlite3.Connection) -> dict:
         "companies": companies,
         "duplicate_open_postings": dupes,
         "open_by_platform": by_platform,
+        "last_updated": get_meta(conn, "last_ingest_finished"),
+        "last_ingest_seconds": (
+            float(get_meta(conn, "last_ingest_seconds"))
+            if get_meta(conn, "last_ingest_seconds") else None),
+        "last_ingest_boards": (
+            int(get_meta(conn, "last_ingest_boards"))
+            if get_meta(conn, "last_ingest_boards") else None),
+        "sources_failed_last_run": (
+            int(get_meta(conn, "last_ingest_failed"))
+            if get_meta(conn, "last_ingest_failed") else 0),
     }
 
 

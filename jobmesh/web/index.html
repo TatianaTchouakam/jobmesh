@@ -214,7 +214,7 @@
         <button data-lang="en">EN</button><button data-lang="de">DE</button><button data-lang="fr">FR</button>
       </div>
       <a href="#pro" id="proBadge" style="text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,var(--gold-1),var(--gold-2));color:#fff;white-space:nowrap">&#10024; Premium &mdash; 3&nbsp;&euro;</a>
-      <div class="live"><span class="dot"></span> <span data-i18n="live">Live index · refreshed continuously</span></div>
+      <div class="live"><span class="dot"></span> <span data-i18n="live">Live index · refreshed continuously</span><span id="lastUpd" class="lastupd" style="opacity:.72;font-weight:600"></span></div>
     </div>
   </div>
 </header>
@@ -590,8 +590,22 @@ function applyI18n(){
   document.querySelectorAll("#langsel button").forEach(b=>b.classList.toggle("on",b.dataset.lang===LANG));
 }
 function setLang(l){LANG=l;try{localStorage.setItem("jobmesh_lang",l)}catch(e){}
-  applyI18n();startPlaceholder();applyBandNote();$("herochips").innerHTML="";loadHeroChips();if(window.__refreshGcard)window.__refreshGcard();loadFeedback();runSearch();}
+  applyI18n();startPlaceholder();applyBandNote();renderLastUpd();$("herochips").innerHTML="";loadHeroChips();if(window.__refreshGcard)window.__refreshGcard();loadFeedback();runSearch();}
 function applyBandNote(){const bn=$("bandnote");if(bn&&GEO&&GEO.remote)bn.textContent=t("remote_note").replace("{n}",GEO.remote.toLocaleString());}
+let LAST_UPDATED=null;
+function agoText(iso){
+  if(!iso)return"";
+  const then=Date.parse(iso);if(isNaN(then))return"";
+  const mins=Math.max(0,Math.round((Date.now()-then)/60000));
+  let n,u;
+  if(mins<60){n=mins;u={en:mins===1?"minute":"minutes",de:"Min.",fr:"min"}[LANG]||"min";}
+  else if(mins<2880){n=Math.round(mins/60);u={en:n===1?"hour":"hours",de:"Std.",fr:"h"}[LANG]||"h";}
+  else{n=Math.round(mins/1440);u={en:n===1?"day":"days",de:"Tagen",fr:"j"}[LANG]||"d";}
+  if(LANG==="fr")return" \u00b7 MAJ il y a "+n+"\u00a0"+u;
+  if(LANG==="de")return" \u00b7 aktualisiert vor "+n+"\u00a0"+u;
+  return" \u00b7 updated "+n+" "+u+" ago";
+}
+function renderLastUpd(){const el=document.getElementById("lastUpd");if(el)el.textContent=agoText(LAST_UPDATED);}
 
 let offset=0, saved=loadSaved();
 
@@ -634,6 +648,7 @@ async function loadBandAndGeo(){
   const geoP=fetch("/geo").then(r=>r.json()).catch(()=>({countries:{},remote:0}));
   // apply the stats-driven counters as soon as /stats arrives
   const s=await statsP;
+  LAST_UPDATED=s.last_updated||null;renderLastUpd();
   {const sv={open_postings:s.open_postings,companies:s.companies,boards_indexed:s.boards_indexed,platforms:s.platforms,duplicate_open_postings:s.duplicate_open_postings};
    document.querySelectorAll(".band .v").forEach(el=>{const v=sv[el.dataset.k];if(v!=null)animateCount(el,v)});const hj=document.getElementById("heroJobs");if(hj&&s.open_postings!=null)animateCount(hj,s.open_postings);const hs=document.getElementById("heroSrc");if(hs&&s.platforms!=null)animateCount(hs,s.platforms);}
   // platform strip

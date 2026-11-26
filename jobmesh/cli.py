@@ -28,8 +28,16 @@ def _cmd_ingest(args) -> None:
     if _cap:
         _n = int(_cap)
         boards = {p: bl[:_n] for p, bl in boards.items()}
-    with storage.session(args.db) as conn:
-        results = ingest(conn, boards)
+    import time as _time
+    from .locks import ingest_lock
+    with ingest_lock() as _acquired:
+        if not _acquired:
+            print("Another ingest is already running; aborting.")
+            return
+        _started = _time.time()
+        with storage.session(args.db) as conn:
+            results = ingest(conn, boards)
+            storage.record_ingest_run(conn, results, _started, _time.time())
 
     ok = [r for r in results if r.status == "success"]
     failed = [r for r in results if r.status == "failure"]

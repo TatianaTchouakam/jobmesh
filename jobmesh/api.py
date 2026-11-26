@@ -281,17 +281,25 @@ def _maybe_start_refresher() -> None:
     def _loop() -> None:
         from .config import load_boards
         from .pipeline import ingest as _ingest
+        from .locks import ingest_lock
 
         cap = os.getenv("INGEST_MAX_BOARDS")
         while True:
             time.sleep(interval)
             try:
-                boards = load_boards()
-                if cap:
-                    n = int(cap)
-                    boards = {p: bl[:n] for p, bl in boards.items()}
-                with storage.session(DB_PATH) as conn:
-                    _ingest(conn, boards)
+                with ingest_lock() as acquired:
+                    if not acquired:
+                        log.info("skipping refresh: another ingest is running")
+                        continue
+                    boards = load_boards()
+                    if cap:
+                        n = int(cap)
+                        boards = {p: bl[:n] for p, bl in boards.items()}
+                    started = time.time()
+                    with storage.session(DB_PATH) as conn:
+                        results = _ingest(conn, boards)
+                        storage.record_ingest_run(
+                            conn, results, started, time.time())
                 log.info("scheduled index refresh complete")
             except Exception as exc:  # pragma: no cover - best effort
                 log.warning("scheduled index refresh failed: %s", exc)
