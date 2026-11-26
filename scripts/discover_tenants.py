@@ -27,11 +27,30 @@ def ex_workday(u):
     m = re.match(r'https?://([a-z0-9][a-z0-9-]*)\.(wd\d+)\.myworkdayjobs\.com/(.*)?$', u, re.I)
     if not m: return None
     tenant, wd, rest = m.group(1).lower(), m.group(2).lower(), (m.group(3) or "")
-    for s in [x for x in rest.split("/") if x]:
-        if re.match(r'^[a-z]{2}-[a-zA-Z]{2}$', s): continue
-        if s.lower() in ("wday","cxs","job","jobs","en","details","apply","search","task","d"): continue
-        return f"{tenant}:{wd}:{s}"
-    return None
+    rest = rest.split("?")[0].split("#")[0]
+    segs = [x for x in rest.split("/") if x]
+    # the career-site name is the segment right before /job/, else the first
+    # non-locale segment; never a job-detail slug (carries a _R.../_JR... id).
+    site = None
+    if "job" in segs:
+        i = segs.index("job")
+        if i > 0:
+            site = segs[i - 1]
+    if site is None:
+        for s in segs:
+            if re.match(r'^[a-z]{2}-[a-zA-Z]{2}$', s):
+                continue
+            if s.lower() in ("wday", "cxs", "job", "jobs", "details", "apply", "task", "d"):
+                continue
+            site = s
+            break
+    if not site:
+        return None
+    if re.search(r'_R\d', site) or re.search(r'_JR\d', site) or re.search(r'\d{5,}', site):
+        return None
+    if "%" in site or len(site) > 40:
+        return None
+    return f"{tenant}:{wd}:{site}"
 
 def ex_oracle(u):
     m = re.match(r'https?://([a-z0-9-]+)\.fa\.([a-z0-9-]+)\.oraclecloud\.com', u, re.I)
