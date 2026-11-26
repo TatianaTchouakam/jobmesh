@@ -15,6 +15,8 @@ it through a documented API. Each job links back to its original posting.
 
 **Live status & coverage:** [jobmesh.world/status](https://jobmesh.world/status) — real-time index numbers, last-refresh time, and the full X / 78 platform checklist with the reason any platform is not yet live.
 
+**MCP server (for AI agents):** listed on the official [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.TatianaTchouakam/jobmesh`. Any MCP client can connect to `https://jobmesh.world/mcp` and call `search_jobs`, `index_stats` and `source_coverage`.
+
 > 🚧 **Work in progress** – growing towards the goal of **78 platform types**.
 
 ### Current status
