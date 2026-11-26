@@ -98,11 +98,112 @@ def robots_txt() -> PlainTextResponse:
 def sitemap_xml() -> Response:
     base = os.getenv("BASE_URL", "https://jobmesh.world").rstrip("/")
     paths = ["/", "/status", "/api"]
+    try:
+        with storage.session(DB_PATH) as conn:
+            for code in _SEO_COUNTRIES:
+                if storage.count(conn, country=code, open_only=True) > 0:
+                    paths.append(f"/jobs/in/{code.lower()}")
+            for slug, kw in _SEO_ROLES:
+                if storage.count(conn, keyword=kw, open_only=True) > 0:
+                    paths.append(f"/jobs/role/{slug}")
+            for slug in _SEO_TYPES:
+                et = _resolve_employment_type(conn, slug)
+                if et and storage.count(conn, employment_type=et, open_only=True) > 0:
+                    paths.append(f"/jobs/type/{slug}")
+    except Exception:
+        pass
     items = "".join(f"<url><loc>{base}{pth}</loc></url>" for pth in paths)
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
            f"{items}</urlset>")
     return Response(xml, media_type="application/xml")
+
+
+import html as _html
+import json as _json
+
+_SEO_COUNTRIES = ["DE", "US", "GB", "FR", "NL", "ES", "IT", "PL", "PT", "SE",
+                  "CH", "IE", "CA", "AT", "BE", "IN"]
+_SEO_ROLES = [("data-engineer", "data engineer"), ("data-analyst", "data analyst"),
+              ("data-scientist", "data scientist"), ("software-engineer", "software engineer"),
+              ("product-manager", "product manager"), ("devops-engineer", "devops"),
+              ("machine-learning-engineer", "machine learning"), ("backend-engineer", "backend"),
+              ("frontend-engineer", "frontend"), ("business-analyst", "business analyst"),
+              ("project-manager", "project manager"), ("ux-designer", "designer")]
+_SEO_TYPES = ["full-time", "part-time", "contract", "internship", "temporary"]
+
+
+def _resolve_country_code(seg: str):
+    from . import geo
+    code = None
+    try:
+        code = geo.resolve_country(seg)
+    except Exception:
+        code = None
+    if not code and seg and seg.upper() in geo.COUNTRY_NAME:
+        code = seg.upper()
+    if code and code in geo.COUNTRY_NAME:
+        return code, geo.COUNTRY_NAME[code]
+    return None, None
+
+
+def _resolve_employment_type(conn, slug: str):
+    want = (slug or "").lower().replace("-", " ").replace("_", " ").strip()
+    rows = conn.execute(
+        "SELECT DISTINCT employment_type FROM jobs "
+        "WHERE employment_type IS NOT NULL AND TRIM(employment_type) != '' "
+        "AND is_open = 1").fetchall()
+    vals = [r[0] for r in rows]
+    for v in vals:
+        if v and v.lower().replace("-", " ").replace("_", " ").strip() == want:
+            return v
+    for v in vals:
+        if v and want and want in v.lower():
+            return v
+    return None
+
+
+def _seo_page(title: str, h1: str, desc: str, canonical: str, jobs, total: int):
+    base = os.getenv("BASE_URL", "https://jobmesh.world").rstrip("/")
+
+    def esc(x):
+        return _html.escape(str(x if x is not None else ""))
+
+    elements = []
+    for i, j in enumerate(jobs, 1):
+        url = j.get("apply_url") or j.get("source_url") or ""
+        elements.append({
+            "@type": "ListItem", "position": i, "url": url,
+            "item": {
+                "@type": "JobPosting",
+                "title": j.get("title"),
+                "hiringOrganization": {"@type": "Organization", "name": j.get("company")},
+                "jobLocation": {"@type": "Place", "address": {
+                    "@type": "PostalAddress", "addressLocality": j.get("location")}},
+                "datePosted": j.get("posted_at"),
+                "url": url,
+            }})
+    ld = _json.dumps({"@context": "https://schema.org", "@type": "ItemList",
+                      "itemListElement": elements}, ensure_ascii=False)
+    rows_html = "".join(
+        f'<li><a href="{esc(j.get("apply_url") or j.get("source_url") or "#")}" rel="nofollow">'
+        f'{esc(j.get("title"))}</a><span>{esc(j.get("company"))}</span>'
+        f'<span>{esc(j.get("location"))}</span></li>' for j in jobs)
+    page = (
+        "<!doctype html><html lang=en><head><meta charset=utf-8>"
+        "<meta name=viewport content='width=device-width,initial-scale=1'>"
+        f"<title>{esc(title)}</title><meta name=description content='{esc(desc)}'>"
+        f"<link rel=canonical href='{base}{esc(canonical)}'>"
+        f"<script type='application/ld+json'>{ld}</script>"
+        "<style>body{font-family:Inter,system-ui,-apple-system,sans-serif;max-width:880px;"
+        "margin:0 auto;padding:28px;color:#1c2030;background:#faf8f3}h1{font-size:26px;"
+        "letter-spacing:-.02em;margin:.2em 0}ul{list-style:none;padding:0}li{padding:11px 0;"
+        "border-bottom:1px solid #ececec}a{color:#c4881a;font-weight:700;text-decoration:none}"
+        "span{color:#6b7280;font-size:14px;margin-left:10px}.t{color:#6b7280}</style></head><body>"
+        f"<p class=t><a href='/'>Jobmesh</a> — the whole-web job index</p>"
+        f"<h1>{esc(h1)}</h1><p class=t>{total:,} open roles</p><ul>{rows_html}</ul>"
+        f"<p class=t><a href='/'>Search the full index →</a></p></body></html>")
+    return HTMLResponse(page)
 
 
 def _error_page(code: int, title: str) -> str:
@@ -439,6 +540,74 @@ def changes(
     } for r in rows]
     return {"count": len(data), "cursor": cursor,
             "has_more": len(data) == limit, "data": data}
+
+
+@app.get("/jobs/in/{country}", response_class=HTMLResponse)
+def seo_country(country: str):
+    code, name = _resolve_country_code(country)
+    if not code:
+        raise StarletteHTTPException(status_code=404, detail="unknown country")
+    f = {"country": code, "open_only": True}
+    with storage.session(DB_PATH) as conn:
+        total = storage.count(conn, **f)
+        jobs = storage.search(conn, limit=100, offset=0, **f)
+    if total == 0:
+        raise StarletteHTTPException(status_code=404, detail="no jobs for this country")
+    return _seo_page(f"Jobs in {name} — Jobmesh", f"Jobs in {name}",
+                     f"Open jobs in {name}, indexed from company career pages and job boards.",
+                     f"/jobs/in/{code.lower()}", jobs, total)
+
+
+@app.get("/jobs/in/{country}/{city}", response_class=HTMLResponse)
+def seo_country_city(country: str, city: str):
+    code, name = _resolve_country_code(country)
+    if not code:
+        raise StarletteHTTPException(status_code=404, detail="unknown country")
+    city_name = city.replace("-", " ").strip()
+    f = {"country": code, "location": city_name, "open_only": True}
+    with storage.session(DB_PATH) as conn:
+        total = storage.count(conn, **f)
+        jobs = storage.search(conn, limit=100, offset=0, **f)
+    if total == 0:
+        raise StarletteHTTPException(status_code=404, detail="no jobs for this city")
+    disp = city_name.title()
+    return _seo_page(f"Jobs in {disp}, {name} — Jobmesh", f"Jobs in {disp}, {name}",
+                     f"Open jobs in {disp}, {name}.",
+                     f"/jobs/in/{code.lower()}/{city}", jobs, total)
+
+
+@app.get("/jobs/role/{role}", response_class=HTMLResponse)
+def seo_role(role: str):
+    kw = role.replace("-", " ").strip()
+    if not kw:
+        raise StarletteHTTPException(status_code=404, detail="unknown role")
+    f = {"keyword": kw, "open_only": True}
+    with storage.session(DB_PATH) as conn:
+        total = storage.count(conn, **f)
+        jobs = storage.search(conn, limit=100, offset=0, **f)
+    if total == 0:
+        raise StarletteHTTPException(status_code=404, detail="no jobs for this role")
+    disp = kw.title()
+    return _seo_page(f"{disp} jobs — Jobmesh", f"{disp} jobs",
+                     f"Open {disp} roles indexed from across the web.",
+                     f"/jobs/role/{role}", jobs, total)
+
+
+@app.get("/jobs/type/{contract}", response_class=HTMLResponse)
+def seo_type(contract: str):
+    with storage.session(DB_PATH) as conn:
+        et = _resolve_employment_type(conn, contract)
+        if not et:
+            raise StarletteHTTPException(status_code=404, detail="unknown contract type")
+        f = {"employment_type": et, "open_only": True}
+        total = storage.count(conn, **f)
+        jobs = storage.search(conn, limit=100, offset=0, **f)
+    if total == 0:
+        raise StarletteHTTPException(status_code=404, detail="no jobs for this type")
+    disp = contract.replace("-", " ").title()
+    return _seo_page(f"{disp} jobs — Jobmesh", f"{disp} jobs",
+                     f"Open {disp} positions from company career pages and job boards.",
+                     f"/jobs/type/{contract}", jobs, total)
 
 
 # Mapping: CSV column -> job row field
