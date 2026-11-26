@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jobmesh — live status &amp; coverage</title>
+<style>
+  :root{--bg:#faf8f3;--panel:#fff;--line:#ece7dc;--text:#1c2030;--muted:#6b7180;
+    --soft:#9aa0ad;--gold1:#e0a52a;--gold2:#c4881a;
+    --green:#1a8a4a;--greenbg:#e8f6ed;--blue:#1763c9;--bluebg:#e8f0fd;
+    --amber:#b9791a;--amberbg:#fdf2e0;--purple:#6b46c1;--purplebg:#f0ebfb;
+    --gray:#6b7180;--graybg:#f1f1f3;--red:#c0392b;--redbg:#fdecea;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(900px 500px at 85% -10%,#fff6e3 0,rgba(255,246,227,0) 60%),var(--bg);
+    color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5}
+  a{color:var(--gold2);text-decoration:none;font-weight:700}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 22px 70px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+  .brand{font-weight:900;font-size:20px;letter-spacing:-.02em}
+  .brand .g{color:var(--gold2)}
+  h1{font-size:clamp(24px,3.4vw,34px);font-weight:900;letter-spacing:-.025em;margin:16px 0 6px}
+  .sub{color:var(--muted);font-size:15.5px;margin:0 0 8px;max-width:52em}
+  .upd{color:var(--soft);font-size:13px;margin:0 0 26px}
+  .upd b{color:var(--muted)}
+  .cards{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:0 0 30px}
+  @media(max-width:860px){.cards{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:520px){.cards{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 15px;box-shadow:0 6px 18px rgba(20,25,40,.04)}
+  .stat .k{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+  .stat .v{font-size:23px;font-weight:900;letter-spacing:-.02em;margin-top:5px}
+  .cov{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(20,25,40,.05);margin-bottom:26px}
+  .cov h2{margin:0;padding:18px 22px;font-size:15px;font-weight:800;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .bar{height:12px;background:var(--graybg);border-radius:999px;overflow:hidden;margin:0 22px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold1),var(--gold2))}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;padding:14px 22px 4px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:11px 22px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+  tr:last-child td{border-bottom:0}
+  td.n{text-align:right;font-weight:800;white-space:nowrap}
+  .b{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}
+  .reason{color:var(--muted);font-size:13px}
+  .foot{color:var(--soft);font-size:13px;margin-top:8px}
+  .seg{display:inline-flex;gap:6px;margin-left:4px}
+  .seg button{font:inherit;font-size:12.5px;font-weight:700;border:1px solid var(--line);background:var(--panel);
+    border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--muted)}
+  .seg button.on{background:var(--text);color:#fff;border-color:var(--text)}
+  .err{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">Job<span class="g">mesh</span> — status</div>
+      <div><a href="/">&larr; Back to search</a> &nbsp;·&nbsp; <a href="/stats" id="jsonlink">JSON</a> &nbsp;·&nbsp; <a href="/docs">API docs</a></div>
+    </div>
+    <h1>Live status &amp; coverage</h1>
+    <p class="sub">Every number here comes from the live index. A failed fetch is recorded as a fetch failure &mdash; it never mass-closes a source&rsquo;s jobs.</p>
+    <p class="upd" id="upd">Loading&hellip;</p>
+
+    <div class="cards" id="cards"></div>
+
+    <div class="cov">
+      <h2><span>Platform coverage &mdash; <span id="covhead">&hellip;</span></span>
+        <span class="seg" id="seg">
+          <button data-f="all" class="on">All</button>
+          <button data-f="live">Live</button>
+          <button data-f="pending">Pending access</button>
+        </span>
+      </h2>
+      <div class="bar"><i id="covbar" style="width:0%"></i></div>
+      <div class="legend" id="legend"></div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Platform</th><th>Status</th><th>Open jobs</th><th>Note</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="foot" id="bonus"></p>
+  </div>
+
+<script>
+const $=id=>document.getElementById(id);
+const JGET=u=>fetch(u,{headers:{"Accept":"application/json"}}).then(r=>r.json());
+const STYLE={
+  ACTIVE:["Live","var(--green)","var(--greenbg)"],
+  API_REQUIRED:["API required","var(--blue)","var(--bluebg)"],
+  PARTNERSHIP_REQUIRED:["Partnership","var(--amber)","var(--amberbg)"],
+  CLIENT_CONNECTION_REQUIRED:["Client access","var(--purple)","var(--purplebg)"],
+  TEMPORARILY_UNAVAILABLE:["Temp. unavailable","var(--gray)","var(--graybg)"],
+  RETIRED:["Blocked","var(--red)","var(--redbg)"],
+};
+function badge(st){const s=STYLE[st]||[st,"var(--gray)","var(--graybg)"];
+  return `<span class="b" style="color:${s[1]};background:${s[2]}">${s[0]}</span>`;}
+function num(n){return (n==null?"—":Number(n).toLocaleString());}
+function ago(iso){if(!iso)return"never";const t=Date.parse(iso);if(isNaN(t))return"—";
+  const m=Math.max(0,Math.round((Date.now()-t)/60000));
+  if(m<60)return m+" min ago";if(m<2880)return Math.round(m/60)+" h ago";return Math.round(m/1440)+" d ago";}
+
+let ROWS=[], FILTER="all";
+function render(){
+  const live=ROWS.filter(r=>r.status==="ACTIVE");
+  const pending=ROWS.filter(r=>r.status!=="ACTIVE");
+  let show=ROWS;
+  if(FILTER==="live")show=live;else if(FILTER==="pending")show=pending;
+  $("rows").innerHTML=show.map(r=>`<tr>
+    <td><b>${r.name}</b></td>
+    <td>${badge(r.status)}</td>
+    <td class="n">${r.status==="ACTIVE"?num(r.live_open):"—"}</td>
+    <td class="reason">${r.status==="ACTIVE"?"":(r.reason||r.next_action||"")}</td>
+  </tr>`).join("");
+}
+
+async function load(){
+  try{
+    const [s,src]=await Promise.all([JGET("/stats"),JGET("/sources")]);
+    const closed=s.closed_postings||0;
+    const cards=[
+      ["Open postings",num(s.open_postings)],
+      ["Companies",num(s.companies)],
+      ["Boards indexed",num(s.boards_indexed)],
+      ["Grouped duplicates",num(s.duplicate_open_postings)],
+      ["Closed detected",num(closed)],
+      ["Coverage",`${src.active}/${src.required_total}`],
+    ];
+    $("cards").innerHTML=cards.map(c=>`<div class="stat"><div class="k">${c[0]}</div><div class="v">${c[1]}</div></div>`).join("");
+
+    const failed=s.sources_failed_last_run||0;
+    const dur=s.last_ingest_seconds!=null?` in ${Math.round(s.last_ingest_seconds)}s`:"";
+    const failTxt=failed>0?` · <span class="err">${failed} source(s) failed last run</span>`:" · all sources OK last run";
+    $("upd").innerHTML=`<b>Last refreshed:</b> ${ago(s.last_updated)}${dur}${failTxt}. Refreshes automatically every few hours.`;
+
+    ROWS=src.sources||[];
+    $("covhead").textContent=`${src.active} of ${src.required_total} required platforms live (${src.ats_total} ATS + ${src.boards_total} job boards)`;
+    $("covbar").style.width=(src.required_total?Math.round(100*src.active/src.required_total):0)+"%";
+    const counts=src.status_counts||{};
+    $("legend").innerHTML=(src.statuses||Object.keys(counts)).filter(st=>counts[st]).map(st=>
+      `${badge(st)} <span style="color:var(--muted);font-size:12.5px;font-weight:700;margin-right:6px">${counts[st]}</span>`).join(" ");
+    if(src.bonus_count)$("bonus").textContent=`Plus ${src.bonus_count} bonus sources beyond the 78 required (not counted toward coverage).`;
+    render();
+  }catch(e){
+    $("upd").innerHTML=`<span class="err">Could not load live stats.</span>`;
+  }
+}
+document.querySelectorAll("#seg button").forEach(b=>b.addEventListener("click",()=>{
+  FILTER=b.dataset.f;document.querySelectorAll("#seg button").forEach(x=>x.classList.toggle("on",x===b));render();
+}));
+load();
+setInterval(load,60000);
+</script>
+</body>
+</html>

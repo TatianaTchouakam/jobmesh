@@ -209,12 +209,13 @@
         <a href="#how" data-i18n="nav_how">How it works</a>
         <a href="#vision" data-i18n="nav_vision">Vision &amp; API</a>
         <a href="#vision" data-i18n="nav_partner">For employers</a>
+        <a href="/status" data-i18n="nav_status">Status</a>
       </nav>
       <div class="langsel" id="langsel">
         <button data-lang="en">EN</button><button data-lang="de">DE</button><button data-lang="fr">FR</button>
       </div>
       <a href="#pro" id="proBadge" style="text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,var(--gold-1),var(--gold-2));color:#fff;white-space:nowrap">&#10024; Premium &mdash; 3&nbsp;&euro;</a>
-      <div class="live"><span class="dot"></span> <span data-i18n="live">Live index · refreshed continuously</span><span id="lastUpd" class="lastupd" style="opacity:.72;font-weight:600"></span></div>
+      <a href="/status" class="live" style="text-decoration:none;color:inherit" title="Live status & coverage"><span class="dot"></span> <span data-i18n="live">Live index · refreshed continuously</span><span id="lastUpd" class="lastupd" style="opacity:.72;font-weight:600"></span></a>
     </div>
   </div>
 </header>
@@ -464,7 +465,7 @@ const PAGE=15;
 /* ---- i18n (EN / DE / FR) — translates the interface chrome; job postings
    stay in their original source language ---- */
 const I18N={
-  en:{live:"Live index · refreshed continuously",eyebrow:"One index · many sources",
+  en:{live:"Live index · refreshed continuously",nav_status:"Status",eyebrow:"One index · many sources",
     h1:'Every job, from every source — one <span class="g">mesh</span>.',
     lead:"Every opening, from every source — one clean, deduplicated index. Paste your CV and we'll surface the jobs that fit you. No scraping — every role straight from its source.",
     ph_keyword:"Role or skill",ph_location:"Location",search:"Search",
@@ -498,7 +499,7 @@ const I18N={
     fb_title:"Your feedback",fb_sub:"How was your job search? Found a role, or just want to rate Jobmesh? We'd love to hear it.",
     fb_ph:"Tell us about your experience — did the search work well, did you find a job?…",fb_name:"Your name (optional)",fb_send:"Send feedback",
     fb_thanks:"Thanks — your feedback was sent!",fb_empty:"No feedback yet. Be the first to share.",fb_anon:"Anonymous",fb_sending:"Sending…"},
-  de:{live:"Live-Index · laufend aktualisiert",eyebrow:"Ein Index · viele Quellen",
+  de:{live:"Live-Index · laufend aktualisiert",nav_status:"Status",eyebrow:"Ein Index · viele Quellen",
     h1:'Jeder Job, aus jeder Quelle — ein <span class="g">Mesh</span>.',
     lead:"Alle Stellen, aus allen Quellen — ein sauberer, dublettenfreier Index. Füge deinen Lebenslauf ein und wir finden die passenden Jobs. Kein Scraping — jede Stelle direkt von der Quelle.",
     ph_keyword:"Beruf oder Skill",ph_location:"Ort",search:"Suchen",
@@ -532,7 +533,7 @@ const I18N={
     fb_title:"Dein Feedback",fb_sub:"Wie war deine Jobsuche? Eine Stelle gefunden oder Jobmesh bewerten? Wir freuen uns auf dein Feedback.",
     fb_ph:"Erzähl uns von deiner Erfahrung — hat die Suche gut funktioniert, hast du einen Job gefunden?…",fb_name:"Dein Name (optional)",fb_send:"Feedback senden",
     fb_thanks:"Danke — dein Feedback wurde gesendet!",fb_empty:"Noch kein Feedback. Sei die erste Person.",fb_anon:"Anonym",fb_sending:"Wird gesendet…"},
-  fr:{live:"Index en direct · actualisé en continu",eyebrow:"Un index · plusieurs sources",
+  fr:{live:"Index en direct · actualisé en continu",nav_status:"Statut",eyebrow:"Un index · plusieurs sources",
     h1:'Chaque offre, de chaque source — un seul <span class="g">mesh</span>.',
     lead:"Toutes les offres, de toutes les sources — un index propre et dédupliqué. Colle ton CV, on te trouve les jobs faits pour toi. Zéro scraping — chaque offre vient directement de sa source.",
     ph_keyword:"Métier ou compétence",ph_location:"Lieu",search:"Rechercher",

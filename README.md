@@ -13,6 +13,8 @@ it through a documented API. Each job links back to its original posting.
 
 **Live demo:** [jobmesh.world](https://jobmesh.world)
 
+**Live status & coverage:** [jobmesh.world/status](https://jobmesh.world/status) — real-time index numbers, last-refresh time, and the full X / 78 platform checklist with the reason any platform is not yet live.
+
 > 🚧 **Work in progress** – growing towards the goal of **78 platform types**.
 
 ### Current status
@@ -134,6 +136,14 @@ curl "http://127.0.0.1:8000/jobs?keyword=python&location=remote&limit=5"
 - A **failed** fetch (timeout, network error) is recorded in a fetch log and
   **never** closes that board's listings. A broken request is treated as a
   fetch failure, not as "every job has closed".
+
+**Automatic refresh (deployed).** Set `INGEST_INTERVAL_HOURS` (the Render
+blueprint ships `6`) and the running app re-ingests on that cadence from a
+background thread — no external scheduler needed. A single-host advisory lock
+means a manual `jobmesh ingest` and the scheduled refresh never run at the same
+time. The home page and **[/status](https://jobmesh.world/status)** show how long
+ago the index was last refreshed, the last run's duration, and any sources that
+failed that run.
 
 Scheduling locally (hourly example):
 

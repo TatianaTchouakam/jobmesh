@@ -83,8 +83,12 @@ def health() -> dict:
 
 
 @app.get("/stats")
-def get_stats() -> dict:
-    """Headline numbers about the current index."""
+def get_stats(request: Request):
+    """Headline numbers about the current index. A browser (Accept: text/html)
+    gets the human status page; API clients get JSON."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept and "application/json" not in accept:
+        return FileResponse(os.path.join(WEB_DIR, "status.html"))
     with storage.session(DB_PATH) as conn:
         return storage.stats(conn)
 
@@ -94,6 +98,35 @@ def get_coverage() -> dict:
     """Per-source-platform status: open jobs, boards and last-fetch health."""
     with storage.session(DB_PATH) as conn:
         return storage.coverage(conn)
+
+
+@app.get("/status", include_in_schema=False)
+def status_page() -> FileResponse:
+    """Human-readable status / coverage page (proof of what the index holds)."""
+    return FileResponse(os.path.join(WEB_DIR, "status.html"))
+
+
+@app.get("/sources")
+def get_sources() -> dict:
+    """Full required-platform registry: per-platform status, live open count
+    and the exact reason a platform is not yet active. Powers the public
+    coverage table (X / 78)."""
+    from . import sources as srcreg
+    data = srcreg.load_sources()
+    with storage.session(DB_PATH) as conn:
+        obp = storage.stats(conn).get("open_by_platform", {})
+    rows = srcreg.health(obp, data)
+    counts = srcreg.status_counts(data)
+    return {
+        "status_counts": counts,
+        "statuses": list(srcreg.STATUSES),
+        "required_total": sum(counts.values()),
+        "active": counts.get("ACTIVE", 0),
+        "ats_total": len(data.get("required_ats", [])),
+        "boards_total": len(data.get("required_boards", [])),
+        "bonus_count": len(srcreg.bonus_sources(data)),
+        "sources": rows,
+    }
 
 
 def _filters(keyword, company, location, platform, workplace_type,
