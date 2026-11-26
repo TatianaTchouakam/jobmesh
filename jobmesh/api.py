@@ -548,6 +548,44 @@ def export_json(
     return payload
 
 
+EXPORT_DIR = os.getenv("JOBMESH_EXPORT_DIR") or os.path.join(
+    os.path.dirname(os.path.abspath(DB_PATH)) or ".", "export")
+
+
+def _serve_gz(name: str, media: str, api_key, x_api_key):
+    from fastapi.responses import FileResponse
+    if _pro_payload(api_key, x_api_key) is None:
+        return JSONResponse(
+            {"error": "Jobmesh Premium required: the bulk .gz export is for subscribers.",
+             "upgrade": "/#pro"}, status_code=402)
+    path = os.path.join(EXPORT_DIR, name)
+    if not os.path.exists(path):
+        return JSONResponse(
+            {"error": "export not generated yet; it is built after the next ingest cycle"},
+            status_code=503)
+    return FileResponse(path, media_type=media, filename=name)
+
+
+@app.get("/export/jobs.ndjson.gz")
+def export_ndjson_gz(
+    api_key: Optional[str] = Query(None),
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+):
+    """Premium: the full open index as gzipped NDJSON (one JSON per line),
+    regenerated after each ingest cycle."""
+    return _serve_gz("jobs.ndjson.gz", "application/gzip", api_key, x_api_key)
+
+
+@app.get("/export/jobs.csv.gz")
+def export_csv_gz(
+    api_key: Optional[str] = Query(None),
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+):
+    """Premium: the full open index as gzipped CSV, regenerated after each
+    ingest cycle."""
+    return _serve_gz("jobs.csv.gz", "application/gzip", api_key, x_api_key)
+
+
 @app.get("/feedback")
 def get_feedback(limit: int = Query(30, ge=1, le=100)) -> dict:
     """Most recent visitor feedback."""
@@ -685,6 +723,12 @@ def _maybe_start_refresher() -> None:
                             results = _ingest(conn, boards)
                             storage.record_ingest_run(
                                 conn, results, started, time.time())
+                        try:
+                            from .exportfiles import write_gz_exports
+                            write_gz_exports(DB_PATH, EXPORT_DIR, _CSV_COLS)
+                            log.info("gz exports regenerated")
+                        except Exception as gz_exc:
+                            log.warning("gz export generation failed: %s", gz_exc)
                         log.info("scheduled index refresh complete")
                     else:
                         log.info("skipping refresh: another ingest is running")
