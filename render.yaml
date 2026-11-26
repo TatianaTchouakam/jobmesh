@@ -28,8 +28,8 @@ services:
         sync: false
       - key: INGEST_INTERVAL_HOURS  # background self-refresh cadence (hours)
         value: "6"
-      - key: INGEST_WORKERS         # optional: ingest fetch concurrency
-        sync: false
+      - key: INGEST_WORKERS         # fetch concurrency — conservative on free tier to avoid timeouts
+        value: "6"
       # Optional keys for keyed sources (leave unset to skip those sources)
       - key: JOOBLE_API_KEY
         sync: false

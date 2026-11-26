@@ -1,3 +1,44 @@
+# À LIRE — fiabilisation du 26/11/2026 (après-midi)
+
+Après vérification de **jobmesh.world/status**. **Rien poussé** — tu fais `git push`. Tests verts (197).
+
+## Les 3 points traités
+
+1. **Trop de sources en échec au dernier ingest (73).**
+   Cause : sur le plan **gratuit** de Render (CPU/mémoire limités), 12 fetchs
+   en parallèle provoquent des timeouts. Correctif :
+   - **Retries avec backoff** sur les seules erreurs *transitoires* (timeout,
+     429, 5xx) — 3 tentatives max, délai progressif. Les 4xx délibérés
+     (403/404/410) échouent tout de suite, jamais harcelés. **Aucune
+     protection, limite de débit ni robots.txt contournés.**
+   - **Concurrence réduite sur Render** (`INGEST_WORKERS=6` dans `render.yaml`).
+   Rappel important : un fetch en échec **ne ferme jamais** les offres et
+   **ne baisse pas la couverture** — les offres récentes restent indexées.
+
+2. **67/78 (et non 68).** CareerPlug est passé en page « client-rendered »
+   (re-vérifié le 26/11 : 0 offre, aucune route publique propre) → non
+   réparable proprement, rétrogradé. Tous les chiffres sont alignés sur **67**
+   (COVERAGE.md, README, page /status qui lit le registre en direct).
+
+3. **« Closed detected : 0 ».** La base SQLite est recréée à **chaque
+   redéploiement** (disque éphémère sur Render gratuit) → aucun historique,
+   donc aucune fermeture détectée.
+   **Solution recommandée (gratuite, ~10 min) : Turso** (base *libSQL*,
+   compatible SQLite — quasi aucun changement de code) :
+   - créer une base Turso gratuite → récupérer l'URL + le token ;
+   - sur Render : définir `JOBMESH_DB_URL` et `JOBMESH_DB_TOKEN` ;
+   - `pip install libsql-experimental`, puis brancher `storage` dessus.
+   La base survit alors aux redéploiements → fermetures détectées + historique
+   conservé. *Alternative :* `litestream` réplique le SQLite vers un bucket
+   gratuit (Cloudflare R2).
+   **Non implémenté ici** : il faut d'abord **ton** compte Turso. Dis-moi quand
+   c'est créé et je branche le code (petit commit, à ton nom).
+
+## Divers
+- Binaire `mcp-publisher` ajouté au `.gitignore` (ne pas versionner).
+
+---
+
 # À LIRE — mise à jour du 26/11/2026
 
 Objectif : sécuriser la victoire Vaya (critères « Automatic updates », preuve
@@ -11,7 +52,7 @@ toi qui fais `git push`. Aucune soumission du challenge n'a été faite.
    **verrou** anti-double-ingest. La page d'accueil et `/status` affichent
    « dernière mise à jour il y a X h ». Un fetch en échec reste une erreur de
    fetch, il ne ferme jamais les offres en masse.
-2. **Page publique `/status`** — couverture **68/78** avec le tableau des
+2. **Page publique `/status`** — couverture **67/78** avec le tableau des
    plateformes (en ligne / en attente d'accès + **raison** exacte), offres,
    entreprises, doublons, fermetures, dernière MAJ et durée du dernier ingest.
    Liée depuis l'accueil (indicateur « live » cliquable) et le README.
@@ -23,7 +64,7 @@ toi qui fais `git push`. Aucune soumission du challenge n'a été faite.
 5. **PARTNERSHIPS.md** — **10 e-mails** d'accès, un par plateforme bloquée,
    signés à ton nom (voir ci-dessous).
 6. **Chiffres du jour** — COVERAGE.md et le README mis à jour avec les vrais
-   chiffres (193 078 offres ouvertes, 28 737 entreprises, 68/78 actives).
+   chiffres (193 078 offres ouvertes, entreprises, 67/78 actives).
 
 ## À faire sur ton Mac (dans l'ordre)
 

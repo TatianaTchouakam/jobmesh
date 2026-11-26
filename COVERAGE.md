@@ -132,7 +132,7 @@ URL into `config/companies.yaml`. New boards are discovered with
 |---|---|---|---|
 | ATS | 50 | 8 | 58 |
 | Job boards | 17 | 3 | 20 |
-| **Total** | **68** | **10** | **78** |
+| **Total** | **67** | **11** | **78** |
 
 **Every one of the 78 required platforms is declared in the source registry**
 (`config/sources.yaml`), with a status that separates *technical* from

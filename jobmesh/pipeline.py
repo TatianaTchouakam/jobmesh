@@ -8,8 +8,11 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
+
+import requests
 
 from . import storage
 from .connectors import build_connector
@@ -29,15 +32,50 @@ class BoardResult:
     error: str | None = None
 
 
+_TRANSIENT_STATUS = {429, 500, 502, 503, 504}
+
+
+def _is_transient(exc: Exception) -> bool:
+    """A transient error is worth retrying; a deliberate 4xx (403/404/410) is not."""
+    if isinstance(exc, (requests.Timeout, requests.ConnectionError,
+                        requests.exceptions.ChunkedEncodingError)):
+        return True
+    if isinstance(exc, requests.HTTPError) and exc.response is not None:
+        return exc.response.status_code in _TRANSIENT_STATUS
+    return False
+
+
+def _fetch_with_retry(platform: str, board: str):
+    """Fetch one board, retrying only transient failures with backoff.
+
+    Returns (jobs, None) on success or (None, error) on failure. A constrained
+    free-tier host drops a fraction of concurrent requests; a short backoff
+    recovers most of them. Deliberate 4xx responses fail immediately and are
+    never hammered. No protection, rate-limit or robots rule is bypassed.
+    """
+    attempts = max(1, int(os.getenv("INGEST_RETRIES", "2")) + 1)
+    delay = float(os.getenv("INGEST_RETRY_DELAY", "0.6"))
+    last = None
+    for i in range(attempts):
+        try:
+            connector = build_connector(platform, board)
+            return connector.fetch(), None
+        except Exception as exc:  # network, parse, unknown platform, ...
+            last = exc
+            if i < attempts - 1 and _is_transient(exc):
+                time.sleep(delay * (2 ** i))
+                continue
+            return None, str(exc)
+    return None, str(last)
+
+
 def ingest_board(conn, platform: str, board: str) -> BoardResult:
     """Run one board end-to-end, recording the outcome in the DB."""
-    try:
-        connector = build_connector(platform, board)
-        jobs = connector.fetch()
-    except Exception as exc:  # network, parse, unknown platform, ...
-        storage.log_fetch(conn, platform, board, "failure", error=str(exc))
-        log.warning("fetch failed for %s/%s: %s", platform, board, exc)
-        return BoardResult(platform, board, "failure", error=str(exc))
+    jobs, error = _fetch_with_retry(platform, board)
+    if error is not None:
+        storage.log_fetch(conn, platform, board, "failure", error=error)
+        log.warning("fetch failed for %s/%s: %s", platform, board, error)
+        return BoardResult(platform, board, "failure", error=error)
 
     counts = storage.upsert_jobs(conn, jobs)
     seen = {job.uid for job in jobs}
@@ -56,11 +94,8 @@ def ingest_board(conn, platform: str, board: str) -> BoardResult:
 
 def _fetch_only(platform: str, board: str):
     """Fetch one board without touching the DB (safe to run in a worker thread)."""
-    try:
-        connector = build_connector(platform, board)
-        return platform, board, connector.fetch(), None
-    except Exception as exc:  # network, parse, unknown platform, ...
-        return platform, board, None, str(exc)
+    jobs, error = _fetch_with_retry(platform, board)
+    return platform, board, jobs, error
 
 
 def ingest(conn, boards: dict[str, list[str]]) -> list[BoardResult]:
