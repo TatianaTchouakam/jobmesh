@@ -896,9 +896,6 @@ usajobs:
 #   - all
 
 eightfold:          # ATS — {tenant}.eightfold.ai (gros employeurs)
-  - bayer   # 365 offres (verifie en direct)
-  - micron        # Micron (2860 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
-  - lamresearch   # Lam Research (1437 offres)
   - symetra       # Symetra
 
 bamboohr:           # ATS — {sub}.bamboohr.com/careers
@@ -4237,7 +4234,6 @@ werecruit:
 # FirstStage (firststage.co) — server-rendered /jobs card list; board = subdomain
 firststage:
   - "firststage"    # First (editor) — verifie 21 nov. 2026 (1 offre)
-  - "wayve"         # Wayve (194 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "reflexivity"   # Reflexivity
 
 # HiringThing ({sub}.hiringthing.com) — server-rendered /jobs cards; board = subdomain (or full white-label host)
