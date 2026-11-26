@@ -4882,6 +4882,33 @@ eightfold:          # ATS — {tenant}.eightfold.ai (gros employeurs)
 bamboohr:           # ATS — {sub}.bamboohr.com/careers
   - multiplier   # 2 offres (verifie)
   - posthog   # 1 offre (verifie)
+  # +26 live-verified 26/11/2026 (Common Crawl -> connector fetch>0)
+  - 401auto
+  - abovegroup
+  - 5icloudsolutions
+  - 321theagency
+  - abstra
+  - 35n
+  - 1milk2sugars
+  - aasafetyinc
+  - abaxx
+  - abilotkids
+  - 24slg
+  - abcpathways
+  - 30fe
+  - aaisolutions
+  - 22w2
+  - 3yourmind
+  - absedu
+  - abilitiesllc
+  - 21stcenturyrehab
+  - 3fs
+  - 28b
+  - 3clife
+  - 406recovery
+  - 4wallsrespage
+  - 9h
+  - abpharmacy
 
 # --- Comeet (Spark Hire Recruit) : API publique keyless ---
 # Format du board : "uid:token" ou "uid:token:Nom Societe".
@@ -8055,6 +8082,54 @@ zohorecruit:
   - menaalliances
   - cause-capacity
   - vfdgroup
+  # +47 live-verified 26/11/2026 (Common Crawl -> connector fetch>0)
+  - agileengine
+  - ironsidehr
+  - humanresourcesme
+  - gec-groupe
+  - kwpb
+  - ctmconnects
+  - cameleonrh
+  - iscale-solutions
+  - bluzinc
+  - be-consultancy-group
+  - genesis-executivesearch
+  - icaremanager
+  - kafougroup
+  - dentago
+  - centriz
+  - hdjassociates
+  - theateroutsource
+  - drbdistribution
+  - mymdoc
+  - kapellagroup
+  - kleinson
+  - exoscale
+  - buildingpointpartners
+  - goabbeyroad
+  - greencoverseed
+  - neo-group
+  - netrist
+  - qualitymaintenance
+  - veracityit
+  - bluewaterbattery
+  - dpacnc
+  - taxconnex
+  - tootelo
+  - carlinecompanies
+  - harambeans
+  - dissen-juhn
+  - wakanow
+  - aztec-automation
+  - blackmarketers
+  - nppn
+  - caregivershhs
+  - gtbank
+  - inmarketingwetrust
+  - onmyway
+  - sharafdg
+  - superq
+  - tdarizona
 
 # Freshteam (freshteam.com) — server-rendered /jobs; robots allows /jobs; board = tenant slug
 freshteam:
@@ -8062,6 +8137,46 @@ freshteam:
   - propine
   - mase
   - foodsafetyworks
+  # +39 live-verified 26/11/2026 (Common Crawl -> connector fetch>0)
+  - simera-talent
+  - psgsonscharities
+  - creditsaisonin-talent
+  - cashflo-talent
+  - gonoise
+  - staffinc-talent
+  - affinity-talent
+  - talent360
+  - nxtwave
+  - tazapay
+  - kwtsteel
+  - littlelives-talent
+  - pointwest-community
+  - cimcor
+  - bforms
+  - arad
+  - blended
+  - foodmarkethub-talent
+  - aerialbuz
+  - builtgh
+  - cocaptain
+  - getflowpath
+  - go360cloud
+  - mavisoft
+  - monolithome
+  - nudeeats
+  - paxcom
+  - realstake
+  - stllr
+  - caia
+  - premagic
+  - proweb
+  - allihoop
+  - autoscriber
+  - berlinerstagecompany
+  - birdandbe
+  - braswellga
+  - ducom
+  - sheleadsafrica-talent
 
 # Gem (jobs.gem.com) — public keyless GraphQL; board = vanity slug
 gem:
@@ -8189,6 +8304,54 @@ jazzhr:
   - constellationinc   # Constellation Inc
   - truckingpeople   # +employeur vérifié live 26/11 (185)
   - jbb                 # JB&B (27)
+  # +47 live-verified 26/11/2026 (Common Crawl -> connector fetch>0)
+  - motaboards
+  - hancockclaimsconsultantstechnicians
+  - abba
+  - delawareparkcasinoracing
+  - alfreduniversity
+  - aspincorporated
+  - academyofmotionpictureartsandsciences
+  - valuetainment
+  - woodgreencommunityservices
+  - executiveaviation
+  - yorkvilleuniversity
+  - nrgconsultinggroup
+  - paradromicsinc
+  - lastmilehealth
+  - lycomingcollege
+  - bitovi
+  - falcon
+  - peterbassoassociates
+  - autorabit
+  - forensicriskalliance
+  - ggapartners
+  - hbspecialtyfoodscareers
+  - horizonquantum
+  - jpr
+  - sendoso
+  - thedartcenter
+  - cornerstoneadvocacyservices
+  - centerfornycneighborhoods
+  - northstarpublicschools
+  - flyusainc
+  - specialisterne
+  - talentedadvisors
+  - teddybaldassarre
+  - adhoc
+  - centerforhealthinformationandanalysis
+  - montgomeryregionalairport
+  - mota
+  - oceanmd
+  - scene
+  - suitespottechnology
+  - tennesseecomptrollerofthetreasury
+  - uproottalent
+  - waterfrontalliance
+  - aclupahr
+  - echelon
+  - newmanuniversity
+  - pythonsoftwarefoundation
 
 # iCIMS — {portal}.icims.com; public sitemap.xml + per-posting JSON-LD (?in_iframe=1)
 icims:
