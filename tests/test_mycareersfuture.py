@@ -61,3 +61,34 @@ def test_mcf_helpers():
     assert _location({"isOverseas": True, "overseasCountry": "India"}) == "India"
     assert _salary({"minimum": 5000, "maximum": 8000, "type": {"salaryType": "Monthly"}}) == "SGD 5000-8000/Monthly"
     assert _salary(None) is None
+
+
+def test_mcf_reads_beyond_old_cap_and_dedupes(monkeypatch):
+    """The catalogue is far larger than the old 5000 cap; read it all, with
+    uuid de-duplication across pages, and honour the configurable cap."""
+    import jobmesh.connectors.mycareersfuture as mcf
+    monkeypatch.setattr(mcf, "PAGE_PAUSE", 0.0)
+    monkeypatch.setattr(mcf, "MAX_JOBS", 6500)
+
+    class _BigSession:
+        headers = {}
+        def __init__(self): self.max_page = 0
+        def get(self, url, params=None, timeout=None, **k):
+            if url.endswith("/robots.txt"):
+                r = _Resp(None); r.text = "User-agent: *\nDisallow:\n"; return r
+            pg = params["page"]; self.max_page = max(self.max_page, pg)
+            # 100 unique jobs per page for 80 pages (8000 > old 5000 cap),
+            # and repeat one uuid every page to exercise de-dup.
+            if pg >= 80:
+                return _Resp({"results": [], "total": 8000})
+            rows = [_job(f"u{pg}-{i}", f"Role {pg}-{i}") for i in range(100)]
+            rows.append(_job("dup", "Repeated Role"))   # same uuid every page
+            return _Resp({"results": rows, "total": 8000})
+
+    s = _BigSession()
+    jobs = mcf.MyCareersFutureConnector(session=s).fetch()
+    ids = [j.source_job_id for j in jobs]
+    assert len(jobs) > 5000                 # old cap no longer limits us
+    assert len(jobs) <= 6500 + 100           # configurable cap respected (soft, per page)
+    assert ids.count("dup") == 1             # de-duplicated across pages
+    assert s.max_page >= 50                  # really paged deep

@@ -17,6 +17,9 @@ thousand postings so one large national portal does not dominate the index.
 
 from __future__ import annotations
 
+import os
+import time
+
 import requests
 
 from ..models import Job, now_iso
@@ -28,7 +31,11 @@ TIMEOUT = 30
 API = "https://api.mycareersfuture.gov.sg/v2/jobs"
 SITE = "https://www.mycareersfuture.gov.sg"
 PAGE_SIZE = 100
-MAX_JOBS = 5000
+# Read the whole public catalogue (the API serves tens of thousands of
+# live postings). Bounded by a high safety cap and paced politely so one
+# national portal stays within friendly rate limits; both are tunable.
+MAX_JOBS = int(os.environ.get("MYCAREERSFUTURE_MAX_JOBS", "100000"))
+PAGE_PAUSE = float(os.environ.get("MYCAREERSFUTURE_PAGE_PAUSE", "0.3"))
 
 
 def _location(addr) -> str | None:
@@ -67,20 +74,22 @@ class MyCareersFutureConnector(Connector):
         at = now_iso()
         jobs: list[Job] = []
         seen: set[str] = set()
-        for page in range(0, (MAX_JOBS // PAGE_SIZE) + 1):
+        page = 0
+        while len(jobs) < MAX_JOBS:
             resp = self._session.get(API, params={"limit": PAGE_SIZE, "page": page},
                                      timeout=TIMEOUT)
             resp.raise_for_status()
             rows = (resp.json() or {}).get("results") or []
             if not rows:
-                break
+                break           # past the last page -> whole catalogue read
             for row in rows:
                 job = self._to_job(row, at)
                 if job is not None and job.source_job_id not in seen:
                     seen.add(job.source_job_id)
                     jobs.append(job)
-            if len(jobs) >= MAX_JOBS:
-                break
+            page += 1
+            if PAGE_PAUSE > 0:
+                time.sleep(PAGE_PAUSE)
         return jobs
 
     def _to_job(self, row: dict, at: str) -> Job | None:
