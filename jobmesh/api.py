@@ -90,8 +90,6 @@ def robots_txt() -> PlainTextResponse:
     return PlainTextResponse(
         "User-agent: *\n"
         "Allow: /\n"
-        "Disallow: /export.csv\n"
-        "Disallow: /export.json\n"
         f"Sitemap: {base}/sitemap.xml\n"
     )
 
@@ -205,7 +203,10 @@ def _filters(keyword, company, location, platform, workplace_type,
 
 FREE_LIMIT = 50          # max results per request without a Pro key
 PRO_LIMIT = 1000         # max results per request with a Pro key
-EXPORT_CAP = 5000        # max rows a single CSV export returns
+EXPORT_CAP = 5000        # max rows per page for the Premium JSON feed
+SAMPLE_CAP = 1000        # free sample without a key: the N most recent rows
+SAMPLE_NOTE = "Free sample — full export with Jobmesh Premium"
+SAMPLE_NOTE_ASCII = "Free sample - full export with Jobmesh Premium"  # latin-1 safe for HTTP headers
 
 
 def _pro_payload(api_key, x_api_key):
@@ -277,12 +278,14 @@ def export_csv(
     api_key: Optional[str] = Query(None, description="Jobmesh Premium API key"),
     x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
 ):
-    """Pro-only: download the filtered search as CSV."""
-    if _pro_payload(api_key, x_api_key) is None:
-        return JSONResponse(
-            {"error": "Reserve a Jobmesh Premium: l'export CSV est reserve aux abonnes.",
-             "upgrade": "/#pro"},
-            status_code=402)
+    """Filtered search as CSV.
+
+    Without a key: a free sample of the most recent SAMPLE_CAP rows (same
+    filters as /jobs), flagged with an X-Jobmesh-Sample header. With a valid
+    Jobmesh Premium key: the full filtered set.
+    """
+    is_pro = _pro_payload(api_key, x_api_key) is not None
+    cap = None if is_pro else SAMPLE_CAP
     f = _filters(keyword, company, location, platform, workplace_type,
                  employment_type, category, country, level, since)
     header = [c for c, _ in _CSV_COLS]
@@ -294,21 +297,23 @@ def export_csv(
         yield buf.getvalue(); buf.seek(0); buf.truncate(0)
         with storage.session(DB_PATH) as conn:
             off, page = 0, 500
-            while off < EXPORT_CAP:
-                batch = storage.search(conn, limit=min(page, EXPORT_CAP - off),
-                                       offset=off, **f)
+            while cap is None or off < cap:
+                page_size = page if cap is None else min(page, cap - off)
+                batch = storage.search(conn, limit=page_size, offset=off, **f)
                 if not batch:
                     break
                 for r in batch:
                     w.writerow([r.get(src) for _, src in _CSV_COLS])
                 yield buf.getvalue(); buf.seek(0); buf.truncate(0)
-                if len(batch) < page:
+                if len(batch) < page_size:
                     break
                 off += len(batch)
 
-    return StreamingResponse(
-        rows_iter(), media_type="text/csv",
-        headers={"Content-Disposition": 'attachment; filename="jobmesh.csv"'})
+    headers = {"Content-Disposition": 'attachment; filename="jobmesh.csv"'}
+    if not is_pro:
+        headers["X-Jobmesh-Sample"] = "true"
+        headers["X-Jobmesh-Note"] = SAMPLE_NOTE_ASCII
+    return StreamingResponse(rows_iter(), media_type="text/csv", headers=headers)
 
 
 @app.get("/export.json")
@@ -329,24 +334,30 @@ def export_json(
     api_key: Optional[str] = Query(None, description="Jobmesh Premium API key"),
     x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
 ):
-    """Pro-only agency feed: the filtered index as JSON, paginated.
+    """Filtered index as JSON (agency feed).
 
-    Same filters as /jobs; walk the whole result set with offset/limit (up to
-    EXPORT_CAP rows per page). Each row carries the same fields as /export.csv.
+    Without a key: a free sample of the most recent SAMPLE_CAP rows (same
+    filters as /jobs), with sample/note fields. With a valid Jobmesh Premium
+    key: the full feed, paginated with offset/limit (up to EXPORT_CAP per page).
     """
-    if _pro_payload(api_key, x_api_key) is None:
-        return JSONResponse(
-            {"error": "Jobmesh Premium required: the JSON feed is for subscribers.",
-             "upgrade": "/#pro"},
-            status_code=402)
+    is_pro = _pro_payload(api_key, x_api_key) is not None
     f = _filters(keyword or q, company, location, platform, workplace_type,
                  employment_type, category, country, level, since)
+    if not is_pro:
+        # free sample: the most recent SAMPLE_CAP rows, same filters as /jobs
+        limit = min(limit, SAMPLE_CAP)
+        offset = 0
     with storage.session(DB_PATH) as conn:
         rows = storage.search(conn, limit=limit, offset=offset, **f)
         total = storage.count(conn, **f)
     results = [{name: r.get(src) for name, src in _CSV_COLS} for r in rows]
-    return {"count": len(results), "total": total,
-            "limit": limit, "offset": offset, "results": results}
+    payload = {"count": len(results), "total": total,
+               "limit": limit, "offset": offset, "pro": is_pro, "results": results}
+    if not is_pro:
+        payload["sample"] = True
+        payload["sample_limit"] = SAMPLE_CAP
+        payload["note"] = SAMPLE_NOTE
+    return payload
 
 
 @app.get("/feedback")

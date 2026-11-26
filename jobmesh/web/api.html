@@ -91,6 +91,19 @@
       <p class="note">Premium key: pass <code>?api_key=...</code> or the header <code>X-API-Key</code> to lift the result cap to 1000.</p>
     </div>
 
+    <h2>Export &amp; feeds</h2>
+    <div class="panel">
+      <div class="ep"><span class="m">GET</span> <code>/export.csv</code></div>
+      <p class="note" style="margin:8px 0 16px">Filtered search as CSV (same filters as <code>/jobs</code>). <b>Without a key</b> — a free sample of the 1,000 most recent rows, flagged with an <code>X-Jobmesh-Sample: true</code> header and the note <i>&ldquo;Free sample — full export with Jobmesh Premium&rdquo;</i>. <b>With a Premium key</b> — the full filtered set.</p>
+      <div class="ep"><span class="m">GET</span> <code>/export.json</code></div>
+      <p class="note" style="margin:8px 0 12px">Agency feed. <b>Without a key</b> — a free sample of the 1,000 most recent rows, with <code>"sample": true</code>, <code>"sample_limit": 1000</code> and a <code>"note"</code> field. <b>With a Premium key</b> — the full feed, paginated with <code>offset</code>/<code>limit</code>.</p>
+      <pre><code># free sample (no key) — up to 1,000 rows
+curl "https://jobmesh.world/export.json?country=DE&amp;limit=1000"
+
+# full export (Premium)
+curl -H "X-API-Key: ..." "https://jobmesh.world/export.csv?country=DE"</code></pre>
+    </div>
+
     <h2>Index &amp; coverage</h2>
     <div class="panel">
       <div class="ep"><span class="m">GET</span> <code>/stats</code></div>
