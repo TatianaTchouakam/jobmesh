@@ -1,7 +1,7 @@
 # Render deployment blueprint for Jobmesh.
 #
-# The index is (re)built at deploy time by the build step, so no persistent
-# disk is needed: every deploy produces a fresh index that the API serves.
+# The index lives on a persistent disk (/var/data) so it survives redeploys;
+# a background thread refreshes it on startup and every INGEST_INTERVAL_HOURS.
 # The service runs on a Starter instance (always on, no spin-down).
 #
 # Secret env vars (STRIPE_*, BASE_URL) are set in the Render dashboard
@@ -11,8 +11,12 @@ services:
     name: jobmesh
     runtime: python
     plan: starter
-    buildCommand: "pip install -r requirements.txt && python -m jobmesh.cli ingest || true"
+    buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn jobmesh.api:app --host 0.0.0.0 --port $PORT"
+    disk:
+      name: jobmesh-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"
@@ -24,14 +28,12 @@ services:
         sync: false
       - key: BASE_URL             # e.g. https://jobmesh.world
         sync: false
-      - key: INGEST_MAX_BOARDS     # per-platform board cap (free tier); 2000 lets most of join through
+      - key: JOBMESH_DB            # SQLite path on the persistent disk
+        value: "/var/data/jobmesh.db"
+      - key: INGEST_MAX_BOARDS     # per-platform board cap; 2000 lets most of join through
         value: "2000"
       - key: INGEST_INTERVAL_HOURS  # background self-refresh cadence (hours)
         value: "6"
-      - key: JOBMESH_DB_URL        # Turso libSQL URL — set to enable persistence (unset = local SQLite)
-        sync: false
-      - key: JOBMESH_DB_TOKEN      # Turso auth token (secret)
-        sync: false
       - key: INGEST_WORKERS         # fetch concurrency — I/O-bound; retries cover transient drops
         value: "8"
       # Optional keys for keyed sources (leave unset to skip those sources)
