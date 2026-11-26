@@ -34,8 +34,8 @@ services:
         value: "2000"
       - key: INGEST_INTERVAL_HOURS  # background self-refresh cadence (hours)
         value: "6"
-      - key: INGEST_WORKERS         # fetch concurrency — I/O-bound; retries cover transient drops
-        value: "8"
+      - key: INGEST_WORKERS         # fetch concurrency — kept low to fit the 512 MB instance
+        value: "4"
       # Optional keys for keyed sources (leave unset to skip those sources)
       - key: JOOBLE_API_KEY
         sync: false

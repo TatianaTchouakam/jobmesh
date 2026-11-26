@@ -101,39 +101,52 @@ def _fetch_only(platform: str, board: str):
 def ingest(conn, boards: dict[str, list[str]]) -> list[BoardResult]:
     """Ingest every board in a {platform: [boards]} mapping.
 
-    Network fetches (the slow part) run concurrently in a thread pool; every
-    database write stays on the calling thread, so the single SQLite
-    connection is only ever touched by one thread. Set INGEST_WORKERS to tune
-    concurrency (default 12); INGEST_WORKERS=1 restores sequential behaviour.
+    Fetches run concurrently, but in **bounded chunks**: only one chunk of
+    futures is held in memory at a time, and the DB is committed after each
+    chunk. That keeps peak memory low on a small instance and persists
+    progress, so an interrupted run (an OOM restart, a redeploy) keeps the
+    boards already done instead of losing the whole run. Every DB write stays
+    on the calling thread. INGEST_WORKERS tunes concurrency (default 8);
+    INGEST_WORKERS=1 is sequential.
     """
-    workers = max(1, int(os.getenv("INGEST_WORKERS", "12")))
+    workers = max(1, int(os.getenv("INGEST_WORKERS", "8")))
     tasks = [(p, b) for p, blist in boards.items() for b in blist]
     results: list[BoardResult] = []
 
+    def _store(platform, board, jobs, error):
+        if error is not None:
+            storage.log_fetch(conn, platform, board, "failure", error=error)
+            log.warning("fetch failed for %s/%s: %s", platform, board, error)
+            return BoardResult(platform, board, "failure", error=error)
+        counts = storage.upsert_jobs(conn, jobs)
+        seen = {job.uid for job in jobs}
+        closed = storage.close_absent(conn, platform, board, seen)
+        storage.log_fetch(conn, platform, board, "success", job_count=len(jobs))
+        log.info(
+            "%s/%s: %d fetched (%d new, %d updated, %d closed)",
+            platform, board, len(jobs), counts["new"], counts["updated"], closed,
+        )
+        return BoardResult(
+            platform, board, "success", fetched=len(jobs),
+            new=counts["new"], updated=counts["updated"], closed=closed,
+        )
+
     if workers == 1:
-        for platform, board in tasks:
-            results.append(ingest_board(conn, platform, board))
+        for i, (platform, board) in enumerate(tasks):
+            jobs, error = _fetch_with_retry(platform, board)
+            results.append(_store(platform, board, jobs, error))
+            if (i + 1) % 25 == 0:
+                conn.commit()
+        conn.commit()
         return results
 
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = [pool.submit(_fetch_only, p, b) for p, b in tasks]
-        for fut in as_completed(futures):
-            platform, board, jobs, error = fut.result()
-            if error is not None:
-                storage.log_fetch(conn, platform, board, "failure", error=error)
-                log.warning("fetch failed for %s/%s: %s", platform, board, error)
-                results.append(BoardResult(platform, board, "failure", error=error))
-                continue
-            counts = storage.upsert_jobs(conn, jobs)
-            seen = {job.uid for job in jobs}
-            closed = storage.close_absent(conn, platform, board, seen)
-            storage.log_fetch(conn, platform, board, "success", job_count=len(jobs))
-            log.info(
-                "%s/%s: %d fetched (%d new, %d updated, %d closed)",
-                platform, board, len(jobs), counts["new"], counts["updated"], closed,
-            )
-            results.append(BoardResult(
-                platform, board, "success", fetched=len(jobs),
-                new=counts["new"], updated=counts["updated"], closed=closed,
-            ))
+    chunk = max(workers * 4, 40)
+    for start in range(0, len(tasks), chunk):
+        batch = tasks[start:start + chunk]
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = [pool.submit(_fetch_only, p, b) for p, b in batch]
+            for fut in as_completed(futures):
+                platform, board, jobs, error = fut.result()
+                results.append(_store(platform, board, jobs, error))
+        conn.commit()  # persist this chunk; the executor's buffered results free here
     return results
