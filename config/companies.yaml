@@ -4331,6 +4331,9 @@ themuse:
 # Kula.ai (ATS #30/78) — official public RSS feed /{slug}/feed (robots allows /feed; only /api/ disallowed). board = slug|Company
 kula:
   - "rocketlane|Rocketlane"    # verifie 21 nov. 2026 (48 offres, careers.kula.ai/rocketlane/feed)
+  - "kickoff|Kickoff"   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - "pebblelife|Pebble"
+  - "varo-money|Varo Bank"
 
 # Taiwan Jobs (Ministry of Labor) — keyless public XML webservice, OGDL 1.0 (bonus). board = zipno (postal code)
 taiwanjobs:
