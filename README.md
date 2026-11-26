@@ -19,10 +19,10 @@ it through a documented API. Each job links back to its original posting.
 
 ### Current status
 
-- 🌍 **~69,000 open postings** (83,000+ tracked incl. closed) across 6 continents
-- 🔌 **31 platform types live** · **3,600+ duplicate postings** grouped by deduplication
+- 🌍 **~193,000 open postings** (270,000+ tracked incl. closed) across 6 continents
+- 🔌 **68 of the 78 required platforms live** · **18,000+ duplicate postings** grouped by deduplication
 - 🏛️ **2 national employment agencies live**: 🇩🇪 Bundesagentur für Arbeit · 🇸🇪 Sweden (JobTech)
-- 🏢 **~2,900 companies / boards** worldwide
+- 🏢 **~28,700 companies · ~6,700 boards** worldwide
 - ✅ **Official public APIs & feeds (REST / RSS / JSON-LD)** — no blind HTML scraping, no login-walled data
 - 📋 Full per-platform status vs the 78 required sources: see **[COVERAGE.md](COVERAGE.md)**
 - 📦 Running, operating costs & dependencies: see **[HANDOFF.md](HANDOFF.md)**
@@ -156,10 +156,10 @@ Scheduling locally (hourly example):
 
 | Category | Status |
 |---|---|
-| ATS platforms (Greenhouse, SmartRecruiters, Lever, Ashby, Workable, Workday, Oracle, …) | ✅ 16 live of the 58 required |
-| Job board platforms (SmartJobBoard, …) | ✅ 1 live of the 20 required — proven on 14 boards |
+| ATS platforms (Greenhouse, SmartRecruiters, Lever, Ashby, Workable, Workday, Oracle, …) | ✅ 51 live of the 58 required |
+| Job board platforms (SmartJobBoard, Niceboard, JobBoardFire, Artha, …) | ✅ 17 live of the 20 required |
 | National employment agencies (🇩🇪 Bundesagentur für Arbeit, 🇸🇪 Sweden JobTech) | ✅ 2 live |
-| Extra sources beyond the required 78 | ✅ 14 (arbeitnow, remote boards, …) |
+| Extra sources beyond the required 78 | ✅ 36 bonus (arbeitnow, remote boards, national feeds, …) |
 | Full checklist vs the 78 required platforms | 📋 see **[COVERAGE.md](COVERAGE.md)** |
 
 Most sources are official public **APIs or feeds** (REST / RSS); a few read the

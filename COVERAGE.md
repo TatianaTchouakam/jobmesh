@@ -1,18 +1,20 @@
 # Jobmesh — Platform Coverage Checklist
 
 **Challenge:** Build a Job Board Indexer (58 ATS + 20 job board platforms)
-**Last verified:** 2026-11-21 · from a full `jobmesh ingest` run + `jobmesh stats`
+**Last verified:** 2026-11-26 · from a full `jobmesh ingest` run + `jobmesh stats`
 
 ## Snapshot (live index)
 
 | Metric | Value |
 |---|---|
-| Open postings | **121,295** |
-| Total postings tracked (open + closed) | 133,063 |
-| Closed postings detected & marked | 11,768 |
-| Duplicate open postings grouped (dedup) | 6,811 |
-| Active platforms | 76 |
-| Boards / companies indexed | 13,094 |
+| Open postings | **193,078** |
+| Total postings tracked (open + closed) | 270,388 |
+| Closed postings detected & marked | 77,310 |
+| Duplicate open postings grouped (dedup) | 18,557 |
+| Required platforms live | **68 / 78** (51 ATS + 17 job boards) |
+| Companies indexed | 28,737 |
+| Source boards indexed | 6,706 |
+| Bonus sources (beyond the 78) | 36 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
