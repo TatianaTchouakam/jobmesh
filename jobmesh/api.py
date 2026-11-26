@@ -418,6 +418,41 @@ def _clear_ingesting_flag() -> None:
         pass
 
 
+_UNSET = object()
+INGEST_INITIAL_DELAY = float(os.getenv("INGEST_INITIAL_DELAY_SECONDS", "180"))
+
+
+def _initial_refresh_wait(interval: float, last_finished_iso=_UNSET) -> float:
+    """Seconds to wait before the FIRST scheduled ingest.
+
+    Short (INGEST_INITIAL_DELAY, ~3 min so the booted server answers first) when
+    the index was never built or is older than one interval; otherwise the time
+    left until the current interval elapses. Read from the persisted
+    last_ingest_finished so a redeploy does not reset the clock and leave the
+    index never refreshed.
+    """
+    import time as _t
+    from datetime import datetime, timezone
+    raw = last_finished_iso
+    if raw is _UNSET:
+        try:
+            with storage.session(DB_PATH) as conn:
+                raw = storage.get_meta(conn, "last_ingest_finished")
+        except Exception:
+            raw = None
+    if not raw:
+        return INGEST_INITIAL_DELAY
+    try:
+        last = datetime.strptime(raw, "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=timezone.utc).timestamp()
+    except Exception:
+        return INGEST_INITIAL_DELAY
+    elapsed = _t.time() - last
+    if elapsed >= interval:
+        return INGEST_INITIAL_DELAY
+    return max(INGEST_INITIAL_DELAY, interval - elapsed)
+
+
 @app.on_event("startup")
 def _maybe_start_refresher() -> None:
     import logging
@@ -442,25 +477,32 @@ def _maybe_start_refresher() -> None:
         from .locks import ingest_lock
 
         cap = os.getenv("INGEST_MAX_BOARDS")
+        # First ingest soon after boot when the index is missing or stale,
+        # otherwise wait out the rest of the interval. Computed from the
+        # persisted last_ingest_finished, so a redeploy no longer resets the
+        # clock and skips the ingest forever.
+        first_wait = _initial_refresh_wait(interval)
+        log.info("first scheduled index refresh in ~%d s", int(first_wait))
+        time.sleep(first_wait)
         while True:
-            time.sleep(interval)   # wait first: let the web server boot and serve the on-disk index
             try:
                 with ingest_lock() as acquired:
-                    if not acquired:
+                    if acquired:
+                        boards = load_boards()
+                        if cap:
+                            n = int(cap)
+                            boards = {p: bl[:n] for p, bl in boards.items()}
+                        started = time.time()
+                        with storage.session(DB_PATH) as conn:
+                            results = _ingest(conn, boards)
+                            storage.record_ingest_run(
+                                conn, results, started, time.time())
+                        log.info("scheduled index refresh complete")
+                    else:
                         log.info("skipping refresh: another ingest is running")
-                        continue
-                    boards = load_boards()
-                    if cap:
-                        n = int(cap)
-                        boards = {p: bl[:n] for p, bl in boards.items()}
-                    started = time.time()
-                    with storage.session(DB_PATH) as conn:
-                        results = _ingest(conn, boards)
-                        storage.record_ingest_run(
-                            conn, results, started, time.time())
-                log.info("scheduled index refresh complete")
             except Exception as exc:  # pragma: no cover - best effort
                 log.warning("scheduled index refresh failed: %s", exc)
+            time.sleep(interval)
 
     threading.Thread(target=_loop, name="jobmesh-refresher", daemon=True).start()
     log.info("background index refresh enabled: every %s h", raw)
