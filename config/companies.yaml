@@ -4983,6 +4983,23 @@ jobfeed:
 # plafond avec SMARTJOBBOARD_MAX_JOBS (defaut 400) et SMARTJOBBOARD_WORKERS.
 # Pour l'activer : decommente ci-dessous ET commente les /rss equivalents
 # dans la section jobfeed (sinon double indexation).
+# --- sitemapjsonld : connecteur generique sitemap + schema.org JSON-LD ---
+# board = "{url_sitemap}|{Societe}". La societe est optionnelle : l'omettre
+# laisse chaque offre porter son propre employeur (hiringOrganization du
+# JSON-LD) -- adapte aux portails multi-employeurs. Reutilise la recette iCIMS
+# (sitemap -> pages -> JobPosting JSON-LD), robots respecte par URL, keyless.
+sitemapjsonld:
+  # EDJOIN — portail emploi education publique (Californie). robots Allow: /,
+  # sitemap -> /sitemap/jobs/1 (~14,6k offres), JobPosting JSON-LD rendu serveur
+  # sur chaque /Home/JobPosting/{id}. Societe par offre (district scolaire).
+  # Pas de CGU restreignant l'acces automatise. Verifie live 26/11/2026.
+  - "https://www.edjoin.org/sitemap.xml"
+  # Jobdanmark — board generaliste danois (Umbraco). robots n'interdit que
+  # /bin/ et /umbraco/ ; sitemap plat (~30k offres /job/{slug}) ; JobPosting
+  # JSON-LD rendu serveur (le '+' du type MIME est encode en entite). Societe
+  # par offre. Pas d'interdiction d'acces automatise. Verifie live 26/11/2026.
+  - "https://jobdanmark.dk/sitemap"
+
 smartjobboard: []
 #   - "https://academiccareers.com"
 #   - "https://apartmentjobs.com"

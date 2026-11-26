@@ -152,6 +152,11 @@ bonus_sources:
 
   - { name: "jobicy", connector: jobicy, status: ACTIVE, note: "Worldwide remote jobs; public keyless v2 API (cursor), cite-friendly robots" }
 
+  - { name: "EDJOIN", connector: sitemapjsonld, status: ACTIVE, note: "USA/California — public education job portal; robots Allow, sitemap -> ~14.6k /Home/JobPosting/{id}, server-rendered JobPosting JSON-LD, keyless (verified live 26/11/2026)" }
+
+  - { name: "Jobdanmark", connector: sitemapjsonld, status: ACTIVE, note: "Denmark — general job board (Umbraco); robots blocks only /bin/ and /umbraco/, flat sitemap ~30k /job/{slug}, server-rendered JobPosting JSON-LD (MIME '+' entity-encoded), keyless (verified live 26/11/2026)" }
+
+
 # Keyed/optional sources — worldwide reach, activated with the user's own
 # free API credentials (env vars). Not auto-seeded in the daily ingest.
 keyed_sources:
@@ -160,3 +165,11 @@ keyed_sources:
   - { name: "francetravail", connector: francetravail, status: CLIENT_CONNECTION_REQUIRED, note: "France national gov portal (France Travail / ex-Pole emploi), free OAuth. Env: FRANCETRAVAIL_CLIENT_ID/SECRET" }
   - { name: "usajobs", connector: usajobs, status: ACTIVE, note: "USA federal gov portal, free API key" }
   - { name: "reed", connector: reed, status: ACTIVE, note: "UK job board, free API key" }
+
+# Declined sources — evaluated but deliberately NOT indexed, with the reason.
+# Not part of the 78 and not counted; kept here for transparency (no connector
+# runs for these). Separate from bonus_sources, which is live ACTIVE only.
+declined_sources:
+  - { name: "SpainJobs.io", connector: null, status: PARTNERSHIP_REQUIRED,
+      reason: "Technically readable (robots '*' Allow: /, server-rendered JobPosting JSON-LD on /companies/{company}/{slug}, ~120k jobs across jobs-0/1/2.xml), BUT robots.txt names and blocks commercial data-aggregator crawlers (CCBot, Diffbot, omgili/omgilibot, Webzio-Extended) specifically from /companies/ — exactly where the job listings live, and omgili/Webz.io is itself a job-data reseller. Under our no-bypass / respect-operator-intent rule we decline to harvest a board that explicitly keeps third-party job-data aggregators off its listings, even though the generic '*' group would permit JobmeshBot. Verified 26/11/2026.",
+      next_action: "EXCLUDED — operator robots blocks named job-data aggregators from the listings path; revisit only via an official syndication agreement", request_status: "No partner contact attempted (public board, no published feed/API)" }

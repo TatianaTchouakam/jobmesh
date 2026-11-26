@@ -14,6 +14,7 @@ recommends JSON-LD on detail pages, not list pages).
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import re
 
@@ -29,7 +30,10 @@ USER_AGENT = (
 )
 TIMEOUT = 25
 _LD_RE = re.compile(
-    r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+    # The MIME subtype's "+" is sometimes HTML-entity-encoded in the markup
+    # (e.g. ``application/ld&#x2B;json``); accept the literal and the entities.
+    r'<script[^>]+type=["\']application/ld(?:\+|&#x2[bB];|&#0*43;)json["\']'
+    r'[^>]*>(.*?)</script>',
     re.DOTALL | re.IGNORECASE,
 )
 
@@ -72,6 +76,11 @@ def _text(value):
     if isinstance(value, list):
         return ", ".join(x for x in (_text(v) for v in value) if x) or None
     return value
+
+
+def _unescape(value):
+    """HTML-unescape short JSON-LD text fields (some sites entity-encode them)."""
+    return html.unescape(value) if isinstance(value, str) else value
 
 
 def _location(posting: dict):
@@ -120,12 +129,12 @@ def _salary(posting: dict):
 def posting_to_job(p: dict, platform: str, board: str, fetched_at: str,
                    page_url: str | None = None) -> Job | None:
     """Map one schema.org JobPosting dict to a jobmesh Job."""
-    title = _text(p.get("title")) or _text(p.get("name"))
+    title = _unescape(_text(p.get("title")) or _text(p.get("name")))
     if not title:
         return None
     org = p.get("hiringOrganization")
-    company = _text(org) or _text(p.get("author")) or board
-    location = _location(p)
+    company = _unescape(_text(org) or _text(p.get("author")) or board)
+    location = _unescape(_location(p))
     url = _text(p.get("url")) or p.get("@id") or page_url or board
 
     ident = p.get("identifier")
@@ -147,7 +156,7 @@ def posting_to_job(p: dict, platform: str, board: str, fetched_at: str,
         salary=_salary(p),
         employment_type=_text(p.get("employmentType")),
         workplace_type=None,
-        category=_text(p.get("occupationalCategory")) or _text(p.get("industry")),
+        category=_unescape(_text(p.get("occupationalCategory")) or _text(p.get("industry"))),
         remote=_is_remote(p, location),
         posted_at=p.get("datePosted"),
         dedup_key=make_dedup_key(title, company, location),

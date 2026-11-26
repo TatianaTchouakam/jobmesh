@@ -74,3 +74,17 @@ def test_careersite_tolerates_bad_blocks():
     bad = '<script type="application/ld+json">{ not json }</script>'
     conn = CareerSiteConnector("https://x/y", session=_FakeSession(bad))
     assert conn.fetch() == []
+
+
+def test_jsonld_type_with_entity_encoded_plus():
+    """Some sites HTML-entity-encode the MIME '+': application/ld&#x2B;json."""
+    from jobmesh.connectors.careersite import parse_jobpostings
+    html = (
+        '<script type="application/ld&#x2B;json">'
+        '{"@type":"JobPosting","title":"Tjener","hiringOrganization":'
+        '{"@type":"Organization","name":"Lucky Sushi"}}'
+        '</script>'
+    )
+    posts = parse_jobpostings(html)
+    assert len(posts) == 1
+    assert posts[0]["title"] == "Tjener"
