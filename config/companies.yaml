@@ -4001,6 +4001,9 @@ hireology:
 # HiBob (careers.hibob.com) — public keyless /api/job-ad; board = tenant subdomain prefix
 hibob:
   - hibob-fa0ad69d0cb34a   # HiBob's own board (~100 jobs)
+  - valr          # VALR   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - cluepoints    # CluePoints
+  - nationaltiles # National Tiles
 
 # CareerPlug (careerplug.com) — server-rendered JSON-LD ItemList at {tenant}.careerplug.com/jobs
 careerplug:
@@ -4037,6 +4040,9 @@ freshteam:
 # Gem (jobs.gem.com) — public keyless GraphQL; board = vanity slug
 gem:
   - nabla-bio
+  - fetch      # Fetch (75 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - groq       # Groq
+  - narmi      # Narmi
 
 # Deel ATS (jobs.deel.com) — JSON-LD JobPosting per job page; board = org slug
 deel:
@@ -4217,6 +4223,9 @@ trakstar:
 # Rival / SilkRoad Recruiting (jobs.silkroad.com) — server-rendered list; board = Tenant/Board
 rival:
   - "RAA/RAACareers"    # RAA (Australia) — verifie 21 nov. 2026 (10 offres)
+  - "NYULangone/NYULHCareers"   # NYU Langone Health   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - "EileenFisher/USCareers"    # Eileen Fisher
+  - "Valpo/Careers"             # Valparaiso University
 
 # WeRecruit (careers.werecruit.io) — embedded JSON in server HTML; board = account slug
 werecruit:
@@ -4271,6 +4280,9 @@ eures:
 # PageUp (ATS #34/78) — public per-client RSS feed (clientId|Company)
 pageup:
   - "513|Monash University"    # verifie 21 nov. 2026 (69 offres, /513/cw/en/rss)
+  - "1132|University of North Dakota"   # UND (/cw/)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - "865|Lehigh University"             # Lehigh (/cw/)
+  - "968|Virginia Tech"                 # Virginia Tech (/cw/)
 
 # JobMount (job board #12/78) — public per-category RSS, {host}/{slug}?rss
 jobmount:
