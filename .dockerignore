@@ -1,0 +1,13 @@
+.git
+.venv
+.python
+__pycache__
+*.pyc
+.pytest_cache
+.DS_Store
+.env
+# Never bake the local index into the image — it is rebuilt by the ingest
+# service onto the mounted volume.
+jobmesh.db
+jobmesh.db-shm
+jobmesh.db-wal

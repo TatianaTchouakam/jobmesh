@@ -1,0 +1,43 @@
+# Jobmesh — two services sharing one index volume:
+#   api    : serves the website + REST API + MCP endpoint
+#   ingest : refreshes the index on a schedule (default every 6h)
+#
+# Quick start:
+#   docker compose up --build
+# then open http://localhost:8000  (and /status for coverage).
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      JOBMESH_DB: /data/jobmesh.db
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-me}
+      # Billing is optional locally; leave these unset to hide the paid tier.
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID:-}
+    volumes:
+      - jobmesh-data:/data
+    restart: unless-stopped
+
+  ingest:
+    build: .
+    # Scheduled refresh: run an ingest, then sleep. The first run happens
+    # immediately so a fresh volume gets populated. A failed source is logged
+    # as a fetch failure and never mass-closes its jobs.
+    command: >
+      sh -c 'while true; do
+               python -m jobmesh.cli ingest || true;
+               sleep "${INGEST_INTERVAL_SECONDS:-21600}";
+             done'
+    environment:
+      JOBMESH_DB: /data/jobmesh.db
+      INGEST_INTERVAL_SECONDS: ${INGEST_INTERVAL_SECONDS:-21600}
+      # Optional: cap boards per platform to keep each run fast.
+      INGEST_MAX_BOARDS: ${INGEST_MAX_BOARDS:-}
+    volumes:
+      - jobmesh-data:/data
+    restart: unless-stopped
+
+volumes:
+  jobmesh-data:

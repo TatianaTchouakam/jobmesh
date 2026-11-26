@@ -167,28 +167,33 @@ schema.org **JobPosting JSON-LD** that sites publish for Google for Jobs. No bli
 HTML scraping, no login-walled data. Growth is additive: a new platform is a new
 `Connector` subclass plus one line in the registry.
 
-## Running with Docker (🚧 in progress)
+## Running with Docker
 
-The API and the ingestion job are being containerised for reproducible local
-runs and deployment:
+Two services share one index volume: `api` (website + REST API + MCP) and
+`ingest` (scheduled refresh, every 6h by default).
 
 ```bash
-# build the image
-docker build -t jobmesh .
+# build both images and start everything
+docker compose up --build
 
-# serve the API on http://127.0.0.1:8000/docs
-docker run -p 8000:8000 -v $(pwd)/data:/app/data jobmesh
-
-# run one ingestion with the same image
-docker run -v $(pwd)/data:/app/data jobmesh python -m jobmesh.cli ingest
+# then open:
+#   http://localhost:8000          the search site
+#   http://localhost:8000/status   live coverage (X / 78) and freshness
+#   http://localhost:8000/docs     interactive API docs
 ```
 
-Planned setup:
+The SQLite index lives on a named volume (`jobmesh-data`, mounted at `/data`),
+so it survives restarts and is shared between the two services. Change the
+refresh cadence with `INGEST_INTERVAL_SECONDS` (default `21600` = 6h) and cap
+work per run with `INGEST_MAX_BOARDS`.
 
-- slim Python base image, non-root user, small image size
-- the SQLite database stored on a mounted volume, so data survives restarts
-- `docker-compose.yml` with two services: `api` (FastAPI) and `ingest` (scheduled refresh)
-- image built and tested automatically in CI (GitHub Actions)
+To run just the API, or a one-off ingest, with the single image:
+
+```bash
+docker build -t jobmesh .
+docker run -p 8000:8000 -v jobmesh-data:/data jobmesh
+docker run -v jobmesh-data:/data jobmesh python -m jobmesh.cli ingest
+```
 
 ## Tests
 
@@ -203,8 +208,8 @@ offline, no network required.
 
 ## Roadmap
 
-- [ ] **Docker**: Dockerfile and docker-compose (API + ingest)
+- [x] **Docker**: Dockerfile and docker-compose (API + ingest)
 - [ ] CI with GitHub Actions: tests and Docker build on every push
-- [ ] Run the ingestion as a scheduled container job
+- [x] Run the ingestion as a scheduled container job
 - [ ] More connectors toward the **78 required platform types** (status in COVERAGE.md)
 - [ ] More national employment agencies
