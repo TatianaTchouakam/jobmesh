@@ -4014,6 +4014,15 @@ hibob:
   - valr          # VALR   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - cluepoints    # CluePoints
   - nationaltiles # National Tiles
+  - asafe   # +employeur vérifié live 26/11 (31)
+  - glasslewisco  # Glass Lewis (23)
+  - localpayment  # Localpayment (14)
+  - shawgibbs     # Shaw Gibbs (14)
+  - causewaytechnologies  # Causeway (14)
+  - jp95          # AKEURA/P95 (7)
+  - clearstemskincareinc  # CLEARSTEM (6)
+  - kaptio        # Kaptio (4)
+  - quinbrook     # Quinbrook (4)
 
 # Jobvite (jobs.jobvite.com) — server-rendered listing, paginated ?p=N; board = company slug
 jobvite:
@@ -4046,6 +4055,14 @@ gem:
   - fetch      # Fetch (75 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - groq       # Groq
   - narmi      # Narmi
+  - nominal   # +employeur vérifié live 26/11 (83)
+  - firestorm    # Firestorm (78)
+  - samba        # Samba TV (51)
+  - spotnana    # Spotnana (22)
+  - vantaca      # Vantaca (10)
+  - apartment-list  # Apartment List (9)
+  - ntop         # nTop (9)
+  - inception    # Inception (8)
 
 # Deel ATS (jobs.deel.com) — JSON-LD JobPosting per job page; board = org slug
 deel:
@@ -4156,6 +4173,8 @@ jazzhr:
   - landing            # Landing   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - roots              # Invest with Roots
   - constellationinc   # Constellation Inc
+  - truckingpeople   # +employeur vérifié live 26/11 (185)
+  - jbb                 # JB&B (27)
 
 # iCIMS — {portal}.icims.com; public sitemap.xml + per-posting JSON-LD (?in_iframe=1)
 icims:
