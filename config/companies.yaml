@@ -4219,6 +4219,16 @@ dayforce:
   - carhartt          # Carhartt   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - jcb               # JCB
   - hok               # HOK
+  - ohmc   # +employeur vérifié live 26/11 (Omni Hotels, 1135)
+  - kgs               # Koniag Gov Services (382)
+  - vpne              # VPNE Parking (136)
+  - dickblick         # Blick Art Materials (107)
+  - mybni             # Barber National Institute (40)
+  - cityind           # City of Independence MO (33)
+  - usga              # USGA (24)
+  - humaneworld       # Humane World for Animals (18)
+  - clubquarters      # Club Quarters Hotels (12)
+  - k12l              # Savvas Learning (11)
 
 # CATS (catsone.com) — portal's public Remix data route {slug}.catsone.com/careers/{id}.data; board = slug|portalId
 catsone:
@@ -4242,6 +4252,14 @@ trinet:
   - "22943-cabaletta-bio-inc"    # Cabaletta Bio — verifie 21 nov. 2026 (6 offres)
   - "20517-summit-technologies-inc"   # Summit Technologies   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "23964-medacta-usa-inc"           # Medacta USA
+  - "178310-acme-marina-management-llc"   # +employeur vérifié live 26/11 (PORT 32 Marinas, 13)
+  - "324552-ionna-llc"                # IONNA EV charging (12)
+  - "460515-climate-united-fund"      # Climate United (10)
+  - "448120-ecifm-solutions-inc"      # eCIFM Solutions (9)
+  - "657292-clarvos-llc"              # Clarvos (5)
+  - "957780-ledger-run-inc"           # Ledger Run (3)
+  - "30190-steelwave-inc"             # SteelWave (2)
+  - "13633-allegiance-merchant-services"  # Allegiance Merchant Svcs (1)
 
 # Trakstar Hire (ex-Recruiterbox) — public careers {sub}.hire.trakstar.com; board = subdomain
 trakstar:
@@ -4256,6 +4274,12 @@ rival:
   - "NYULangone/NYULHCareers"   # NYU Langone Health   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "EileenFisher/USCareers"    # Eileen Fisher
   - "Valpo/Careers"             # Valparaiso University
+  - "SOCCo/Careers"   # +employeur vérifié live 26/11 (42)
+  - "cameron/careers"           # Cameron University (38)
+  - "Core4ce/Careers"           # Core4ce (37)
+  - "kpsglobal/careers"         # KPS Global (16)
+  - "akingump/akingump"         # Akin Gump (11)
+  - "PHEAA/Careers"             # PHEAA (4)
 
 # WeRecruit (careers.werecruit.io) — embedded JSON in server HTML; board = account slug
 werecruit:
@@ -4359,6 +4383,14 @@ kula:
   - "kickoff|Kickoff"   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "pebblelife|Pebble"
   - "varo-money|Varo Bank"
+  - "massive-bio|Massive Bio"   # +employeur vérifié live 26/11 (61)
+  - "shinkei|Shinkei"           # (18)
+  - "onshore|Onshore"           # (6)
+  - "daybreak|Daybreak"         # (6)
+  - "aetherbio|Aether Biomachines"  # (7)
+  - "crossbeam|Crossbeam"       # (7)
+  - "maev|Maev"                 # (3)
+  - "blueair|Blueair"           # (2)
 
 # Taiwan Jobs (Ministry of Labor) — keyless public XML webservice, OGDL 1.0 (bonus). board = zipno (postal code)
 taiwanjobs:
