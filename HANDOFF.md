@@ -33,7 +33,11 @@ python -m jobmesh.cli ingest        # build the index
 uvicorn jobmesh.api:app --reload    # serve API + UI at http://127.0.0.1:8000
 python -m pytest -q                 # 40+ offline tests
 ```
-Schedule the ingest (cron / Render Cron Job) to keep the index fresh.
+Keep the index fresh automatically: set `INGEST_INTERVAL_HOURS` (the Render
+blueprint ships `6`) and the app re-ingests on that cadence from a background
+thread, guarded by a single-host lock. `/status` and the home page show the
+last refresh. A fetch failure is logged, never treated as all-jobs-closed.
+(An external cron / Render Cron Job works too.)
 **Add a platform** = one `Connector` subclass + one line in
 `config/companies.yaml` (details in README).
 
