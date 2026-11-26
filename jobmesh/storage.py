@@ -602,6 +602,10 @@ def stats(conn: sqlite3.Connection) -> dict:
         "sources_failed_last_run": (
             int(get_meta(conn, "last_ingest_failed"))
             if get_meta(conn, "last_ingest_failed") else 0),
+        "ingesting": get_meta(conn, "ingesting") == "1",
+        "refresh_interval_hours": (
+            float(os.getenv("INGEST_INTERVAL_HOURS"))
+            if os.getenv("INGEST_INTERVAL_HOURS") else None),
     }
 
 

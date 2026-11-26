@@ -99,6 +99,17 @@ def _fetch_only(platform: str, board: str):
 
 
 def ingest(conn, boards: dict[str, list[str]]) -> list[BoardResult]:
+    """Public entry point: mark an ingest in progress so the UI can show
+    'update in progress' and never present partial counts as final, then run
+    the actual ingest and clear the flag whatever happens."""
+    storage.set_meta(conn, "ingesting", "1")
+    try:
+        return _run_ingest(conn, boards)
+    finally:
+        storage.set_meta(conn, "ingesting", "0")
+
+
+def _run_ingest(conn, boards: dict[str, list[str]]) -> list[BoardResult]:
     """Ingest every board in a {platform: [boards]} mapping.
 
     Fetches run concurrently, but in **bounded chunks**: only one chunk of

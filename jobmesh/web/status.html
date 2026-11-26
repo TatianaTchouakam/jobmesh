@@ -130,7 +130,16 @@ async function load(){
     const failed=s.sources_failed_last_run||0;
     const dur=s.last_ingest_seconds!=null?` in ${Math.round(s.last_ingest_seconds)}s`:"";
     const failTxt=failed>0?` · <span class="err">${failed} source(s) failed last run</span>`:" · all sources OK last run";
-    $("upd").innerHTML=`<b>Last refreshed:</b> ${ago(s.last_updated)}${dur}${failTxt}. Refreshes automatically every few hours.`;
+    const iv=s.refresh_interval_hours;
+    let nextTxt="";
+    if(iv){
+      if(s.last_updated){const t=Date.parse(s.last_updated);
+        if(!isNaN(t)){const mins=Math.max(0,Math.round((t+iv*3600000-Date.now())/60000));
+          nextTxt=` · next refresh in ~${mins<60?mins+" min":Math.round(mins/60)+" h"}`;}}
+    }
+    const everyTxt=iv?`every ${iv%1===0?iv:iv.toFixed(1)} hours`:"every few hours";
+    const ingTxt=s.ingesting?` · <b style="color:var(--gold2)">update in progress\u2026</b>`:"";
+    $("upd").innerHTML=`<b>Last refreshed:</b> ${ago(s.last_updated)}${dur}${failTxt}${nextTxt}${ingTxt}. Refreshes automatically ${everyTxt}.`;
 
     ROWS=src.sources||[];
     $("covhead").textContent=`${src.active} of ${src.required_total} required platforms live (${src.ats_total} ATS + ${src.boards_total} job boards)`;

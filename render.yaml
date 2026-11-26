@@ -2,7 +2,7 @@
 #
 # The index lives on a persistent disk (/var/data) so it survives redeploys;
 # a background thread refreshes it on startup and every INGEST_INTERVAL_HOURS.
-# The service runs on a Starter instance (always on, no spin-down).
+# The service runs on a Standard instance (2 GB RAM, always on) with a 10 GB disk.
 #
 # Secret env vars (STRIPE_*, BASE_URL) are set in the Render dashboard
 # (declared here with sync:false). SECRET_KEY is generated once by Render.
@@ -10,13 +10,13 @@ services:
   - type: web
     name: jobmesh
     runtime: python
-    plan: starter
+    plan: standard
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn jobmesh.api:app --host 0.0.0.0 --port $PORT"
     disk:
       name: jobmesh-data
       mountPath: /var/data
-      sizeGB: 1
+      sizeGB: 10
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"
@@ -30,12 +30,12 @@ services:
         sync: false
       - key: JOBMESH_DB            # SQLite path on the persistent disk
         value: "/var/data/jobmesh.db"
-      - key: INGEST_MAX_BOARDS     # per-platform board cap; kept modest to fit 512 MB during ingest
-        value: "800"
+      - key: INGEST_MAX_BOARDS     # per-platform board cap; high on the 2 GB Standard plan
+        value: "3000"
       - key: INGEST_INTERVAL_HOURS  # background self-refresh cadence (hours)
+        value: "4"
+      - key: INGEST_WORKERS         # fetch concurrency — 2 GB Standard plan allows more
         value: "6"
-      - key: INGEST_WORKERS         # fetch concurrency — low to cap concurrent memory on 512 MB
-        value: "2"
       # Optional keys for keyed sources (leave unset to skip those sources)
       - key: JOOBLE_API_KEY
         sync: false

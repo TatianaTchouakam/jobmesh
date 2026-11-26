@@ -6,7 +6,7 @@ agencies, with a very strong presence across Africa and the Global South —
 mostly non-tech roles (programme, logistics, health, WASH, finance, M&E).
 
     GET https://api.reliefweb.int/v1/jobs
-        ?appname=jobmesh-jobindex&profile=full
+        ?appname=jobmesh&profile=full
         &limit=100&offset=0&sort[]=date.created:desc
 
 `appname` is just a courtesy identifier (not a secret). `board` is

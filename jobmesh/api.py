@@ -14,7 +14,9 @@ import os
 from typing import Optional
 
 from fastapi import FastAPI, Query, Request, Header
-from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
+from fastapi.responses import (FileResponse, StreamingResponse, JSONResponse,
+                               Response, HTMLResponse, PlainTextResponse)
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -80,6 +82,62 @@ def home() -> FileResponse:
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
+
+
+@app.get("/robots.txt", include_in_schema=False)
+def robots_txt() -> PlainTextResponse:
+    base = os.getenv("BASE_URL", "https://jobmesh.world").rstrip("/")
+    return PlainTextResponse(
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /export.csv\n"
+        "Disallow: /export.json\n"
+        f"Sitemap: {base}/sitemap.xml\n"
+    )
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap_xml() -> Response:
+    base = os.getenv("BASE_URL", "https://jobmesh.world").rstrip("/")
+    paths = ["/", "/status", "/api"]
+    items = "".join(f"<url><loc>{base}{pth}</loc></url>" for pth in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+           f"{items}</urlset>")
+    return Response(xml, media_type="application/xml")
+
+
+def _error_page(code: int, title: str) -> str:
+    return (
+        "<!doctype html><html lang=en><head><meta charset=utf-8>"
+        "<meta name=viewport content='width=device-width,initial-scale=1'>"
+        f"<title>Jobmesh \u2014 {code}</title><style>"
+        "body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;"
+        "font-family:Inter,system-ui,-apple-system,sans-serif;background:#faf8f3;color:#1c2030;text-align:center}"
+        ".b{max-width:30em;padding:24px}.c{font-size:64px;font-weight:900;letter-spacing:-.03em;color:#c4881a;margin:0}"
+        "h1{font-size:20px;margin:.3em 0}a{color:#c4881a;font-weight:700;text-decoration:none}"
+        "</style></head><body><div class=b>"
+        f"<p class=c>{code}</p><h1>{title}</h1>"
+        "<p>Try the <a href='/'>search</a> or the <a href='/status'>status page</a>.</p>"
+        "</div></body></html>"
+    )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def _http_exc_handler(request: Request, exc: StarletteHTTPException):
+    accept = request.headers.get("accept", "")
+    if exc.status_code == 404 and "text/html" in accept:
+        return HTMLResponse(_error_page(404, "Page not found"), status_code=404)
+    return JSONResponse({"error": exc.detail or "error", "status": exc.status_code},
+                        status_code=exc.status_code)
+
+
+@app.exception_handler(Exception)
+async def _unhandled_handler(request: Request, exc: Exception):
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        return HTMLResponse(_error_page(500, "Something went wrong"), status_code=500)
+    return JSONResponse({"error": "internal server error", "status": 500}, status_code=500)
 
 
 @app.get("/stats")
@@ -158,6 +216,7 @@ def _pro_payload(api_key, x_api_key):
 @app.get("/jobs")
 def list_jobs(
     keyword: Optional[str] = Query(None, description="match in title/description"),
+    q: Optional[str] = Query(None, description="alias for keyword"),
     company: Optional[str] = Query(None),
     location: Optional[str] = Query(None),
     platform: Optional[str] = Query(None, description="filter by source platform"),
@@ -173,6 +232,7 @@ def list_jobs(
     x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
 ) -> dict:
     """Search the index with filters and pagination."""
+    keyword = keyword or q
     is_pro = _pro_payload(api_key, x_api_key) is not None
     if not is_pro:
         limit = min(limit, FREE_LIMIT)
@@ -251,6 +311,44 @@ def export_csv(
         headers={"Content-Disposition": 'attachment; filename="jobmesh.csv"'})
 
 
+@app.get("/export.json")
+def export_json(
+    keyword: Optional[str] = Query(None),
+    q: Optional[str] = Query(None, description="alias for keyword"),
+    company: Optional[str] = Query(None),
+    location: Optional[str] = Query(None),
+    platform: Optional[str] = Query(None),
+    workplace_type: Optional[str] = Query(None),
+    employment_type: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    country: Optional[str] = Query(None),
+    level: Optional[str] = Query(None),
+    since: Optional[str] = Query(None),
+    limit: int = Query(500, ge=1, le=EXPORT_CAP),
+    offset: int = Query(0, ge=0),
+    api_key: Optional[str] = Query(None, description="Jobmesh Premium API key"),
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+):
+    """Pro-only agency feed: the filtered index as JSON, paginated.
+
+    Same filters as /jobs; walk the whole result set with offset/limit (up to
+    EXPORT_CAP rows per page). Each row carries the same fields as /export.csv.
+    """
+    if _pro_payload(api_key, x_api_key) is None:
+        return JSONResponse(
+            {"error": "Jobmesh Premium required: the JSON feed is for subscribers.",
+             "upgrade": "/#pro"},
+            status_code=402)
+    f = _filters(keyword or q, company, location, platform, workplace_type,
+                 employment_type, category, country, level, since)
+    with storage.session(DB_PATH) as conn:
+        rows = storage.search(conn, limit=limit, offset=offset, **f)
+        total = storage.count(conn, **f)
+    results = [{name: r.get(src) for name, src in _CSV_COLS} for r in rows]
+    return {"count": len(results), "total": total,
+            "limit": limit, "offset": offset, "results": results}
+
+
 @app.get("/feedback")
 def get_feedback(limit: int = Query(30, ge=1, le=100)) -> dict:
     """Most recent visitor feedback."""
@@ -299,6 +397,16 @@ def get_facets(
 # so the deployed index updates itself on a schedule. WAL (see storage.connect)
 # makes the concurrent background write + API reads safe. Off unless the env
 # var is set, so local runs and tests are unaffected.
+@app.on_event("startup")
+def _clear_ingesting_flag() -> None:
+    """Clear a stale in-progress flag left by a previous crash."""
+    try:
+        with storage.session(DB_PATH) as conn:
+            storage.set_meta(conn, "ingesting", "0")
+    except Exception:
+        pass
+
+
 @app.on_event("startup")
 def _maybe_start_refresher() -> None:
     import logging

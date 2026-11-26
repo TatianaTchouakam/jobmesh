@@ -10,7 +10,7 @@ from jobmesh import sources as srcreg
 from jobmesh.connectors import REGISTRY
 from jobmesh.config import load_boards
 
-# The official challenge list (verified against vayahq.com, 21/11/2026).
+# The official challenge platform list (verified 21/11/2026).
 _OFFICIAL_ATS = {
     "ADP","ApplicantPro","Ashby","Avature","BambooHR","BrassRing","Breezy HR",
     "CareerPlug","Comeet","CSOD (Cornerstone)","Dayforce","Deel","Dover",
