@@ -87,6 +87,7 @@ const JGET=u=>fetch(u,{headers:{"Accept":"application/json"}}).then(r=>r.json())
 const STYLE={
   ACTIVE:["Live","var(--green)","var(--greenbg)"],
   API_REQUIRED:["API required","var(--blue)","var(--bluebg)"],
+  NO_PUBLIC_ROUTE:["No clean public route","var(--gray)","var(--graybg)"],
   PARTNERSHIP_REQUIRED:["Partnership","var(--amber)","var(--amberbg)"],
   CLIENT_CONNECTION_REQUIRED:["Client access","var(--purple)","var(--purplebg)"],
   TEMPORARILY_UNAVAILABLE:["Temp. unavailable","var(--gray)","var(--graybg)"],
@@ -109,7 +110,7 @@ function render(){
     <td><b>${r.name}</b></td>
     <td>${badge(r.status)}</td>
     <td class="n">${r.status==="ACTIVE"?(r.shared?"—":num(r.live_open)):"—"}</td>
-    <td class="reason">${r.status==="ACTIVE"?(r.shared?"shared feed — counted once":""):(r.reason||r.next_action||"")}</td>
+    <td class="reason">${r.status==="ACTIVE"?(r.shared?(r.note||"shared feed — counted once"):""):(r.note||r.reason||r.next_action||"")}</td>
   </tr>`).join("");
 }
 

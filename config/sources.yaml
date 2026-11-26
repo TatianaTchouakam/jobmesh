@@ -11,16 +11,16 @@
 
 required_ats:
   - { name: "ADP", connector: adp, status: ACTIVE }
-  - { name: "ApplicantPro", connector: isolvedhire, status: ACTIVE }
+  - { name: "ApplicantPro", connector: isolvedhire, status: ACTIVE, boards: [], note: "Same engine as iSolvedHire (rebrand); counted under iSolvedHire." }
   - { name: "Ashby", connector: ashby, status: ACTIVE }
   - { name: "Avature", connector: avature, status: ACTIVE }
   - { name: "BambooHR", connector: bamboohr, status: ACTIVE }
-  - { name: "BrassRing", connector: null, status: API_REQUIRED,
+  - { name: "BrassRing", connector: null, status: NO_PUBLIC_ROUTE, note: "Public job route sits behind an anti-bot firewall; no token-free access.",
       reason: "Re-checked 26/11: first contact sets an F5 BIG-IP ASM anti-bot cookie (TS01...), and the public TGnewUI/ProcessSortAndShowMoreJobs route sits behind that WAF (sample tenant 500s). The official SearchAPI is JWT-gated (authenticated partner). The platform is sunsetting (employers migrating to Oracle from April 2026). No simple public request returns job data without clearing the anti-bot challenge. Excluded under the no-bypass rule.", next_action: "EXCLUDED — F5 anti-bot WAF on the public route + JWT-gated partner API; platform migrating off BrassRing in 2026", request_status: "Partner request sent 26/11/2026" }
   - { name: "Breezy HR", connector: breezy, status: ACTIVE }
-  - { name: "CareerPlug", connector: careerplug, status: API_REQUIRED, reason: "Careers page switched to client-rendered: the /jobs listing no longer embeds schema.org JobPosting JSON-LD and exposes no public JSON/RSS endpoint (verified 26/11 on alphagraphics-careers.careerplug.com — 62 jobs in the DOM, 0 JSON-LD blocks, /jobs.json 406). No token-free HTTP route.", next_action: "EXCLUDED — regressed to client-rendered; revisit if a server-rendered feed or public API returns" }
+  - { name: "CareerPlug", connector: careerplug, status: NO_PUBLIC_ROUTE, note: "Listings are client-rendered with no public JSON or RSS route.", reason: "Careers page switched to client-rendered: the /jobs listing no longer embeds schema.org JobPosting JSON-LD and exposes no public JSON/RSS endpoint (verified 26/11 on alphagraphics-careers.careerplug.com — 62 jobs in the DOM, 0 JSON-LD blocks, /jobs.json 406). No token-free HTTP route.", next_action: "EXCLUDED — regressed to client-rendered; revisit if a server-rendered feed or public API returns" }
   - { name: "Comeet", connector: comeet, status: ACTIVE }
-  - { name: "CSOD (Cornerstone)", connector: null, status: API_REQUIRED,
+  - { name: "CSOD (Cornerstone)", connector: null, status: NO_PUBLIC_ROUTE, note: "Job data needs an auth token that is not handed to the public.",
       reason: "Re-checked 26/11 on arizona.csod.com: robots allows (Crawl-delay 10) and config endpoints are anonymous, BUT every job-data route (/services/x/career-site/v1/search and .../careersites/4/requisitions) returns 401 'Check your credentials'. The required Authorization bearer is NOT handed to anonymous visitors by any simple public call (token endpoints 404/401; the anonymous cscx cookie is rejected); obtaining it would mean replicating the player's obfuscated handshake. Excluded under the no-bypass rule.", next_action: "EXCLUDED — job-data API needs an auth bearer minted by obfuscated client code, not a public anonymous hand-out; revisit only via an official partner feed", request_status: "Partner request sent 26/11/2026" }
   - { name: "Dayforce", connector: dayforce, status: ACTIVE }
   - { name: "Deel", connector: deel, status: ACTIVE }
@@ -37,7 +37,7 @@ required_ats:
   - { name: "Hireology", connector: hireology, status: ACTIVE }
   - { name: "HiringThing", connector: hiringthing, status: ACTIVE }
   - { name: "iCIMS", connector: icims, status: ACTIVE }
-  - { name: "iSolvedHire", connector: isolvedhire, status: ACTIVE }
+  - { name: "iSolvedHire", connector: isolvedhire, status: ACTIVE, boards: ["*"] }
   - { name: "JazzHR", connector: jazzhr, status: ACTIVE }
   - { name: "Jobvite", connector: jobvite, status: ACTIVE }
   - { name: "JOIN.com", connector: join, status: ACTIVE }
@@ -46,11 +46,11 @@ required_ats:
   - { name: "Manatal", connector: manatal, status: ACTIVE }
   - { name: "Oracle Recruiting", connector: oracle, status: ACTIVE }
   - { name: "PageUp", connector: pageup, status: ACTIVE }
-  - { name: "Paradox", connector: null, status: RETIRED,
+  - { name: "Paradox", connector: null, status: RETIRED, note: "Acquired by Workday; no standalone public job surface.",
       reason: "Acquired by Workday; no standalone public job surface; client sites run on their own domains", next_action: "PARTNERSHIP_PENDING — Workday Recruiting partner feed; McHire tenant exists but detail pages are anti-bot 202 (see PARTNERSHIPS.md)", request_status: "Partner request pending — Workday form requires a professional email; to be sent from contact@jobmesh.world (26/11/2026)" }
-  - { name: "Paycom", connector: null, status: API_REQUIRED,
+  - { name: "Paycom", connector: null, status: NO_PUBLIC_ROUTE, note: "No public job route without an employer client key.",
       reason: "Re-checked 26/11: robots Allows /api/ats/job-postings/, but it returns 404 to a normal public request with real clientkeys; live client portals serve jobs only via the sprawl SPA's internal endpoints, which also do not answer a simple public request. Per the no-bypass rule we do not fabricate a computed signature, so there is no clean public route. Excluded.", next_action: "EXCLUDED — no simple public request returns job data; the robots-Allowed crawler endpoint does not serve these portals", request_status: "Not contacted — no public technical partner program (sales form only), verified 26/11/2026" }
-  - { name: "Paycor", connector: null, status: RETIRED,
+  - { name: "Paycor", connector: null, status: RETIRED, note: "Public feed exists but the hosting domain is retired.",
       reason: "Public per-client ATOM feed is real (verified 24/11: clientId 8a7883d0…, employer 'US Eye', 97 jobs) BUT recruitingbypaycor.com — and newton.newtonsoftware.com, which redirects to it — serve robots.txt 'User-agent: * / Disallow: /'. Honouring robots (RFC 9309), the feed is off-limits. Connector `paycor` shipped and tested offline.", next_action: "ROBOTS_BLOCKED — revisit only if a Paycor client exposes the feed on a host whose robots.txt permits reading", request_status: "Partner request (Paychex/Paycor) sent 26/11/2026" }
   - { name: "Paylocity", connector: paylocity, status: ACTIVE }
   - { name: "Personio", connector: personio, status: ACTIVE }
@@ -64,13 +64,13 @@ required_ats:
   - { name: "Rival", connector: rival, status: ACTIVE }
   - { name: "SAP SuccessFactors", connector: successfactors, status: ACTIVE }
   - { name: "SmartRecruiters", connector: smartrecruiters, status: ACTIVE }
-  - { name: "talentReef", connector: null, status: CLIENT_CONNECTION_REQUIRED,
+  - { name: "talentReef", connector: null, status: CLIENT_CONNECTION_REQUIRED, note: "No active public client board found yet.",
       reason: "sitemap+JSON-LD recipe ready, but no live public tenant found (21/11/2026)", next_action: "SYNDICATION_PENDING — TalentReef XML job distribution / syndication feed (see PARTNERSHIPS.md)", request_status: "Partner request already sent earlier (before 26/11/2026)" }
   - { name: "Taleo", connector: taleo, status: ACTIVE }
   - { name: "Teamtailor", connector: teamtailor, status: ACTIVE }
   - { name: "Trakstar", connector: trakstar, status: ACTIVE }
   - { name: "TriNet", connector: trinet, status: ACTIVE }
-  - { name: "UltiPro", connector: null, status: API_REQUIRED,
+  - { name: "UltiPro", connector: null, status: NO_PUBLIC_ROUTE, note: "robots.txt disallows the only job-data route.",
       reason: "robots.txt re-checked 26/11/2026: Disallow */JobBoardView (the only job-data route, incl. LoadSearchResults); */JobBoard/ is Allowed but is a JS shell with no embedded jobs (no JSON-LD, no server-rendered list). No clean public data route.", next_action: "PARTNERSHIP_PENDING — UKG Developer Portal partner job-board feed (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
   - { name: "WeRecruit", connector: werecruit, status: ACTIVE }
   - { name: "Workable", connector: workable, status: ACTIVE }
@@ -79,28 +79,28 @@ required_ats:
 
 required_boards:
   - { name: "Niceboard", connector: niceboard, status: ACTIVE }
-  - { name: "WP Job Manager", connector: jobfeed, status: ACTIVE }
-  - { name: "JobKit", connector: jobfeed, status: ACTIVE }
-  - { name: "Jobboardly", connector: jobfeed, status: ACTIVE }
+  - { name: "WP Job Manager", connector: jobfeed, status: ACTIVE, boards: ["https://jobs.blog/?feed=job_feed"] }
+  - { name: "JobKit", connector: jobfeed, status: ACTIVE, boards: ["https://jobs.rubyonrails.org/jobs.rss"] }
+  - { name: "Jobboardly", connector: jobfeed, status: ACTIVE, boards: ["https://onboardnwa.com/jobs.rss", "https://www.jobsindevon.uk/jobs.rss", "https://www.constructionjobsaustralia.com/jobs.rss", "https://tradiejobs.com.au/jobs.rss", "https://www.motorsport.jobs/jobs.rss", "https://otjobsaustralia.com.au/jobs.rss", "https://www.leveluphealthjobs.com/jobs.rss"] }
   - { name: "Jobiqo", connector: jobiqo, status: ACTIVE }
-  - { name: "JBoard.io", connector: jobfeed, status: ACTIVE }
+  - { name: "JBoard.io", connector: jobfeed, status: ACTIVE, boards: ["https://golf-jobs.com/rss/jobs", "https://www.winti.jobs/rss/jobs", "https://www.charityjobs.ie/rss/jobs", "https://couriergigs.com/rss/jobs"] }
   - { name: "JobBoardFire", connector: jobboardfire, status: ACTIVE }
-  - { name: "SmartJobBoard", connector: jobfeed, status: ACTIVE }
-  - { name: "JobBoard.io", connector: jobfeed, status: ACTIVE }
-  - { name: "Wiley Madgex", connector: jobfeed, status: ACTIVE }
-  - { name: "Talenetic", connector: null, status: CLIENT_CONNECTION_REQUIRED,
+  - { name: "SmartJobBoard", connector: jobfeed, status: ACTIVE, boards: ["https://www.proapartments.com/rss/", "https://jobsboard.edsurge.com/rss/", "https://jobs.amahouston.org/rss", "https://investmentjobs.org/rss", "https://jobs.flnonprofits.org/rss", "https://www.cleantechrecruits.com/rss", "https://www.christiancareercenter.com/rss", "https://www.hireveterans.com/rss", "https://academiccareers.com/rss", "https://apartmentjobs.com/rss", "https://environmentalcareer.com/rss", "https://jobs.acem.org.au/rss", "https://jobs.psychologicalscience.org/rss", "https://jobs.thechemicalengineer.com/rss", "https://jobs.tribalcollegejournal.org/rss", "https://newimmigrantjobs.ca/rss", "https://www.datacareer.de/rss", "https://www.jobsinchildcare.com/rss", "https://jobs.rentalhousingjournal.com/rss", "https://jobs.njla.org/rss", "https://jobs.rspa.net/rss", "https://jobs.coloradochiropractic.org/rss"] }
+  - { name: "JobBoard.io", connector: jobfeed, status: ACTIVE, boards: ["https://www.cancercareers.org/jobs.rss", "https://jobs.aacc.nche.edu/jobs.rss", "https://jobs.cityandstateny.com/jobs.rss", "https://jobs.rmets.org/jobs.rss", "https://jobs.motionographer.com/jobs.rss"] }
+  - { name: "Wiley Madgex", connector: jobfeed, status: ACTIVE, boards: ["https://jobs.sciencecareers.org/jobsrss/", "https://www.nature.com/naturecareers/jobsrss/"] }
+  - { name: "Talenetic", connector: null, status: CLIENT_CONNECTION_REQUIRED, note: "No active public client board found yet.",
       reason: "No active client board found on the public web", next_action: "PARTNERSHIP_PENDING — Talenetic XML/JSON syndication partnership, FeedOuts (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
   - { name: "JobMount", connector: jobmount, status: ACTIVE }
-  - { name: "CareerSiteCloud", connector: null, status: TEMPORARILY_UNAVAILABLE,
+  - { name: "CareerSiteCloud", connector: null, status: TEMPORARILY_UNAVAILABLE, note: "Service is offline (repeated 502s).",
       reason: "Service returns 502 (offline across repeated checks)", next_action: "PROVIDER_CHECK_PENDING — 502 + daily health-check; free partner XML export, no $1000/mo backfill (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
   - { name: "JobBoard.com", connector: jobboardcom, status: ACTIVE }
   - { name: "Artha", connector: artha, status: ACTIVE }
   - { name: "jobboardsoftware.com", connector: exenzo, status: ACTIVE }
-  - { name: "jobBoardHQ", connector: jobfeed, status: ACTIVE }
+  - { name: "jobBoardHQ", connector: jobfeed, status: ACTIVE, boards: ["https://www.njschooljobs.com/jobs.xml", "https://www.roaddogjobs.com/jobs.xml", "https://www.greaterroccareers.com/jobs.xml", "https://www.jobsindoorcounty.com/jobs.xml", "https://jobs.macslist.org/jobs.xml"] }
   - { name: "Nodex", connector: nodex, status: ACTIVE }
-  - { name: "eJobBoard", connector: null, status: PARTNERSHIP_REQUIRED,
+  - { name: "eJobBoard", connector: null, status: PARTNERSHIP_REQUIRED, note: "No public client board or feed published.",
       reason: "No client names or live tenant published anywhere", next_action: "PARTNERSHIP_PENDING — negotiated XML feed only; active vendor (~$49/mo), no public tenant (see PARTNERSHIPS.md)", request_status: "Cannot contact — ejobboard.com is a parked GoDaddy domain, no reachable vendor (verified 26/11/2026)" }
-  - { name: "ejobsitesoftware.com", connector: jobfeed, status: ACTIVE }
+  - { name: "ejobsitesoftware.com", connector: jobfeed, status: ACTIVE, boards: ["https://www.eyetasticjobs.com/rss/job.php", "https://jobqlick.com/rss/job.php", "https://connectagri.com/rss/job.php"] }
 
 
 # Bonus sources — BEYOND the required 78. Real, deduplicated jobs that prove
@@ -185,10 +185,10 @@ declined_sources:
   - { name: "Ethiojobs", connector: null, status: PARTNERSHIP_REQUIRED, reason: "Ethiopia board; robots.txt blocks aggregator/AI crawlers by name (CCBot, ClaudeBot, GPTBot, Bytespider, Amazonbot, Applebot-Extended, ChatGPT-User) and job pages expose no server-rendered JobPosting JSON-LD and no public RSS/XML job feed. Verified 26/11/2026.", next_action: "EXCLUDED — named-crawler blocks + no token-free structured route", request_status: "none" }
   - { name: "Choisir le service public", connector: null, status: API_REQUIRED, reason: "France public-service portal; the sitemap carries editorial HTML pages only (no JobPosting JSON-LD) and there is no RSS/XML job feed — offers are API/JS-rendered. A separate open-data API exists but is out of scope for the sitemap/feed connectors. Verified 26/11/2026.", next_action: "DEFERRED — official open-data API integration (separate connector)", request_status: "none" }
   - { name: "HZZ (Croatian Employment Service)", connector: null, status: TEMPORARILY_UNAVAILABLE, reason: "burzarada.hzz.hr not reachable by JobmeshBot (connection error on robots/pages, 26/11); ASP.NET postback search, no public RSS/XML or JSON-LD route found.", next_action: "RECHECK — reachability + look for an official feed", request_status: "none" }
-  - { name: "TES Jobs", connector: null, status: API_REQUIRED, reason: "UK education board; job search is client-rendered (SPA) with no server-rendered JobPosting JSON-LD on sampled pages and no public RSS/XML job feed. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
-  - { name: "NHS Jobs", connector: null, status: API_REQUIRED, reason: "UK health service board; SPA with no sitemap, no server-rendered JobPosting JSON-LD and no public RSS/XML feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route (official NHS feeds are partner-gated)", request_status: "none" }
-  - { name: "myjobscotland", connector: null, status: API_REQUIRED, reason: "Scotland public-sector board; SPA with no sitemap, no server-rendered JobPosting JSON-LD and no public RSS/XML feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
-  - { name: "Feina Activa", connector: null, status: API_REQUIRED, reason: "Catalonia (gencat) public employment portal; client-rendered, no server-rendered JobPosting JSON-LD and no public RSS/XML job feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
-  - { name: "MojeDelo", connector: null, status: API_REQUIRED, reason: "Slovenia board; no server-rendered JobPosting JSON-LD and no public RSS/XML job feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
-  - { name: "Habr Career", connector: null, status: API_REQUIRED, reason: "Russia tech board; client-rendered vacancy pages with no server-rendered JobPosting JSON-LD and no public RSS/XML job feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
+  - { name: "TES Jobs", connector: null, status: NO_PUBLIC_ROUTE, reason: "UK education board; job search is client-rendered (SPA) with no server-rendered JobPosting JSON-LD on sampled pages and no public RSS/XML job feed. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
+  - { name: "NHS Jobs", connector: null, status: NO_PUBLIC_ROUTE, reason: "UK health service board; SPA with no sitemap, no server-rendered JobPosting JSON-LD and no public RSS/XML feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route (official NHS feeds are partner-gated)", request_status: "none" }
+  - { name: "myjobscotland", connector: null, status: NO_PUBLIC_ROUTE, reason: "Scotland public-sector board; SPA with no sitemap, no server-rendered JobPosting JSON-LD and no public RSS/XML feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
+  - { name: "Feina Activa", connector: null, status: NO_PUBLIC_ROUTE, reason: "Catalonia (gencat) public employment portal; client-rendered, no server-rendered JobPosting JSON-LD and no public RSS/XML job feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
+  - { name: "MojeDelo", connector: null, status: NO_PUBLIC_ROUTE, reason: "Slovenia board; no server-rendered JobPosting JSON-LD and no public RSS/XML job feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
+  - { name: "Habr Career", connector: null, status: NO_PUBLIC_ROUTE, reason: "Russia tech board; client-rendered vacancy pages with no server-rendered JobPosting JSON-LD and no public RSS/XML job feed on sampled pages. Verified 26/11/2026.", next_action: "EXCLUDED — no token-free structured route", request_status: "none" }
   - { name: "Torre", connector: null, status: API_REQUIRED, reason: "Global board; job data served via a GraphQL/JSON API behind a SPA, sitemaps list talent/team pages, no server-rendered JobPosting JSON-LD route. Verified 26/11/2026.", next_action: "DEFERRED — official API (separate connector, out of scope for sitemap/feed)", request_status: "none" }

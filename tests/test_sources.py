@@ -2,7 +2,7 @@
 
 This is the drift guard: every ACTIVE platform must have a real registered
 connector, the registry must list exactly the 78 required platforms, and every
-status must be one of the six defined states.
+status must be one of the defined states.
 """
 import yaml
 
@@ -84,3 +84,44 @@ def test_bonus_sources_are_real_and_seeded():
         assert cfg.get(c), f"bonus {c} is not seeded with any board"
         assert c not in required, f"bonus {c} is actually a required-platform connector"
         assert b["status"] == "ACTIVE"
+
+
+def test_shared_feed_counts_split_per_platform_no_double_count():
+    """Platforms served by one shared connector are counted per own board,
+    and the per-platform totals sum back to the connector total (no double
+    count, nothing lost)."""
+    import jobmesh.sources as srcreg
+    d = srcreg.load_sources()
+    by_board = {}
+    jf_boards = 0
+    for sec in ("required_ats", "required_boards"):
+        for p in d[sec]:
+            if p.get("connector") == "jobfeed":
+                for b in (p.get("boards") or []):
+                    by_board[("jobfeed", b)] = 3
+                    jf_boards += 1
+    obp = {"jobfeed": 3 * jf_boards}
+    rows = srcreg.health(obp, d, by_board)
+    jf_rows = [r for r in rows if r["connector"] == "jobfeed"]
+    # every shared-feed platform now shows a real number, not None/shared
+    assert jf_rows and all(r["live_open"] is not None and not r["shared"] for r in jf_rows)
+    assert sum(r["live_open"] for r in jf_rows) == obp["jobfeed"]
+
+
+def test_isolvedhire_pair_counted_once():
+    import jobmesh.sources as srcreg
+    d = srcreg.load_sources()
+    by_board = {("isolvedhire", "acme"): 5, ("isolvedhire", "beta"): 4}
+    rows = srcreg.health({"isolvedhire": 9}, d, by_board)
+    byname = {r["name"]: r for r in rows}
+    assert byname["iSolvedHire"]["live_open"] == 9
+    assert byname["ApplicantPro"]["shared"] and byname["ApplicantPro"]["note"]
+
+
+def test_no_public_route_status_is_valid_and_used():
+    import jobmesh.sources as srcreg
+    assert "NO_PUBLIC_ROUTE" in srcreg.STATUSES
+    d = srcreg.load_sources()
+    names = {p["name"] for p in srcreg.all_required(d)
+             if p["status"] == "NO_PUBLIC_ROUTE"}
+    assert {"BrassRing", "Paycom", "UltiPro", "CSOD (Cornerstone)", "CareerPlug"} <= names

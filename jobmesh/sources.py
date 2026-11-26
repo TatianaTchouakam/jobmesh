@@ -17,6 +17,7 @@ import yaml
 STATUSES = (
     "ACTIVE",
     "API_REQUIRED",
+    "NO_PUBLIC_ROUTE",
     "PARTNERSHIP_REQUIRED",
     "CLIENT_CONNECTION_REQUIRED",
     "TEMPORARILY_UNAVAILABLE",
@@ -55,13 +56,15 @@ def active_connectors(data: dict | None = None) -> set[str]:
 
 
 def health(open_by_platform: dict[str, int] | None = None,
-           data: dict | None = None) -> list[dict]:
+           data: dict | None = None,
+           open_by_board: dict | None = None) -> list[dict]:
     """One row per required platform: status, connector and (for ACTIVE) the
     live open-job count of its connector. open_by_platform is storage.stats()'s
     'open_by_platform' map (connector -> open count); shared connectors (e.g.
     jobfeed) report the connector's total."""
     data = data or load_sources()
     counts = open_by_platform or {}
+    by_board = open_by_board or {}
     rows = []
     counted: set = set()   # connectors already attributed, to avoid double counting
     for p in all_required(data):
@@ -69,9 +72,22 @@ def health(open_by_platform: dict[str, int] | None = None,
         active = p["status"] == "ACTIVE" and conn
         shared = False
         live_open = None
+        boards = p.get("boards")
         if active:
-            if conn in counted:
-                shared = True            # same feed as an earlier platform; count once
+            if boards == ["*"]:
+                # Whole shared engine attributed to this platform (its sibling
+                # carries boards: [] and shows a "counted here" note).
+                live_open = sum(n for (c, _b), n in by_board.items() if c == conn)
+                counted.add(conn)
+            elif boards:
+                # A platform served by a shared connector (one engine, several
+                # platforms): count only its own boards, so the shared total is
+                # split correctly and never double-counted.
+                live_open = sum(by_board.get((conn, b), 0) for b in boards)
+            elif boards == []:
+                shared = True            # deferred to the sibling that owns the count
+            elif conn in counted:
+                shared = True            # same engine as an earlier platform; count once
             else:
                 live_open = counts.get(conn)
                 counted.add(conn)
@@ -81,6 +97,7 @@ def health(open_by_platform: dict[str, int] | None = None,
             "status": p["status"],
             "live_open": live_open,
             "shared": shared,
+            "note": p.get("note"),
             "reason": p.get("reason"),
             "next_action": p.get("next_action"),
         })

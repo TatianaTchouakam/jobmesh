@@ -279,8 +279,9 @@ def get_sources() -> dict:
     data = srcreg.load_sources()
     with storage.session(DB_PATH) as conn:
         obp = storage.stats(conn).get("open_by_platform", {})
+        obb = storage.open_counts_by_board(conn)
         last = storage.last_fetch_by_platform(conn)
-    rows = srcreg.health(obp, data)
+    rows = srcreg.health(obp, data, obb)
     _attach_last_read(rows, last)
     counts = srcreg.status_counts(data)
     return {

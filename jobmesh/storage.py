@@ -624,6 +624,20 @@ def stats(conn: sqlite3.Connection) -> dict:
     }
 
 
+def open_counts_by_board(conn: sqlite3.Connection) -> dict:
+    """Open-posting counts keyed by (source_platform, source_board).
+
+    Lets the status page attribute per-platform totals for connectors that
+    serve several required platforms from one engine (e.g. the shared feed
+    parser), by summing a platform's own boards — each board counted once.
+    """
+    rows = conn.execute(
+        "SELECT source_platform AS p, source_board AS b, COUNT(*) AS n "
+        "FROM jobs WHERE is_open=1 GROUP BY source_platform, source_board"
+    ).fetchall()
+    return {(r["p"], r["b"]): r["n"] for r in rows}
+
+
 def coverage(conn: sqlite3.Connection) -> dict:
     """Per-platform coverage: open jobs, boards and last-fetch health.
 
