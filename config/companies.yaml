@@ -4011,10 +4011,6 @@ hibob:
   - cluepoints    # CluePoints
   - nationaltiles # National Tiles
 
-# CareerPlug (careerplug.com) — server-rendered JSON-LD ItemList at {tenant}.careerplug.com/jobs
-careerplug:
-  - cplugjobs   # CareerPlug's own board
-
 # Jobvite (jobs.jobvite.com) — server-rendered listing, paginated ?p=N; board = company slug
 jobvite:
   - nutanix

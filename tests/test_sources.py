@@ -68,8 +68,8 @@ def test_no_inactive_source_is_seeded_for_live_ingest():
             assert c not in seeded, f"inactive connector {c} is seeded in companies.yaml"
 
 
-def test_active_count_is_68():
-    assert srcreg.status_counts().get("ACTIVE") == 68
+def test_active_count_is_67():
+    assert srcreg.status_counts().get("ACTIVE") == 67
 
 
 def test_bonus_sources_are_real_and_seeded():
