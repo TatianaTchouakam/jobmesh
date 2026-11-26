@@ -767,7 +767,11 @@ softgarden:
 # wrong token is skipped and logged, never fatal — verify live and add more.
 workday:
   - nvidia:wd5:NVIDIAExternalCareerSite:NVIDIA
-  - mastercard:wd1:CorporateCareers:Mastercard   # Mastercard — paiements, mondial
+  - mastercard:wd1:CorporateCareers:Mastercard
+  # --- +3 gros employeurs valides live 26/11 (CxS public, total>0) ---
+  - salesforce:wd12:External_Career_Site:Salesforce
+  - td:wd3:TD_Bank_Careers:TD_Bank
+  - ghr:wd1:Lateral-US:Bank_of_America   # Mastercard — paiements, mondial
 
 # Teamtailor — ATS (strong in the Nordics/Europe). Token = company subdomain
 # from {company}.teamtailor.com. A public RSS feed is served at /jobs.rss.
