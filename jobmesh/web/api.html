@@ -104,6 +104,32 @@ curl "https://jobmesh.world/export.json?country=DE&amp;limit=1000"
 curl -H "X-API-Key: ..." "https://jobmesh.world/export.csv?country=DE"</code></pre>
     </div>
 
+    <h2>Jobs, companies &amp; changes</h2>
+    <div class="panel">
+      <div class="ep"><span class="m">GET</span> <code>/jobs/{id}</code></div>
+      <p class="note" style="margin:8px 0 14px">A single posting by its <code>uid</code>.</p>
+      <div class="ep"><span class="m">GET</span> <code>/jobs/by-url?url=...</code></div>
+      <p class="note" style="margin:8px 0 14px">A posting by its source or apply URL.</p>
+      <div class="ep"><span class="m">GET</span> <code>/companies</code> · <code>/companies/{name}</code></div>
+      <p class="note" style="margin:8px 0 14px">Employers with open-job counts; a single employer with its latest roles.</p>
+      <div class="ep"><span class="m">GET</span> <code>/filter-values</code> · <code>/suggest?q=...</code></div>
+      <p class="note" style="margin:8px 0 14px">Distinct values per filter field; prefix-first title/company suggestions.</p>
+      <div class="ep"><span class="m">GET</span> <code>/changes?since=&lt;cursor&gt;</code></div>
+      <p class="note" style="margin:8px 0 14px">New, modified and closed postings since a cursor (each row carries <code>change_type</code> and <code>is_open</code>); page with the returned <code>cursor</code>.</p>
+      <p class="note">Extra <code>/jobs</code> filters: <code>posted_after=YYYY-MM-DD</code>, <code>seen_within=N</code> (days), <code>has_salary=true</code>, <code>include_closed=true</code>, <code>platform</code>.</p>
+    </div>
+
+    <h2>Bulk .gz feeds (Premium)</h2>
+    <div class="panel">
+      <div class="ep"><span class="m">GET</span> <code>/export/jobs.ndjson.gz</code> · <code>/export/jobs.csv.gz</code></div>
+      <p class="note">The full open index, gzipped, regenerated after each ingest cycle. Premium key required.</p>
+    </div>
+
+    <h2>Rate limits</h2>
+    <div class="panel">
+      <p class="note" style="margin:0 0 10px">Every API response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code> and <code>X-Request-Id</code>. Over the limit returns <code>429</code> with <code>Retry-After</code>. A Premium key raises the per-minute limit.</p>
+    </div>
+
     <h2>Index &amp; coverage</h2>
     <div class="panel">
       <div class="ep"><span class="m">GET</span> <code>/stats</code></div>
