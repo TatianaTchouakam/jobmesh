@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tatianatchouakam/jobmesh",
+  "title": "Jobmesh",
+  "description": "Search a live, deduplicated index of open jobs aggregated from 68+ ATS and job-board platforms worldwide; every role links back to its original application page.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/TatianaTchouakam/jobmesh",
+    "source": "github"
+  },
+  "websiteUrl": "https://jobmesh.world",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://jobmesh.world/mcp"
+    }
+  ]
+}

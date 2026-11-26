@@ -220,6 +220,20 @@ Point any MCP-capable client at the endpoint URL and it can search the index on
 the user's behalf. A plain `GET /mcp` returns a short description and the tool
 list.
 
+**Listed in the official MCP Registry.** The manifest is `server.json`
+(remote, Streamable-HTTP). Publish it once, as the repo owner, so MCP clients
+can discover Jobmesh:
+
+```bash
+# the publisher CLI: see modelcontextprotocol.io/registry/quickstart
+mcp-publisher login github     # GitHub auth → namespace io.github.<you>/jobmesh
+mcp-publisher publish          # pushes server.json to registry.modelcontextprotocol.io
+```
+
+The remote server must stay publicly reachable at `https://jobmesh.world/mcp`
+(it is). To tie the registry name to the domain instead of a GitHub namespace,
+use DNS authentication and rename to `world.jobmesh/jobmesh`.
+
 ## Tests
 
 ```bash
