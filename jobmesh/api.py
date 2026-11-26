@@ -106,6 +106,12 @@ def status_page() -> FileResponse:
     return FileResponse(os.path.join(WEB_DIR, "status.html"))
 
 
+@app.get("/api", include_in_schema=False)
+def api_page() -> FileResponse:
+    """Human-readable API reference page."""
+    return FileResponse(os.path.join(WEB_DIR, "api.html"))
+
+
 @app.get("/sources")
 def get_sources() -> dict:
     """Full required-platform registry: per-platform status, live open count

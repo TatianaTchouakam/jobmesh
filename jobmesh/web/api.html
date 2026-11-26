@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jobmesh — API</title>
+<style>
+  :root{--bg:#faf8f3;--panel:#fff;--line:#ece7dc;--text:#1c2030;--muted:#6b7180;
+    --soft:#9aa0ad;--gold1:#e0a52a;--gold2:#c4881a;--green:#1a8a4a;--code:#2d2a26;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(900px 500px at 85% -10%,#fff6e3 0,rgba(255,246,227,0) 60%),var(--bg);
+    color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+  a{color:var(--gold2);text-decoration:none;font-weight:700}
+  .wrap{max-width:860px;margin:0 auto;padding:40px 22px 80px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+  .brand{font-weight:900;font-size:20px;letter-spacing:-.02em}
+  .brand .g{color:var(--gold2)}
+  h1{font-size:clamp(24px,3.4vw,34px);font-weight:900;letter-spacing:-.025em;margin:16px 0 6px}
+  .sub{color:var(--muted);font-size:15.5px;margin:0 0 26px;max-width:52em}
+  h2{font-size:19px;font-weight:900;letter-spacing:-.02em;margin:34px 0 10px}
+  h3{font-size:15px;font-weight:800;margin:22px 0 6px}
+  p{margin:0 0 12px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:0 8px 24px rgba(20,25,40,.05);margin:0 0 22px}
+  .ep{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+  .m{font-size:11px;font-weight:900;letter-spacing:.04em;padding:3px 9px;border-radius:7px;background:#e8f6ed;color:var(--green)}
+  .m.post{background:#e8f0fd;color:#1763c9}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:#f4f1ea;border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+  pre{background:var(--code);color:#f4efe6;border-radius:12px;padding:15px 17px;overflow:auto;font-size:12.5px;line-height:1.55;margin:10px 0 0}
+  pre code{background:none;border:0;padding:0;color:inherit;font-size:inherit}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 2px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--soft)}
+  td:first-child{white-space:nowrap}
+  .foot{color:var(--soft);font-size:13px;margin-top:30px}
+  .note{font-size:13.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">Job<span class="g">mesh</span> — API</div>
+      <div><a href="/">&larr; Search</a> &nbsp;·&nbsp; <a href="/status">Status</a> &nbsp;·&nbsp; <a href="/docs">OpenAPI</a></div>
+    </div>
+    <h1>API reference</h1>
+    <p class="sub">Jobmesh exposes a free, keyless JSON API over a live, de&#8209;duplicated index of job postings aggregated from dozens of ATS and job&#8209;board platforms. Every role links back to its original application page.</p>
+
+    <div class="panel">
+      <p style="margin:0"><b>Base URL</b> &nbsp; <code>https://jobmesh.world</code></p>
+      <p class="note" style="margin:8px 0 0">No key required. Responses are JSON. Rate limits are generous for normal use; a Premium key raises the per&#8209;request result cap.</p>
+    </div>
+
+    <h2>Search jobs</h2>
+    <div class="panel">
+      <div class="ep"><span class="m">GET</span> <code>/jobs</code></div>
+      <p style="margin:12px 0 2px">Filtered, paginated full&#8209;text search over open postings.</p>
+      <table>
+        <thead><tr><th>Parameter</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>keyword</code></td><td>Role or skill, matched in title and description (e.g. <code>data engineer</code>).</td></tr>
+          <tr><td><code>company</code></td><td>Filter by employer name.</td></tr>
+          <tr><td><code>location</code></td><td>Free&#8209;text location (e.g. <code>Berlin</code>).</td></tr>
+          <tr><td><code>country</code></td><td>ISO&#8209;2 country code (e.g. <code>DE</code>, <code>US</code>, <code>NG</code>).</td></tr>
+          <tr><td><code>platform</code></td><td>Source platform (e.g. <code>greenhouse</code>, <code>lever</code>).</td></tr>
+          <tr><td><code>workplace_type</code></td><td><code>remote</code> / <code>hybrid</code> / <code>onsite</code>.</td></tr>
+          <tr><td><code>employment_type</code></td><td>e.g. <code>Full-time</code>, <code>Contract</code>.</td></tr>
+          <tr><td><code>category</code></td><td>Broad domain (e.g. <code>Engineering</code>).</td></tr>
+          <tr><td><code>level</code></td><td>Seniority (e.g. <code>Internship</code>, <code>Junior / Entry</code>, <code>Senior</code>).</td></tr>
+          <tr><td><code>since</code></td><td>Only jobs posted within the last N days.</td></tr>
+          <tr><td><code>limit</code></td><td>Results per page. Up to <b>50</b> (free), <b>1000</b> with a Premium key. Default 30.</td></tr>
+          <tr><td><code>offset</code></td><td>Pagination offset. Default 0.</td></tr>
+        </tbody>
+      </table>
+      <h3>Example</h3>
+      <pre><code>curl "https://jobmesh.world/jobs?keyword=data%20engineer&amp;country=DE&amp;limit=5"</code></pre>
+      <pre><code>{
+  "count": 5,
+  "total": 1234,
+  "limit": 5,
+  "offset": 0,
+  "results": [
+    {
+      "title": "Data Engineer",
+      "company": "Example GmbH",
+      "location": "Berlin, DE",
+      "source_platform": "greenhouse",
+      "posted_at": "2026-11-24T10:00:00",
+      "apply_url": "https://.../apply"
+    }
+  ]
+}</code></pre>
+      <p class="note">Premium key: pass <code>?api_key=...</code> or the header <code>X-API-Key</code> to lift the result cap to 1000.</p>
+    </div>
+
+    <h2>Index &amp; coverage</h2>
+    <div class="panel">
+      <div class="ep"><span class="m">GET</span> <code>/stats</code></div>
+      <p class="note" style="margin:8px 0 16px">Headline numbers: open postings, companies, boards, grouped duplicates, last refresh. Add <code>Accept: application/json</code> for JSON.</p>
+      <div class="ep"><span class="m">GET</span> <code>/sources</code></div>
+      <p class="note" style="margin:8px 0 16px">The full 78&#8209;platform registry: per&#8209;platform status, live open count and the exact reason any platform is not yet active.</p>
+      <div class="ep"><span class="m">GET</span> <code>/coverage</code></div>
+      <p class="note" style="margin:8px 0 0">Per&#8209;platform open&#8209;job counts and last&#8209;fetch health.</p>
+    </div>
+
+    <h2>MCP server (for AI agents)</h2>
+    <div class="panel">
+      <div class="ep"><span class="m post">POST</span> <code>/mcp</code></div>
+      <p style="margin:12px 0 10px">Jobmesh is listed on the official <a href="https://registry.modelcontextprotocol.io" target="_blank" rel="noopener">MCP Registry</a> as <code>io.github.TatianaTchouakam/jobmesh</code>. Any MCP client can connect over Streamable&#8209;HTTP and call three tools:</p>
+      <table>
+        <tbody>
+          <tr><td><code>search_jobs</code></td><td>Search the index by keyword, location, country, level, category or remote&#8209;only.</td></tr>
+          <tr><td><code>index_stats</code></td><td>Current totals for the index.</td></tr>
+          <tr><td><code>source_coverage</code></td><td>Per&#8209;platform coverage and status.</td></tr>
+        </tbody>
+      </table>
+      <pre><code>// connect an MCP client to:
+https://jobmesh.world/mcp   (transport: streamable-http)</code></pre>
+    </div>
+
+    <p class="foot">Jobmesh indexes only public postings via official APIs and feeds &mdash; no scraping, robots.txt honoured. Each result links back to its original source. &nbsp;·&nbsp; <a href="/status">Live status</a></p>
+  </div>
+</body>
+</html>
