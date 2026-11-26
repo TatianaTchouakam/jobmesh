@@ -1,0 +1,11 @@
+{
+  "title": "Jobmesh search",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "q": { "title": "Keyword", "type": "string", "description": "Role or skill", "editor": "textfield" },
+    "country": { "title": "Country (ISO-2)", "type": "string", "editor": "textfield" },
+    "workplace_type": { "title": "Workplace", "type": "string", "editor": "textfield", "description": "remote / hybrid / onsite" },
+    "maxItems": { "title": "Max results", "type": "integer", "default": 500, "minimum": 1 }
+  }
+}

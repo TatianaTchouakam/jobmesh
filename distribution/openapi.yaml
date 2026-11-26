@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: Jobmesh API
+  version: "0.1.0"
+  description: >
+    A unified, de-duplicated index of job postings aggregated from dozens of
+    public ATS and job-board platforms. Every role links back to its original
+    application page. Free and keyless; a Premium key raises the per-request cap
+    and unlocks the bulk CSV/JSON agency feeds.
+  license:
+    name: MIT
+servers:
+  - url: https://jobmesh.world
+paths:
+  /jobs:
+    get:
+      summary: Search the index
+      description: Filtered, paginated full-text search over open postings.
+      parameters:
+        - { name: q, in: query, schema: { type: string }, description: "Role or skill (alias of keyword)" }
+        - { name: keyword, in: query, schema: { type: string } }
+        - { name: company, in: query, schema: { type: string } }
+        - { name: location, in: query, schema: { type: string } }
+        - { name: country, in: query, schema: { type: string }, description: "ISO-2, e.g. DE" }
+        - { name: platform, in: query, schema: { type: string } }
+        - { name: workplace_type, in: query, schema: { type: string }, description: "remote / hybrid / onsite" }
+        - { name: employment_type, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: level, in: query, schema: { type: string } }
+        - { name: since, in: query, schema: { type: integer }, description: "posted within the last N days" }
+        - { name: limit, in: query, schema: { type: integer, default: 30, maximum: 1000 } }
+        - { name: offset, in: query, schema: { type: integer, default: 0 } }
+      responses:
+        "200":
+          description: Matching postings
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobSearch" }
+  /export.json:
+    get:
+      summary: Agency feed (JSON, Premium)
+      description: Paginated bulk JSON with the same filters as /jobs. Requires a Premium key.
+      security: [ { ApiKeyQuery: [] }, { ApiKeyHeader: [] } ]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: country, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, default: 500, maximum: 5000 } }
+        - { name: offset, in: query, schema: { type: integer, default: 0 } }
+      responses:
+        "200": { description: Rows }
+        "402": { description: Premium required }
+  /stats:
+    get:
+      summary: Index headline numbers
+      responses: { "200": { description: Totals } }
+  /sources:
+    get:
+      summary: Platform coverage registry
+      responses: { "200": { description: Per-platform status } }
+  /health:
+    get:
+      summary: Liveness
+      responses: { "200": { description: ok } }
+components:
+  securitySchemes:
+    ApiKeyQuery: { type: apiKey, in: query, name: api_key }
+    ApiKeyHeader: { type: apiKey, in: header, name: X-API-Key }
+  schemas:
+    Job:
+      type: object
+      properties:
+        title: { type: string }
+        company: { type: string }
+        location: { type: string }
+        source_platform: { type: string }
+        posted_at: { type: string }
+        source_url: { type: string }
+        apply_url: { type: string }
+    JobSearch:
+      type: object
+      properties:
+        count: { type: integer }
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+        results: { type: array, items: { $ref: "#/components/schemas/Job" } }

@@ -1,0 +1,9 @@
+{
+  "actorSpecification": 1,
+  "name": "jobmesh-jobs",
+  "title": "Jobmesh — Jobs Feed",
+  "version": "0.1",
+  "input": "./input_schema.json",
+  "dockerfile": "./Dockerfile",
+  "storages": { "dataset": "./dataset_schema.json" }
+}
