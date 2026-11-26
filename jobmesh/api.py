@@ -192,12 +192,16 @@ def get_sources() -> dict:
 
 
 def _filters(keyword, company, location, platform, workplace_type,
-             employment_type, category, country=None, level=None, since=None) -> dict:
+             employment_type, category, country=None, level=None, since=None,
+             posted_after=None, seen_within=None, has_salary=False,
+             include_closed=False) -> dict:
     return {
         "keyword": keyword, "company": company, "location": location,
         "platform": platform, "workplace_type": workplace_type,
         "employment_type": employment_type, "category": category,
         "country": country, "level": level, "since": since,
+        "posted_after": posted_after, "seen_within": seen_within,
+        "has_salary": bool(has_salary), "open_only": not bool(include_closed),
     }
 
 
@@ -227,6 +231,10 @@ def list_jobs(
     country: Optional[str] = Query(None, description="ISO-2 country, e.g. DE"),
     level: Optional[str] = Query(None, description="seniority, e.g. Internship, Junior / Entry, Senior"),
     since: Optional[str] = Query(None, description="only jobs posted within the last N days"),
+    posted_after: Optional[str] = Query(None, description="jobs posted on/after YYYY-MM-DD"),
+    seen_within: Optional[int] = Query(None, ge=1, description="first seen within the last N days"),
+    has_salary: bool = Query(False, description="only jobs that list a salary"),
+    include_closed: bool = Query(False, description="include closed postings (is_open=false)"),
     limit: int = Query(30, ge=1, le=PRO_LIMIT),
     offset: int = Query(0, ge=0),
     api_key: Optional[str] = Query(None, description="Jobmesh Premium API key"),
@@ -238,7 +246,8 @@ def list_jobs(
     if not is_pro:
         limit = min(limit, FREE_LIMIT)
     f = _filters(keyword, company, location, platform, workplace_type,
-                 employment_type, category, country, level, since)
+                 employment_type, category, country, level, since,
+                 posted_after, seen_within, has_salary, include_closed)
     with storage.session(DB_PATH) as conn:
         rows = storage.search(conn, limit=limit, offset=offset, **f)
         total = storage.count(conn, **f)
@@ -247,10 +256,102 @@ def list_jobs(
         "total": total,
         "limit": limit,
         "offset": offset,
+        "has_more": offset + len(rows) < total,
         "pro": is_pro,
         "free_limit": FREE_LIMIT,
         "results": rows,
     }
+
+
+@app.get("/jobs/by-url")
+def job_by_url(url: str = Query(..., description="source_url or apply_url")) -> dict:
+    """One posting by its source or apply URL."""
+    with storage.session(DB_PATH) as conn:
+        job = storage.get_job_by_url(conn, url)
+    if not job:
+        raise StarletteHTTPException(status_code=404, detail="job not found")
+    return job
+
+
+@app.get("/jobs/{uid}")
+def job_by_id(uid: str) -> dict:
+    """One posting by its uid."""
+    with storage.session(DB_PATH) as conn:
+        job = storage.get_job(conn, uid)
+    if not job:
+        raise StarletteHTTPException(status_code=404, detail="job not found")
+    return job
+
+
+@app.get("/companies")
+def companies(
+    q: Optional[str] = Query(None, description="filter by employer name"),
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
+    include_closed: bool = Query(False),
+) -> dict:
+    """Employers with their open-job counts, most first."""
+    with storage.session(DB_PATH) as conn:
+        total, rows = storage.list_companies(
+            conn, limit=limit, offset=offset, q=q, open_only=not include_closed)
+    return {"count": len(rows), "total": total, "limit": limit, "offset": offset,
+            "has_more": offset + len(rows) < total, "data": rows}
+
+
+@app.get("/companies/{company}")
+def company_detail(
+    company: str,
+    limit: int = Query(50, ge=1, le=FREE_LIMIT),
+    offset: int = Query(0, ge=0),
+) -> dict:
+    """A single employer: open-job count and its most recent postings."""
+    f = _filters(None, company, None, None, None, None, None)
+    with storage.session(DB_PATH) as conn:
+        total = storage.count(conn, **f)
+        rows = storage.search(conn, limit=limit, offset=offset, **f)
+    if total == 0:
+        raise StarletteHTTPException(status_code=404, detail="company not found")
+    return {"company": company, "open_jobs": total, "count": len(rows),
+            "limit": limit, "offset": offset,
+            "has_more": offset + len(rows) < total, "results": rows}
+
+
+@app.get("/filter-values")
+def get_filter_values(include_closed: bool = Query(False)) -> dict:
+    """Distinct values (with counts) for each filter field."""
+    with storage.session(DB_PATH) as conn:
+        return storage.filter_values(conn, open_only=not include_closed)
+
+
+@app.get("/suggest")
+def get_suggest(q: str = Query(..., min_length=1),
+                limit: int = Query(10, ge=1, le=25)) -> dict:
+    """Prefix-first title and company suggestions."""
+    with storage.session(DB_PATH) as conn:
+        return {"query": q, "suggestions": storage.suggest(conn, q, limit=limit)}
+
+
+@app.get("/changes")
+def changes(
+    since: Optional[str] = Query(None, description="cursor: last_changed from a previous page"),
+    limit: int = Query(200, ge=1, le=1000),
+) -> dict:
+    """New, modified and closed postings since a cursor (ascending by change time)."""
+    with storage.session(DB_PATH) as conn:
+        rows, cursor = storage.changes_since(conn, since=since, limit=limit)
+    data = [{
+        "change_type": storage.change_type(r),
+        "is_open": bool(r.get("is_open")),
+        "uid": r.get("uid"),
+        "title": r.get("title"),
+        "company": r.get("company"),
+        "location": r.get("location"),
+        "source_url": r.get("source_url"),
+        "apply_url": r.get("apply_url"),
+        "last_changed": r.get("last_changed"),
+    } for r in rows]
+    return {"count": len(data), "cursor": cursor,
+            "has_more": len(data) == limit, "data": data}
 
 
 # Mapping: CSV column -> job row field

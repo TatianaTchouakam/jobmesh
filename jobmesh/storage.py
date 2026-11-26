@@ -424,6 +424,21 @@ def _build_where(f: dict, exclude: Optional[str] = None):
             _cut = (datetime.now(timezone.utc) - timedelta(days=_days)).strftime("%Y-%m-%d")
             clauses.append("substr(COALESCE(posted_at, first_seen),1,10) >= ?")
             params.append(_cut)
+    if f.get("posted_after") and exclude != "posted_after":
+        clauses.append("substr(COALESCE(posted_at, first_seen),1,10) >= ?")
+        params.append(str(f["posted_after"])[:10])
+    if f.get("seen_within") and exclude != "seen_within":
+        try:
+            _sw = int(f["seen_within"])
+        except (TypeError, ValueError):
+            _sw = 0
+        if _sw > 0:
+            from datetime import datetime, timezone, timedelta
+            _swc = (datetime.now(timezone.utc) - timedelta(days=_sw)).strftime("%Y-%m-%d")
+            clauses.append("substr(first_seen,1,10) >= ?")
+            params.append(_swc)
+    if f.get("has_salary") and exclude != "has_salary":
+        clauses.append("salary IS NOT NULL AND TRIM(salary) != ''")
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     return where, params
 
@@ -657,3 +672,109 @@ def _has_changed(row: sqlite3.Row, job: Job) -> bool:
         if (old or None) != (new or None):
             return True
     return False
+
+
+# --- Read helpers for the public API (jobs by id/url, companies, facets,
+#     suggestions, change feed) --------------------------------------------
+
+def get_job(conn: sqlite3.Connection, uid: str):
+    """One posting by its uid (primary key), or None."""
+    r = conn.execute("SELECT * FROM jobs WHERE uid = ?", (uid,)).fetchone()
+    return dict(r) if r else None
+
+
+def get_job_by_url(conn: sqlite3.Connection, url: str):
+    """One posting by its source_url or apply_url (open preferred), or None."""
+    if not url:
+        return None
+    r = conn.execute(
+        "SELECT * FROM jobs WHERE source_url = ? OR apply_url = ? "
+        "ORDER BY is_open DESC LIMIT 1", (url, url)).fetchone()
+    return dict(r) if r else None
+
+
+def list_companies(conn: sqlite3.Connection, limit: int = 100, offset: int = 0,
+                   q: str | None = None, open_only: bool = True):
+    """(total, rows) of companies with their open-job counts, most first."""
+    cond = "WHERE is_open = 1" if open_only else "WHERE 1 = 1"
+    cond += " AND company IS NOT NULL AND TRIM(company) != ''"
+    params: list = []
+    if q:
+        cond += " AND company LIKE ?"
+        params.append(f"%{q}%")
+    total = conn.execute(
+        f"SELECT COUNT(DISTINCT company) FROM jobs {cond}", params).fetchone()[0]
+    rows = conn.execute(
+        f"SELECT company, COUNT(*) AS n FROM jobs {cond} "
+        f"GROUP BY company ORDER BY n DESC, company ASC LIMIT ? OFFSET ?",
+        params + [limit, offset]).fetchall()
+    return total, [{"company": r["company"], "open_jobs": r["n"]} for r in rows]
+
+
+def filter_values(conn: sqlite3.Connection, open_only: bool = True) -> dict:
+    """Distinct values (with counts) for each filterable field."""
+    cond = "WHERE is_open = 1" if open_only else "WHERE 1 = 1"
+
+    def vals(col: str):
+        rows = conn.execute(
+            f"SELECT {col} AS v, COUNT(*) AS n FROM jobs {cond} "
+            f"AND {col} IS NOT NULL AND TRIM({col}) != '' "
+            f"GROUP BY {col} ORDER BY n DESC LIMIT 200").fetchall()
+        return [{"value": r["v"], "count": r["n"]} for r in rows]
+
+    return {
+        "platform": vals("source_platform"),
+        "category": vals("category"),
+        "level": vals("level"),
+        "employment_type": vals("employment_type"),
+        "workplace_type": vals("workplace_type"),
+    }
+
+
+def suggest(conn: sqlite3.Connection, q: str, limit: int = 10):
+    """Prefix-first title and company suggestions for a short query."""
+    if not q or not q.strip():
+        return []
+    q = q.strip()
+    like, pre = f"%{q}%", f"{q}%"
+    out, seen = [], set()
+    for col, kind in (("title", "title"), ("company", "company")):
+        rows = conn.execute(
+            f"SELECT {col} AS v, COUNT(*) AS n FROM jobs "
+            f"WHERE is_open = 1 AND {col} LIKE ? AND TRIM({col}) != '' "
+            f"GROUP BY {col} "
+            f"ORDER BY (CASE WHEN {col} LIKE ? THEN 0 ELSE 1 END), n DESC "
+            f"LIMIT ?", (like, pre, limit)).fetchall()
+        for r in rows:
+            key = (kind, (r["v"] or "").lower())
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({"value": r["v"], "type": kind, "count": r["n"]})
+    out.sort(key=lambda x: -x["count"])
+    return out[:limit]
+
+
+def changes_since(conn: sqlite3.Connection, since: str | None = None,
+                  limit: int = 200):
+    """Postings whose last_changed is after `since` (ISO cursor), oldest first,
+    closed ones included. Returns (rows, next_cursor)."""
+    where = "WHERE last_changed IS NOT NULL"
+    params: list = []
+    if since:
+        where += " AND last_changed > ?"
+        params.append(since)
+    rows = [dict(r) for r in conn.execute(
+        f"SELECT * FROM jobs {where} ORDER BY last_changed ASC, uid ASC LIMIT ?",
+        params + [limit]).fetchall()]
+    next_cursor = rows[-1]["last_changed"] if rows else since
+    return rows, next_cursor
+
+
+def change_type(row: dict) -> str:
+    """Classify a change feed row: closed / new / modified."""
+    if not row.get("is_open"):
+        return "closed"
+    if row.get("first_seen") and row.get("first_seen") == row.get("last_changed"):
+        return "new"
+    return "modified"
