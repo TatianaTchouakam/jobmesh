@@ -208,7 +208,10 @@ def _connect_libsql(db_path: str, url: str):
 def connect(db_path: str = DEFAULT_DB):
     url = os.getenv("JOBMESH_DB_URL")
     if url:
-        return _connect_libsql(db_path, url)
+        try:
+            return _connect_libsql(db_path, url)
+        except Exception as exc:  # keep the site alive if Turso is unreachable
+            log.warning("Turso/libSQL backend unavailable (%s); using local SQLite", exc)
     # timeout: wait (don't error) if another connection holds the write lock.
     conn = sqlite3.connect(db_path, timeout=30)
     conn.row_factory = sqlite3.Row
