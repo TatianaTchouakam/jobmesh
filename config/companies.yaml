@@ -4350,6 +4350,19 @@ pageup:
   - "1132|University of North Dakota"   # UND (/cw/)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
   - "865|Lehigh University"             # Lehigh (/cw/)
   - "968|Virginia Tech"                 # Virginia Tech (/cw/)
+  - "873|California State University"  # CSU système (1000) — +vérifié live 26/11
+  - "674|University of Florida"       # (729)
+  - "782|Michigan State University"   # (480)
+  - "889|Flight Centre"               # (409)
+  - "1151|University of North Texas System"  # (386)
+  - "1020|Nova Southeastern University"  # (258)
+  - "822|UMass Lowell"                # (191)
+  - "726|University of Oregon"        # (150)
+  - "1144|James Madison University"   # (97)
+  - "875|University of Dayton"        # (95)
+  - "676|Pepperdine University"       # (86)
+  - "885|University of Denver"        # (86)
+  - "871|Quinnipiac University"       # (38)
 
 # JobMount (job board #12/78) — public per-category RSS, {host}/{slug}?rss
 jobmount:
