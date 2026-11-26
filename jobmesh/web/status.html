@@ -108,8 +108,8 @@ function render(){
   $("rows").innerHTML=show.map(r=>`<tr>
     <td><b>${r.name}</b></td>
     <td>${badge(r.status)}</td>
-    <td class="n">${r.status==="ACTIVE"?num(r.live_open):"—"}</td>
-    <td class="reason">${r.status==="ACTIVE"?"":(r.reason||r.next_action||"")}</td>
+    <td class="n">${r.status==="ACTIVE"?(r.shared?"—":num(r.live_open)):"—"}</td>
+    <td class="reason">${r.status==="ACTIVE"?(r.shared?"shared feed — counted once":""):(r.reason||r.next_action||"")}</td>
   </tr>`).join("");
 }
 

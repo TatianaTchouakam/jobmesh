@@ -63,13 +63,24 @@ def health(open_by_platform: dict[str, int] | None = None,
     data = data or load_sources()
     counts = open_by_platform or {}
     rows = []
+    counted: set = set()   # connectors already attributed, to avoid double counting
     for p in all_required(data):
         conn = p.get("connector")
+        active = p["status"] == "ACTIVE" and conn
+        shared = False
+        live_open = None
+        if active:
+            if conn in counted:
+                shared = True            # same feed as an earlier platform; count once
+            else:
+                live_open = counts.get(conn)
+                counted.add(conn)
         rows.append({
             "name": p["name"],
             "connector": conn,
             "status": p["status"],
-            "live_open": counts.get(conn) if (p["status"] == "ACTIVE" and conn) else None,
+            "live_open": live_open,
+            "shared": shared,
             "reason": p.get("reason"),
             "next_action": p.get("next_action"),
         })
