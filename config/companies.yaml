@@ -897,6 +897,9 @@ usajobs:
 
 eightfold:          # ATS — {tenant}.eightfold.ai (gros employeurs)
   - bayer   # 365 offres (verifie en direct)
+  - micron        # Micron (2860 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - lamresearch   # Lam Research (1437 offres)
+  - symetra       # Symetra
 
 bamboohr:           # ATS — {sub}.bamboohr.com/careers
   - multiplier   # 2 offres (verifie)
@@ -908,6 +911,9 @@ bamboohr:           # ATS — {sub}.bamboohr.com/careers
 # (objet COMPANY_DATA). Decommente et ajoute de vraies paires pour indexer.
 comeet:
   - tripleten/98.008   # TripleTen (~235 jobs) — keyless hosted page; add more as company/uid
+  - kaltura/E2.00D     # Kaltura   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - coralogix/06.004   # Coralogix
+  - solaredge/71.00A   # SolarEdge
 #   - "30.005:LE_TOKEN_PUBLIC:Nom Societe"
 
 # --- careersite : moteur JSON-LD (schema.org JobPosting) ---
@@ -4188,6 +4194,9 @@ dvinci:
 # Dayforce — public candidate-portal search API (CSRF handshake only, no login); board = namespace[|BOARDCODE]
 dayforce:
   - mydayforce        # Dayforce (Ceridian) own portal — verifie 21 nov. 2026 (1 offre)
+  - carhartt          # Carhartt   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - jcb               # JCB
+  - hok               # HOK
 
 # CATS (catsone.com) — portal's public Remix data route {slug}.catsone.com/careers/{id}.data; board = slug|portalId
 catsone:
@@ -4237,6 +4246,8 @@ werecruit:
 # FirstStage (firststage.co) — server-rendered /jobs card list; board = subdomain
 firststage:
   - "firststage"    # First (editor) — verifie 21 nov. 2026 (1 offre)
+  - "wayve"         # Wayve (194 offres)   # +employeurs vérifiés via recherche 26 nov. 2026 (offres live), confirmer à l'ingest
+  - "reflexivity"   # Reflexivity
 
 # HiringThing ({sub}.hiringthing.com) — server-rendered /jobs cards; board = subdomain (or full white-label host)
 hiringthing:
