@@ -72,7 +72,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 44 | Recruitee | ✅ | `recruitee` | 4,653 | keyless offers API |
 | 45 | Rippling | ✅ | `rippling` | 1,344 | keyless board API |
 | 46 | Rival | ✅ | `rival` | 15 | server-rendered list `jobs.silkroad.com/{Tenant}/{Board}` (sr-panel cards) · robots-clean |
-| 47 | SAP SuccessFactors | ✅ | `successfactors` | live | Career Site Builder: `/sitemap.xml` + schema.org **microdata** per `/job/{id}/` page (no token) · 7 tenants verified live (Boehringer Ingelheim, CMA CGM, Plan International, Mota-Engil, Schaeffler, Fraunhofer, ZF) |
+| 47 | SAP SuccessFactors | ✅ | `successfactors` | live | Career Site Builder: `/sitemap.xml` + schema.org **microdata** per `/job/{id}/` page (no token) · 9 tenants verified live (Boehringer Ingelheim, CMA CGM, Plan International, Mota-Engil, Schaeffler, Fraunhofer, ZF, Vaillant, Wacker) |
 | 48 | SmartRecruiters | ✅ | `smartrecruiters` | 15,523 | keyless posting API (paginated) |
 | 49 | talentReef | 🟡 | | | `sitemap+JSON-LD` recipe ready, but no live public tenant found as of 21/11/2026 |
 | 50 | Taleo | ✅ | `taleo` | 2,203 | careersection REST `jobboard/searchjobs` (keyless, needs X-Requested-With) · board = tenant\|portal |
