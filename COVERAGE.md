@@ -11,10 +11,10 @@
 | Total postings tracked (open + closed) | 270,388 |
 | Closed postings detected & marked | 77,310 |
 | Duplicate open postings grouped (dedup) | 18,557 |
-| Required platforms live | **69 / 78** (52 ATS + 17 job boards) |
+| Required platforms live | **71 / 78** (52 ATS + 19 job boards) |
 | Companies indexed | 28,737 |
 | Source boards indexed | 6,706 |
-| Bonus sources (beyond the 78) | 36 |
+| Bonus sources (beyond the 78) | 43 |
 
 Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting a key/token or a live board) · ⬜ not yet covered
 
@@ -87,7 +87,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 
 ---
 
-## Required job board platform coverage — 17/20 live
+## Required job board platform coverage — 19/20 live
 
 | # | Platform | Status | Connector | Open now | Method |
 |---|---|---|---|---|---|
@@ -101,7 +101,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 8 | SmartJobBoard | ✅ | `jobfeed` | 680+ | public `/rss` feed · verified on 20 live boards |
 | 9 | JobBoard.io | ✅ | `jobfeed` | live | public RSS {board}/jobs.rss · verified on 5 live boards |
 | 10 | Wiley Madgex | ✅ | `jobfeed` | | public RSS feed {board}/jobsrss/ · verified on Nature Careers |
-| 11 | Talenetic | ⬜ | | | |
+| 11 | Talenetic | ✅ | `sitemapjsonld` | live | public client board (medicalupdateonline.com, 'Powered by Talenetic' footer) · sitemap → /job-detail/{id}/{slug}/ server-rendered JobPosting JSON-LD · verified live 27/11 |
 | 12 | JobMount | ✅ | `jobmount` | public per-category RSS `{host}/{slug}?rss` · verified on AWC JobNet (7 categories) |
 | 13 | CareerSiteCloud | ⬜ | | | |
 | 14 | JobBoard.com | ✅ | `jobboardcom` | live | per-sector RSS `/jobs/rss/?params=SectorIds=N` (rate-limited, retried) · board = host |
@@ -109,7 +109,7 @@ Legend: ✅ live (indexing now) · 🟡 connector ready (code shipped, awaiting 
 | 16 | jobboardsoftware.com | ✅ | `exenzo` | | public JSON API {tenant}.api.exenzo.com/api/public/v1 · 3 boards |
 | 17 | jobBoardHQ | ✅ | `jobfeed` | live (5 boards) | public Indeed-format /jobs.xml per board · complete feed |
 | 18 | Nodex | ✅ | `nodex` | ~300 | sitemap.xml + per-posting schema.org JSON-LD · fabricjobs engine · board = host (cap 300; 586 at sitemap) |
-| 19 | eJobBoard | ⬜ | | | |
+| 19 | eJobBoard | ✅ | `sitemapjsonld` | live | public client board (liveincarejobs.co.uk) · sitemap → /…-job{id} server-rendered JobPosting JSON-LD · verified live 27/11 |
 | 20 | ejobsitesoftware.com | ✅ | `jobfeed` | | public RSS {board}/rss/job.php · verified on 3 live boards |
 
 ### SmartJobBoard — the 14 live boards (coverage proof)
@@ -130,9 +130,9 @@ URL into `config/companies.yaml`. New boards are discovered with
 
 | Group | Live (ACTIVE) | Declared (pending access) | Required |
 |---|---|---|---|
-| ATS | 50 | 8 | 58 |
-| Job boards | 17 | 3 | 20 |
-| **Total** | **67** | **11** | **78** |
+| ATS | 52 | 6 | 58 |
+| Job boards | 19 | 1 | 20 |
+| **Total** | **71** | **7** | **78** |
 
 **Every one of the 78 required platforms is declared in the source registry**
 (`config/sources.yaml`), with a status that separates *technical* from
@@ -142,14 +142,13 @@ rest are declared, never silently failed, and never counted as covered:
 
 | Status | Count | Meaning |
 |---|---|---|
-| `ACTIVE` | 67 | live, robots-permitted, keyless — real jobs in the index |
+| `ACTIVE` | 71 | live, robots-permitted, keyless — real jobs in the index |
 | `NO_PUBLIC_ROUTE` | 3 | no token-free public job route (BrassRing, CSOD, UltiPro) |
-| `CLIENT_CONNECTION_REQUIRED` | 2 | an employer must connect their feed (Talenetic, talentReef) |
+| `CLIENT_CONNECTION_REQUIRED` | 1 | an employer must connect their feed (talentReef) |
 | `TEMPORARILY_UNAVAILABLE` | 1 | service down (CareerSiteCloud 502) |
 | `RETIRED` | 2 | merged/acquired, no standalone surface (Paradox→Workday, Paycor→Paychex) |
-| `PARTNERSHIP_REQUIRED` | 1 | a commercial agreement is needed (eJobBoard) |
 
-The 13 non-live platforms are **integrations pending access, not technical
+The 7 non-live platforms are **integrations pending access, not technical
 failures** — each carries a reason and a concrete next action in the registry.
 JobMesh distinguishes *reading* the jobs (API/feed/export) from the *right to
 redistribute* them (licence/terms); both must hold before a source goes live.

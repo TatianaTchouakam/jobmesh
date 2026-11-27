@@ -5023,6 +5023,18 @@ sitemapjsonld:
   # pages /jobs/{slug} sont autorisees et portent un JobPosting JSON-LD rendu
   # serveur ; on passe donc par le sitemap (~1k offres). Verifie live 26/11/2026.
   - "https://vuejobs.com/sitemap.xml"
+  # Talenetic — board client multi-employeur (jobs.medicalupdateonline.com,
+  # pied de page "Powered by Talenetic Job Board Software"). robots '*' n'interdit
+  # que /jobseekers/ /sign-up/ /Rss-Feed* /job/*/application-form /job-search-results*
+  # ; sitemap dédié des fiches -> /job-detail/{id}/{slug}/, JobPosting JSON-LD rendu
+  # serveur, keyless. Employeur par offre (label "Partner Jobs" sur les offres
+  # syndiquées). Vérifié live 27/11/2026 (offres ouvertes > 0).
+  - "https://jobs.medicalupdateonline.com/sitemap-job-pages-1.xml"
+  # eJobBoard — board client (liveincarejobs.co.uk). robots '*' autorise les fiches
+  # /...-job{id} (interdits: /jobs/*, /results.php, recherche, comptes) et déclare le
+  # sitemap ; fiches avec JobPosting JSON-LD rendu serveur, employeur réel par offre,
+  # keyless. Vérifié live 27/11/2026 (offres ouvertes > 0).
+  - "https://www.liveincarejobs.co.uk/sitemap.xml"
 
 # --- careerplug : portails employeurs {sub}.careerplug.com ---
 # robots autorise /jobs et /jobs/{id} (interdits: /apps/ /j/ /jobs.js).

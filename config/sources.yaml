@@ -87,8 +87,7 @@ required_boards:
   - { name: "SmartJobBoard", connector: jobfeed, status: ACTIVE, boards: ["https://www.proapartments.com/rss/", "https://jobsboard.edsurge.com/rss/", "https://jobs.amahouston.org/rss", "https://investmentjobs.org/rss", "https://jobs.flnonprofits.org/rss", "https://www.cleantechrecruits.com/rss", "https://www.christiancareercenter.com/rss", "https://www.hireveterans.com/rss", "https://academiccareers.com/rss", "https://apartmentjobs.com/rss", "https://environmentalcareer.com/rss", "https://jobs.acem.org.au/rss", "https://jobs.psychologicalscience.org/rss", "https://jobs.thechemicalengineer.com/rss", "https://jobs.tribalcollegejournal.org/rss", "https://newimmigrantjobs.ca/rss", "https://www.datacareer.de/rss", "https://www.jobsinchildcare.com/rss", "https://jobs.rentalhousingjournal.com/rss", "https://jobs.njla.org/rss", "https://jobs.rspa.net/rss", "https://jobs.coloradochiropractic.org/rss"] }
   - { name: "JobBoard.io", connector: jobfeed, status: ACTIVE, boards: ["https://www.cancercareers.org/jobs.rss", "https://jobs.aacc.nche.edu/jobs.rss", "https://jobs.cityandstateny.com/jobs.rss", "https://jobs.rmets.org/jobs.rss", "https://jobs.motionographer.com/jobs.rss"] }
   - { name: "Wiley Madgex", connector: jobfeed, status: ACTIVE, boards: ["https://jobs.sciencecareers.org/jobsrss/", "https://www.nature.com/naturecareers/jobsrss/"] }
-  - { name: "Talenetic", connector: null, status: CLIENT_CONNECTION_REQUIRED, note: "No active public client board found yet.",
-      reason: "No active client board found on the public web", next_action: "PARTNERSHIP_PENDING — Talenetic XML/JSON syndication partnership, FeedOuts (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
+  - { name: "Talenetic", connector: sitemapjsonld, status: ACTIVE, boards: ["https://jobs.medicalupdateonline.com/sitemap-job-pages-1.xml"], note: "Public client board (medicalupdateonline.com), 'Powered by Talenetic' footer; sitemap -> /job-detail/{id}/{slug}/ server-rendered JobPosting JSON-LD, robots-permitted, keyless (verified live 27/11/2026, open jobs > 0)" }
   - { name: "JobMount", connector: jobmount, status: ACTIVE }
   - { name: "CareerSiteCloud", connector: null, status: TEMPORARILY_UNAVAILABLE, note: "Service is offline (repeated 502s).",
       reason: "Service returns 502 (offline across repeated checks)", next_action: "PROVIDER_CHECK_PENDING — 502 + daily health-check; free partner XML export, no $1000/mo backfill (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
@@ -97,8 +96,7 @@ required_boards:
   - { name: "jobboardsoftware.com", connector: exenzo, status: ACTIVE }
   - { name: "jobBoardHQ", connector: jobfeed, status: ACTIVE, boards: ["https://www.njschooljobs.com/jobs.xml", "https://www.roaddogjobs.com/jobs.xml", "https://www.greaterroccareers.com/jobs.xml", "https://www.jobsindoorcounty.com/jobs.xml", "https://jobs.macslist.org/jobs.xml"] }
   - { name: "Nodex", connector: nodex, status: ACTIVE }
-  - { name: "eJobBoard", connector: null, status: PARTNERSHIP_REQUIRED, note: "No public client board or feed published.",
-      reason: "No client names or live tenant published anywhere", next_action: "PARTNERSHIP_PENDING — negotiated XML feed only; active vendor (~$49/mo), no public tenant (see PARTNERSHIPS.md)", request_status: "Cannot contact — ejobboard.com is a parked GoDaddy domain, no reachable vendor (verified 26/11/2026)" }
+  - { name: "eJobBoard", connector: sitemapjsonld, status: ACTIVE, boards: ["https://www.liveincarejobs.co.uk/sitemap.xml"], note: "Public client board (liveincarejobs.co.uk); public sitemap -> /...-job{id} pages with server-rendered JobPosting JSON-LD, robots-permitted, keyless (verified live 27/11/2026, open jobs > 0)" }
   - { name: "ejobsitesoftware.com", connector: jobfeed, status: ACTIVE, boards: ["https://www.eyetasticjobs.com/rss/job.php", "https://jobqlick.com/rss/job.php", "https://connectagri.com/rss/job.php"] }
 
 

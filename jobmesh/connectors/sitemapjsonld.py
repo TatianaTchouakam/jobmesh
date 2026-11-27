@@ -51,7 +51,8 @@ _SITEMAP_LOC = re.compile(r"\.xml(\.gz)?(\?|$)|sitemap", re.I)
 # Loc paths that look like a job/vacancy page (multi-lingual, loose on purpose).
 _JOBISH = re.compile(
     r"/(jobs?|careers?|positions?|vacanc(?:y|ies)|openings?|roles?|"
-    r"stellen?|emplois?|offres?|empleos?|vagas?)[/\-_0-9]",
+    r"stellen?|emplois?|offres?|empleos?|vagas?)[/\-_0-9]"
+    r"|[-/]job-?\d",   # trailing id form, e.g. ...-live-in-carer-job21127
     re.I,
 )
 

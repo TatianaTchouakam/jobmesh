@@ -68,9 +68,9 @@ def test_no_inactive_source_is_seeded_for_live_ingest():
             assert c not in seeded, f"inactive connector {c} is seeded in companies.yaml"
 
 
-def test_active_count_is_69():
-    # CareerPlug and Paycom now have a working public job-pages route (Live).
-    assert srcreg.status_counts().get("ACTIVE") == 69
+def test_active_count_is_71():
+    # Talenetic and eJobBoard now have a working public client board (Live).
+    assert srcreg.status_counts().get("ACTIVE") == 71
 
 
 def test_bonus_sources_are_real_and_seeded():
@@ -78,12 +78,21 @@ def test_bonus_sources_are_real_and_seeded():
     (non-empty board list) — a bonus with no boards is not a live source."""
     bonus = srcreg.bonus_sources()
     cfg = yaml.safe_load(open("config/companies.yaml"))
-    required = srcreg.active_connectors()
+    # A generic shared connector (e.g. sitemapjsonld) may serve both required
+    # platforms and bonus sources, distinguished by board. What a bonus must
+    # not do is reuse a connector that a required platform claims whole (no
+    # explicit boards, or boards ["*"]) -- that would double-count the 78.
+    data = srcreg.load_sources()
+    claimed_whole = {
+        p["connector"] for p in srcreg.all_required(data)
+        if p["status"] == "ACTIVE" and p.get("connector")
+        and (not p.get("boards") or p.get("boards") == ["*"])
+    }
     for b in bonus:
         c = b["connector"]
         assert c in REGISTRY, f"bonus references missing connector: {c}"
         assert cfg.get(c), f"bonus {c} is not seeded with any board"
-        assert c not in required, f"bonus {c} is actually a required-platform connector"
+        assert c not in claimed_whole, f"bonus {c} collides with a required platform that claims the whole connector"
         assert b["status"] == "ACTIVE"
 
 
