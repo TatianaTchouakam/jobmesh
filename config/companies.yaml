@@ -11906,6 +11906,8 @@ successfactors:
   - "jobs.zf.com|ZF"   # equipementier automobile mondial — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~794 offres), verifie live 27/11/2026 (offres ouvertes > 0)
   - "jobs.vaillant-group.com|Vaillant Group"   # chauffage/CVC — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~200 offres), verifie live 27/11/2026 (offres ouvertes > 0)
   - "jobs.wacker.com|Wacker Chemie"   # chimie — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~102 offres), verifie live 27/11/2026 (offres ouvertes > 0)
+  - "jobs.rwe.com|RWE"   # energie — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~204 offres), verifie live 27/11/2026 (offres ouvertes > 0)
+  - "jobs.uniper.energy|Uniper"   # energie — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~111 offres), verifie live 27/11/2026 (offres ouvertes > 0)
 
 # GoHire (ATS #18/78) — hosted careers: sitemap.txt + schema.org JSON-LD per job (no token). board = careers host
 gohire:
