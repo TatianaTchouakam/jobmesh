@@ -9,7 +9,7 @@ from jobmesh.rotation import apply_rotation, shard_of, shards_for
 
 def test_workday_rotates_by_default():
     assert shards_for("workday") == 4
-    assert shards_for("greenhouse") == 1
+    assert shards_for("lever") == 1
 
 
 def test_env_override(monkeypatch):
@@ -28,14 +28,14 @@ def test_shard_is_stable_and_in_range():
 
 def test_rotation_covers_everything_once_per_n_cycles():
     boards = {"workday": [f"co{i}:wd{i%4}:site" for i in range(300)],
-              "greenhouse": ["acme", "beta"]}
+              "lever": ["acme", "beta"]}
     seen = set()
     sizes = []
     shards = 4
     for cycle in range(shards):
         run, info = apply_rotation(boards, cycle)
         # non-rotated platform passes through untouched every cycle
-        assert run["greenhouse"] == ["acme", "beta"]
+        assert run["lever"] == ["acme", "beta"]
         assert info["workday"]["shards"] == shards
         assert info["workday"]["current"] == cycle % shards
         sizes.append(len(run["workday"]))
