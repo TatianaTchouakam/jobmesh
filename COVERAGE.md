@@ -143,8 +143,7 @@ rest are declared, never silently failed, and never counted as covered:
 | Status | Count | Meaning |
 |---|---|---|
 | `ACTIVE` | 71 | live, robots-permitted, keyless — real jobs in the index |
-| `NO_PUBLIC_ROUTE` | 3 | no token-free public job route (BrassRing, CSOD, UltiPro) |
-| `CLIENT_CONNECTION_REQUIRED` | 1 | an employer must connect their feed (talentReef) |
+| `NO_PUBLIC_ROUTE` | 4 | no token-free public job route (BrassRing, CSOD, UltiPro, talentReef) |
 | `TEMPORARILY_UNAVAILABLE` | 1 | service down (CareerSiteCloud 502) |
 | `RETIRED` | 2 | merged/acquired, no standalone surface (Paradox→Workday, Paycor→Paychex) |
 

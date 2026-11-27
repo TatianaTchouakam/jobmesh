@@ -63,8 +63,8 @@ required_ats:
   - { name: "Rival", connector: rival, status: ACTIVE }
   - { name: "SAP SuccessFactors", connector: successfactors, status: ACTIVE }
   - { name: "SmartRecruiters", connector: smartrecruiters, status: ACTIVE }
-  - { name: "talentReef", connector: null, status: CLIENT_CONNECTION_REQUIRED, note: "No active public client board found yet.",
-      reason: "sitemap+JSON-LD recipe ready, but no live public tenant found (21/11/2026)", next_action: "SYNDICATION_PENDING — TalentReef XML job distribution / syndication feed (see PARTNERSHIPS.md)", request_status: "Partner request already sent earlier (before 26/11/2026)" }
+  - { name: "talentReef", connector: null, status: NO_PUBLIC_ROUTE, note: "Public apply site is a JS app with no server-rendered job data; its data API needs an auth token.",
+      reason: "Live public tenant exists (apply.jobappnetwork.com/clients/{id}/posting/{id}/en) but the page is a client-rendered SPA with no server-rendered JobPosting. Job data comes from the BFF prod-applicant-bff-external-api.jobappnetwork.com, which answers 401 Unauthorized to any token-free request (auth via a CAS/Heimdall handshake). robots.txt allows all, but there is no clean token-free public data route (verified live 27/11/2026).", next_action: "SYNDICATION_PENDING — TalentReef XML job distribution / syndication feed (see PARTNERSHIPS.md)", request_status: "Partner request already sent earlier (before 26/11/2026)" }
   - { name: "Taleo", connector: taleo, status: ACTIVE }
   - { name: "Teamtailor", connector: teamtailor, status: ACTIVE }
   - { name: "Trakstar", connector: trakstar, status: ACTIVE }
