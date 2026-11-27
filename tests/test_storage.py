@@ -80,3 +80,33 @@ def test_normal_shrink_still_closes(tmp_path):
         closed = storage.close_absent(conn, "greenhouse", "acme", seen)
         assert closed == 2
         assert storage.count(conn, open_only=True) == 28
+
+
+def test_search_dedups_by_role_and_reports_sources(tmp_path):
+    """Two sources of the same role (shared dedup_key) collapse to one result
+    carrying group_size and the other source's URL."""
+    from jobmesh import storage
+    from jobmesh.models import Job
+    db = str(tmp_path / "dedup.db")
+    jobs = [
+        Job("greenhouse", "acme", "1", "Data Engineer", "Acme", "Berlin, Germany",
+            source_url="https://boards.greenhouse.io/acme/1", dedup_key="role-de"),
+        Job("lever", "acme", "9", "Data Engineer", "Acme", "Berlin, Germany",
+            source_url="https://jobs.lever.co/acme/9", dedup_key="role-de"),
+        Job("ashby", "beta", "2", "Data Analyst", "Beta", "Paris, France",
+            source_url="https://jobs.ashbyhq.com/beta/2", dedup_key="role-da"),
+    ]
+    with storage.session(db) as conn:
+        storage.upsert_jobs(conn, jobs)
+        conn.commit()
+        # keyword path (FTS)
+        res = storage.search(conn, limit=20, keyword="data")
+        titles = [r["title"] for r in res]
+        assert titles.count("Data Engineer") == 1          # collapsed
+        de = next(r for r in res if r["title"] == "Data Engineer")
+        assert de["group_size"] == 2
+        assert len(de["other_source_urls"]) == 1
+        assert de["source_url"] not in de["other_source_urls"]
+        # plain listing path (no keyword)
+        res2 = storage.search(conn, limit=20)
+        assert [r["title"] for r in res2].count("Data Engineer") == 1

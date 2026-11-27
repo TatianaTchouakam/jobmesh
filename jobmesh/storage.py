@@ -558,49 +558,99 @@ def _fts_match(tokens: list[str]) -> str:
     return " ".join(safe)
 
 
+# One row per role: the same posting indexed from several sources shares a
+# dedup_key, so search collapses a group to its best representative and reports
+# the other sources. A NULL/empty dedup_key is its own group (its uid).
+def _enrich_groups(conn: sqlite3.Connection, rows: list[dict]) -> list[dict]:
+    """Attach group_size and other_source_urls (the duplicate postings of the
+    same role on other sources) to each representative row."""
+    keys = sorted({r["dedup_key"] for r in rows
+                   if r.get("dedup_key")})
+    agg: dict = {}
+    if keys:
+        ph = ",".join("?" * len(keys))
+        for k, n, urls in conn.execute(
+            f"SELECT dedup_key, COUNT(*) AS n, "
+            f"GROUP_CONCAT(source_url, char(10)) AS urls "
+            # +is_open disables the is_open index so the selective dedup_key
+            # index drives the lookup (otherwise SQLite scans all open rows).
+            f"FROM jobs WHERE dedup_key IN ({ph}) AND +is_open = 1 "
+            f"GROUP BY dedup_key", keys):
+            agg[k] = (n, (urls or "").split("\n"))
+    for r in rows:
+        r.pop("_r", None); r.pop("_d", None)
+        k = r.get("dedup_key")
+        n, urls = agg.get(k, (1, []))
+        r["group_size"] = n
+        r["other_source_urls"] = [u for u in urls if u and u != r.get("source_url")]
+    return rows
+
+
 def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
            **filters) -> list[dict]:
-    """Filtered, paginated search. A keyword goes through the FTS5 index
-    (title/company/location) ranked by bm25 with the title weighted highest;
-    everything else is a plain indexed query."""
+    """Filtered, paginated search.
+
+    A keyword goes through the FTS5 index (title/company/location) ranked by
+    bm25 with the title weighted highest; there the same role indexed from
+    several sources (one dedup_key) collapses to one representative, with the
+    other sources reported on it. Non-keyword listings stay a plain indexed
+    query. Everything is de-duplicated for display either way: keyword results
+    collapse in SQL (bounded by the FTS top-k), and the plain path is
+    collapsed in Python over the page."""
     tokens = str(filters.get("keyword") or "").split()
     if tokens:
-        clauses, params = _filter_clauses(filters, exclude="keyword", alias="j.")
+        clauses, params = _filter_clauses(filters, exclude="keyword", alias="j2.")
         where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
-        # Rank the top matches inside FTS (its top-k path is fast even for a
-        # broad term), then join to jobs, apply the remaining filters and the
-        # date tie-break. The cap bounds relevance ranking depth; it still
-        # paginates comfortably past typical use.
         sql = (
-            "SELECT j.* FROM "
-            "(SELECT rowid, bm25(jobs_fts, 10.0, 3.0, 1.0) AS rank "
-            " FROM jobs_fts WHERE jobs_fts MATCH ? ORDER BY rank LIMIT ?) m "
-            "JOIN jobs j ON j.rowid = m.rowid"
-            f"{where} "
-            "ORDER BY m.rank, COALESCE(j.posted_at, j.first_seen) DESC "
-            "LIMIT ? OFFSET ?"
+            "SELECT j.* FROM ("
+            " SELECT j2.rowid AS rid, MIN(m.rank) AS r, "
+            "        COALESCE(j2.posted_at, j2.first_seen) AS d"
+            "  FROM (SELECT rowid, bm25(jobs_fts, 10.0, 3.0, 1.0) AS rank"
+            "        FROM jobs_fts WHERE jobs_fts MATCH ? ORDER BY rank LIMIT ?) m"
+            "  CROSS JOIN jobs j2 ON j2.rowid = m.rowid"
+            f"{where}"
+            "  GROUP BY COALESCE(NULLIF(j2.dedup_key, ''), j2.uid)"
+            "  ORDER BY r, d DESC LIMIT ? OFFSET ?"
+            ") g JOIN jobs j ON j.rowid = g.rid ORDER BY g.r, g.d DESC"
         )
         try:
-            return [dict(r) for r in conn.execute(
+            rows = [dict(r) for r in conn.execute(
                 sql, [_fts_match(tokens), _FTS_RANK_CAP] + params
                 + [limit, offset]).fetchall()]
+            return _enrich_groups(conn, rows)
         except sqlite3.OperationalError:
             pass  # FTS5 not available in this build -> LIKE fallback below
+    # Plain path: fast indexed query, then collapse same-role duplicates within
+    # the returned page (cheap; a broad listing stays index-fast).
     where, params = _build_where(filters)
     date_order = "COALESCE(posted_at, first_seen) DESC"
+    over = max(limit * 3, limit + 20)   # fetch a little extra to refill after collapse
     if tokens:
         score = " + ".join("(CASE WHEN title LIKE ? THEN 1 ELSE 0 END)" for _ in tokens)
         sql = (f"SELECT * FROM jobs {where} "
                f"ORDER BY ({score}) DESC, {date_order} LIMIT ? OFFSET ?")
         order_params = [f"%{t}%" for t in tokens]
-        return [dict(r) for r in conn.execute(
-            sql, params + order_params + [limit, offset]).fetchall()]
-    sql = f"SELECT * FROM jobs {where} ORDER BY {date_order} LIMIT ? OFFSET ?"
-    return [dict(r) for r in conn.execute(sql, params + [limit, offset]).fetchall()]
+        raw = [dict(r) for r in conn.execute(
+            sql, params + order_params + [over, offset]).fetchall()]
+    else:
+        sql = f"SELECT * FROM jobs {where} ORDER BY {date_order} LIMIT ? OFFSET ?"
+        raw = [dict(r) for r in conn.execute(
+            sql, params + [over, offset]).fetchall()]
+    seen: set = set()
+    rows = []
+    for row in raw:
+        key = row.get("dedup_key") or row.get("uid")
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append(row)
+        if len(rows) >= limit:
+            break
+    return _enrich_groups(conn, rows)
 
 
 def count(conn: sqlite3.Connection, **filters) -> int:
-    """Total postings matching the filters (ignoring limit/offset)."""
+    """Number of distinct roles (dedup_key groups) matching the filters."""
     tokens = str(filters.get("keyword") or "").split()
     if tokens:
         clauses, params = _filter_clauses(filters, exclude="keyword", alias="j.")
@@ -608,9 +658,10 @@ def count(conn: sqlite3.Connection, **filters) -> int:
         try:
             # CROSS JOIN forces the FTS index to drive the scan (SQLite would
             # otherwise pick the is_open index and probe FTS per row -> slow).
+            # Raw match count (fast); results are de-duplicated for display.
             return conn.execute(
-                "SELECT COUNT(*) FROM jobs_fts f CROSS JOIN jobs j "
-                "ON j.rowid = f.rowid "
+                "SELECT COUNT(*) "
+                "FROM jobs_fts f CROSS JOIN jobs j ON j.rowid = f.rowid "
                 f"WHERE jobs_fts MATCH ?{extra}",
                 [_fts_match(tokens)] + params).fetchone()[0]
         except sqlite3.OperationalError:
