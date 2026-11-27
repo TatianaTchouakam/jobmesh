@@ -45,3 +45,98 @@ def write_gz_exports(db_path: str, out_dir: str, cols, limit: int | None = None)
     os.replace(nd_tmp, nd_final)
     os.replace(csv_tmp, csv_final)
     return n
+
+
+# -- sitemap (generated after each cycle, served from disk) ---------------
+
+_SITEMAP_MAX_URLS = 50000   # sitemaps.org per-file limit
+
+
+def _xml_escape(s: str) -> str:
+    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+
+def _seo_paths(conn) -> list[str]:
+    """SEO landing-page paths that currently have at least one open job.
+
+    Uses the indexed country column and the FTS keyword counts, so this is
+    cheap even on a large index."""
+    from .api import (_SEO_COUNTRIES, _SEO_ROLES, _SEO_TYPES,
+                      _resolve_employment_type)
+    paths: list[str] = ["/", "/status", "/api"]
+    for code in _SEO_COUNTRIES:
+        if storage.count(conn, country=code, open_only=True) > 0:
+            paths.append(f"/jobs/in/{code.lower()}")
+    for slug, kw in _SEO_ROLES:
+        if storage.count(conn, keyword=kw, open_only=True) > 0:
+            paths.append(f"/jobs/role/{slug}")
+    for slug in _SEO_TYPES:
+        et = _resolve_employment_type(conn, slug)
+        if et and storage.count(conn, employment_type=et, open_only=True) > 0:
+            paths.append(f"/jobs/type/{slug}")
+    return paths
+
+
+def write_sitemaps(db_path: str, out_dir: str, base_url: str) -> int:
+    """Generate a gzip sitemap set (index + sitemap-N.xml.gz of <=50k URLs).
+
+    Streams open-job UIDs from one cursor, so memory stays bounded whatever
+    the catalogue size. Writes temp files and renames, so a crawler never sees
+    a half-written sitemap. Returns the number of job URLs written."""
+    os.makedirs(out_dir, exist_ok=True)
+    base = base_url.rstrip("/")
+    files: list[str] = []
+    written = 0
+
+    def _open(idx: int):
+        name = f"sitemap-{idx}.xml.gz"
+        gz = gzip.open(os.path.join(out_dir, name + ".tmp"), "wt", encoding="utf-8")
+        gz.write('<?xml version="1.0" encoding="UTF-8"?>'
+                 '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+        return name, gz
+
+    with storage.session(db_path) as conn:
+        seo = _seo_paths(conn)
+        idx = 1
+        name, gz = _open(idx)
+        files.append(name)
+        in_file = 0
+        for pth in seo:
+            gz.write(f"<url><loc>{base}{pth}</loc></url>")
+            in_file += 1
+        cur = conn.execute("SELECT uid FROM jobs WHERE is_open = 1")
+        while True:
+            batch = cur.fetchmany(5000)
+            if not batch:
+                break
+            for (uid,) in batch:
+                if in_file >= _SITEMAP_MAX_URLS:
+                    gz.write("</urlset>")
+                    gz.close()
+                    os.replace(os.path.join(out_dir, name + ".tmp"),
+                               os.path.join(out_dir, name))
+                    idx += 1
+                    name, gz = _open(idx)
+                    files.append(name)
+                    in_file = 0
+                gz.write(f"<url><loc>{base}/jobs/{_xml_escape(uid)}</loc></url>")
+                in_file += 1
+                written += 1
+        gz.write("</urlset>")
+        gz.close()
+        os.replace(os.path.join(out_dir, name + ".tmp"),
+                   os.path.join(out_dir, name))
+
+    # Sitemap index pointing at every file.
+    from .models import now_iso
+    lastmod = now_iso()
+    idx_tmp = os.path.join(out_dir, "sitemap.xml.tmp")
+    with open(idx_tmp, "w", encoding="utf-8") as fh:
+        fh.write('<?xml version="1.0" encoding="UTF-8"?>'
+                 '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+        for name in files:
+            fh.write(f"<sitemap><loc>{base}/{name}</loc>"
+                     f"<lastmod>{lastmod}</lastmod></sitemap>")
+        fh.write("</sitemapindex>")
+    os.replace(idx_tmp, os.path.join(out_dir, "sitemap.xml"))
+    return written

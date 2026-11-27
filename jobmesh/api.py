@@ -96,6 +96,12 @@ def robots_txt() -> PlainTextResponse:
 
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap_xml() -> Response:
+    # Served straight from disk: the index + gzip url-files are regenerated at
+    # the end of each ingest cycle (no per-request computation). Before the
+    # first cycle has run we fall back to a small on-demand SEO-only sitemap.
+    idx_path = os.path.join(EXPORT_DIR, "sitemap.xml")
+    if os.path.exists(idx_path):
+        return FileResponse(idx_path, media_type="application/xml")
     base = os.getenv("BASE_URL", "https://jobmesh.world").rstrip("/")
     paths = ["/", "/status", "/api"]
     try:
@@ -117,6 +123,15 @@ def sitemap_xml() -> Response:
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
            f"{items}</urlset>")
     return Response(xml, media_type="application/xml")
+
+
+@app.get("/sitemap-{n}.xml.gz", include_in_schema=False)
+def sitemap_part(n: int) -> Response:
+    """Serve a generated gzip url-file straight from disk."""
+    path = os.path.join(EXPORT_DIR, f"sitemap-{n}.xml.gz")
+    if not os.path.exists(path):
+        raise StarletteHTTPException(status_code=404, detail="no such sitemap")
+    return FileResponse(path, media_type="application/gzip")
 
 
 import html as _html
@@ -900,9 +915,11 @@ def _maybe_start_refresher() -> None:
                             storage.record_ingest_run(
                                 conn, results, started, time.time())
                         try:
-                            from .exportfiles import write_gz_exports
+                            from .exportfiles import write_gz_exports, write_sitemaps
                             write_gz_exports(DB_PATH, EXPORT_DIR, _CSV_COLS)
-                            log.info("gz exports regenerated")
+                            base_url = os.getenv("BASE_URL", "https://jobmesh.world")
+                            write_sitemaps(DB_PATH, EXPORT_DIR, base_url)
+                            log.info("gz exports + sitemaps regenerated")
                         except Exception as gz_exc:
                             log.warning("gz export generation failed: %s", gz_exc)
                         log.info("scheduled index refresh complete")

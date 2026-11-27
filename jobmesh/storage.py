@@ -59,12 +59,18 @@ CREATE TABLE IF NOT EXISTS jobs (
     first_seen      TEXT,
     last_checked    TEXT,
     last_changed    TEXT,
+    country         TEXT,
     is_open         INTEGER NOT NULL DEFAULT 1
 );
 CREATE INDEX IF NOT EXISTS idx_jobs_board   ON jobs(source_platform, source_board);
 CREATE INDEX IF NOT EXISTS idx_jobs_dedup   ON jobs(dedup_key);
 CREATE INDEX IF NOT EXISTS idx_jobs_open    ON jobs(is_open);
 CREATE INDEX IF NOT EXISTS idx_jobs_sortdate ON jobs(is_open, COALESCE(posted_at, first_seen) DESC);
+CREATE INDEX IF NOT EXISTS idx_jobs_platform ON jobs(source_platform, is_open);
+CREATE INDEX IF NOT EXISTS idx_jobs_posted   ON jobs(posted_at);
+CREATE INDEX IF NOT EXISTS idx_jobs_changed  ON jobs(last_changed, uid);
+CREATE INDEX IF NOT EXISTS idx_jobs_lastseen ON jobs(last_checked);
+CREATE INDEX IF NOT EXISTS idx_jobs_firstseen ON jobs(first_seen);
 
 CREATE TABLE IF NOT EXISTS fetch_log (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -227,9 +233,91 @@ def connect(db_path: str = DEFAULT_DB):
         conn.execute("PRAGMA synchronous=NORMAL")
     except sqlite3.OperationalError:
         pass
-    conn.executescript(_SCHEMA)
-    _migrate(conn)
+    # Migrate once per process per database: the schema/FTS persist on disk, so
+    # later connections in the same process skip the (count-checking) migration.
+    if db_path not in _MIGRATED:
+        conn.executescript(_SCHEMA)
+        _migrate(conn)
+        _MIGRATED.add(db_path)
     return conn
+
+
+# FTS5 full-text index over the short, high-signal fields (title, company,
+# location). Kept in sync by triggers; the UPDATE trigger fires only when one
+# of those fields actually changes, so re-opening a posting or stamping
+# last_checked each cycle never re-indexes it.
+_FTS_SCHEMA = """
+CREATE VIRTUAL TABLE IF NOT EXISTS jobs_fts
+    USING fts5(title, company, location, tokenize='unicode61');
+
+CREATE TRIGGER IF NOT EXISTS jobs_fts_ai AFTER INSERT ON jobs BEGIN
+    INSERT INTO jobs_fts(rowid, title, company, location)
+    VALUES (new.rowid, new.title, new.company, new.location);
+END;
+CREATE TRIGGER IF NOT EXISTS jobs_fts_ad AFTER DELETE ON jobs BEGIN
+    DELETE FROM jobs_fts WHERE rowid = old.rowid;
+END;
+CREATE TRIGGER IF NOT EXISTS jobs_fts_au AFTER UPDATE OF title, company, location ON jobs
+    WHEN new.title IS NOT old.title OR new.company IS NOT old.company
+         OR new.location IS NOT old.location
+BEGIN
+    DELETE FROM jobs_fts WHERE rowid = old.rowid;
+    INSERT INTO jobs_fts(rowid, title, company, location)
+    VALUES (new.rowid, new.title, new.company, new.location);
+END;
+"""
+
+
+def _ensure_fts(conn: sqlite3.Connection) -> bool:
+    """Create the FTS5 table + sync triggers and backfill when out of sync.
+
+    Returns False (degrading to LIKE search) if FTS5 is unavailable in this
+    SQLite build. rowids are stable here (the app never VACUUMs), so a plain
+    count mismatch is enough to trigger a one-off rebuild (e.g. first deploy
+    on an existing database)."""
+    try:
+        conn.executescript(_FTS_SCHEMA)
+        n_jobs = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
+        n_fts = conn.execute("SELECT COUNT(*) FROM jobs_fts").fetchone()[0]
+        if n_jobs and n_fts != n_jobs:
+            conn.execute("DELETE FROM jobs_fts")
+            conn.execute("INSERT INTO jobs_fts(rowid, title, company, location) "
+                         "SELECT rowid, title, company, location FROM jobs")
+            conn.commit()
+        return True
+    except sqlite3.OperationalError as exc:  # no FTS5 in this build
+        log.warning("FTS5 unavailable (%s); keyword search falls back to LIKE", exc)
+        return False
+
+
+def _backfill_country(conn: sqlite3.Connection) -> None:
+    """Populate the country column for rows that don't have it yet (one-off).
+
+    Batched with a per-distinct-location cache so a 400k-row backfill is a few
+    seconds, not one UPDATE per row."""
+    from .geo import resolve_country
+    cache: dict[str, Optional[str]] = {}
+    batch: list[tuple] = []
+    rows = conn.execute(
+        "SELECT rowid, location FROM jobs WHERE country IS NULL AND location IS NOT NULL"
+    ).fetchall()
+    for rid, loc in rows:
+        if loc in cache:
+            c = cache[loc]
+        else:
+            c = resolve_country(loc)
+            cache[loc] = c
+        if c:
+            batch.append((c, rid))
+            if len(batch) >= 5000:
+                conn.executemany("UPDATE jobs SET country=? WHERE rowid=?", batch)
+                batch = []
+    if batch:
+        conn.executemany("UPDATE jobs SET country=? WHERE rowid=?", batch)
+    conn.commit()
+
+
+_MIGRATED: set = set()   # db paths whose schema/FTS this process has ensured
 
 
 def _migrate(conn: sqlite3.Connection) -> None:
@@ -238,6 +326,16 @@ def _migrate(conn: sqlite3.Connection) -> None:
     for col in ("workplace_type", "category", "level"):
         if col not in existing:
             conn.execute(f"ALTER TABLE jobs ADD COLUMN {col} TEXT")
+    country_added = "country" not in existing
+    if country_added:
+        conn.execute("ALTER TABLE jobs ADD COLUMN country TEXT")
+    conn.commit()
+    # Indexes/FTS from _SCHEMA may post-date the table: re-apply idempotently.
+    conn.executescript(_SCHEMA)
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_jobs_country ON jobs(country, is_open)')
+    if country_added:
+        _backfill_country(conn)
+    _ensure_fts(conn)
     conn.commit()
 
 
@@ -252,6 +350,14 @@ def session(db_path: str = DEFAULT_DB) -> Iterator[sqlite3.Connection]:
 
 
 # -- writes ---------------------------------------------------------------
+
+def _country_of(location):
+    """ISO-2 country code for a location string (cached), or None."""
+    if not location:
+        return None
+    from .geo import resolve_country
+    return resolve_country(location)
+
 
 def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
     """Insert new postings and update existing ones.
@@ -276,8 +382,8 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
                     title, company, location, description, source_url,
                     apply_url, salary, employment_type, workplace_type,
                     category, level, remote, posted_at, dedup_key, first_seen,
-                    last_checked, last_changed, is_open
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)
+                    last_checked, last_changed, country, is_open
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)
                 """,
                 (
                     job.uid, job.source_platform, job.source_board,
@@ -285,7 +391,7 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
                     job.description, job.source_url, job.apply_url, job.salary,
                     job.employment_type, job.workplace_type, job.category,
                     job.level, _bool(job.remote), job.posted_at, job.dedup_key,
-                    now, now, now,
+                    now, now, now, _country_of(job.location),
                 ),
             )
             new += 1
@@ -298,7 +404,7 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
                 title=?, company=?, location=?, description=?, source_url=?,
                 apply_url=?, salary=?, employment_type=?, workplace_type=?,
                 category=?, level=?, remote=?, posted_at=?, dedup_key=?, last_checked=?,
-                last_changed=?, is_open=1
+                last_changed=?, country=?, is_open=1
             WHERE uid=?
             """,
             (
@@ -306,7 +412,8 @@ def upsert_jobs(conn: sqlite3.Connection, jobs: Iterable[Job]) -> dict:
                 job.source_url, job.apply_url, job.salary, job.employment_type,
                 job.workplace_type, job.category, job.level, _bool(job.remote),
                 job.posted_at, job.dedup_key, now,
-                now if changed else row["last_changed"], job.uid,
+                now if changed else row["last_changed"],
+                _country_of(job.location), job.uid,
             ),
         )
         if changed:
@@ -377,44 +484,36 @@ def log_fetch(
 
 # -- reads ----------------------------------------------------------------
 
-def _build_where(f: dict, exclude: Optional[str] = None):
-    """Build a WHERE clause from a filter dict, optionally skipping one key.
-
-    `exclude` lets the facet counts ignore a filter's own selection, so the
-    dropdown still shows the counts you'd get by switching to another value.
-    """
+def _filter_clauses(f: dict, exclude: Optional[str] = None, alias: str = ""):
+    """(clauses, params) for a filter dict. `alias` (e.g. "j.") qualifies the
+    columns so the same builder works in a plain query and in an FTS join."""
+    a = alias
     clauses, params = [], []
     if f.get("open_only", True):
-        clauses.append("is_open = 1")
+        clauses.append(f"{a}is_open = 1")
     if f.get("keyword") and exclude != "keyword":
-        # Split the query into words and require EACH word to appear (in the
-        # title or the description). "junior data engineer" then means
-        # junior AND data AND engineer, instead of the exact phrase — which
-        # rarely sits contiguously in a title and otherwise matched senior
-        # roles whose description says "mentor junior data engineers".
         for tok in str(f["keyword"]).split():
-            clauses.append("(title LIKE ? OR description LIKE ?)")
+            clauses.append(f"({a}title LIKE ? OR {a}description LIKE ?)")
             params += [f"%{tok}%", f"%{tok}%"]
     if f.get("company") and exclude != "company":
-        clauses.append("company LIKE ?"); params.append(f"%{f['company']}%")
+        clauses.append(f"{a}company LIKE ?"); params.append(f"%{f['company']}%")
     if f.get("location") and exclude != "location":
-        clauses.append("location LIKE ?"); params.append(f"%{f['location']}%")
+        clauses.append(f"{a}location LIKE ?"); params.append(f"%{f['location']}%")
     if f.get("platform") and exclude != "platform":
-        clauses.append("source_platform = ?"); params.append(f["platform"])
+        clauses.append(f"{a}source_platform = ?"); params.append(f["platform"])
     if f.get("workplace_type") and exclude != "workplace_type":
-        clauses.append("workplace_type = ?"); params.append(f["workplace_type"])
+        clauses.append(f"{a}workplace_type = ?"); params.append(f["workplace_type"])
     if f.get("employment_type") and exclude != "employment_type":
-        clauses.append("employment_type = ?"); params.append(f["employment_type"])
+        clauses.append(f"{a}employment_type = ?"); params.append(f["employment_type"])
     if f.get("category") and exclude != "category":
-        clauses.append("category = ?"); params.append(f["category"])
+        clauses.append(f"{a}category = ?"); params.append(f["category"])
     if f.get("level") and exclude != "level":
-        clauses.append("level = ?"); params.append(f["level"])
+        clauses.append(f"{a}level = ?"); params.append(f["level"])
     if f.get("country") and exclude != "country":
-        from .geo import country_patterns
-        pats = country_patterns(f["country"])
-        if pats:
-            clauses.append("(" + " OR ".join("location LIKE ?" for _ in pats) + ")")
-            params += pats
+        # Indexed country column (populated at ingest). Fall back to a name
+        # match only for a value the column can't carry (shouldn't happen).
+        code = str(f["country"]).upper()
+        clauses.append(f"{a}country = ?"); params.append(code)
     if f.get("since") and exclude != "since":
         try:
             _days = int(f["since"])
@@ -423,10 +522,10 @@ def _build_where(f: dict, exclude: Optional[str] = None):
         if _days > 0:
             from datetime import datetime, timezone, timedelta
             _cut = (datetime.now(timezone.utc) - timedelta(days=_days)).strftime("%Y-%m-%d")
-            clauses.append("substr(COALESCE(posted_at, first_seen),1,10) >= ?")
+            clauses.append(f"substr(COALESCE({a}posted_at, {a}first_seen),1,10) >= ?")
             params.append(_cut)
     if f.get("posted_after") and exclude != "posted_after":
-        clauses.append("substr(COALESCE(posted_at, first_seen),1,10) >= ?")
+        clauses.append(f"substr(COALESCE({a}posted_at, {a}first_seen),1,10) >= ?")
         params.append(str(f["posted_after"])[:10])
     if f.get("seen_within") and exclude != "seen_within":
         try:
@@ -436,37 +535,86 @@ def _build_where(f: dict, exclude: Optional[str] = None):
         if _sw > 0:
             from datetime import datetime, timezone, timedelta
             _swc = (datetime.now(timezone.utc) - timedelta(days=_sw)).strftime("%Y-%m-%d")
-            clauses.append("substr(first_seen,1,10) >= ?")
+            clauses.append(f"substr({a}first_seen,1,10) >= ?")
             params.append(_swc)
     if f.get("has_salary") and exclude != "has_salary":
-        clauses.append("salary IS NOT NULL AND TRIM(salary) != ''")
+        clauses.append(f"{a}salary IS NOT NULL AND TRIM({a}salary) != ''")
+    return clauses, params
+
+
+def _build_where(f: dict, exclude: Optional[str] = None):
+    clauses, params = _filter_clauses(f, exclude=exclude, alias="")
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     return where, params
 
 
+_FTS_RANK_CAP = int(os.getenv("FTS_RANK_CAP", "1000"))
+
+
+def _fts_match(tokens: list[str]) -> str:
+    """FTS5 MATCH expression: every token required (implicit AND), quoted so
+    punctuation in a query can't break the FTS grammar."""
+    safe = ['"' + t.replace('"', '') + '"' for t in tokens if t.strip()]
+    return " ".join(safe)
+
+
 def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
            **filters) -> list[dict]:
-    """Filtered, paginated search. Filters: keyword, company, location,
-    platform, workplace_type, employment_type, category, open_only."""
-    where, params = _build_where(filters)
-    date_order = "COALESCE(posted_at, first_seen) DESC"
+    """Filtered, paginated search. A keyword goes through the FTS5 index
+    (title/company/location) ranked by bm25 with the title weighted highest;
+    everything else is a plain indexed query."""
     tokens = str(filters.get("keyword") or "").split()
     if tokens:
-        # Relevance boost: a posting whose TITLE contains the query words
-        # ranks above one that only matches in the description. So
-        # "junior data engineer" surfaces real junior-titled roles first,
-        # not senior roles that merely mention juniors in the body.
+        clauses, params = _filter_clauses(filters, exclude="keyword", alias="j.")
+        where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
+        # Rank the top matches inside FTS (its top-k path is fast even for a
+        # broad term), then join to jobs, apply the remaining filters and the
+        # date tie-break. The cap bounds relevance ranking depth; it still
+        # paginates comfortably past typical use.
+        sql = (
+            "SELECT j.* FROM "
+            "(SELECT rowid, bm25(jobs_fts, 10.0, 3.0, 1.0) AS rank "
+            " FROM jobs_fts WHERE jobs_fts MATCH ? ORDER BY rank LIMIT ?) m "
+            "JOIN jobs j ON j.rowid = m.rowid"
+            f"{where} "
+            "ORDER BY m.rank, COALESCE(j.posted_at, j.first_seen) DESC "
+            "LIMIT ? OFFSET ?"
+        )
+        try:
+            return [dict(r) for r in conn.execute(
+                sql, [_fts_match(tokens), _FTS_RANK_CAP] + params
+                + [limit, offset]).fetchall()]
+        except sqlite3.OperationalError:
+            pass  # FTS5 not available in this build -> LIKE fallback below
+    where, params = _build_where(filters)
+    date_order = "COALESCE(posted_at, first_seen) DESC"
+    if tokens:
         score = " + ".join("(CASE WHEN title LIKE ? THEN 1 ELSE 0 END)" for _ in tokens)
         sql = (f"SELECT * FROM jobs {where} "
                f"ORDER BY ({score}) DESC, {date_order} LIMIT ? OFFSET ?")
         order_params = [f"%{t}%" for t in tokens]
-        return [dict(r) for r in conn.execute(sql, params + order_params + [limit, offset]).fetchall()]
+        return [dict(r) for r in conn.execute(
+            sql, params + order_params + [limit, offset]).fetchall()]
     sql = f"SELECT * FROM jobs {where} ORDER BY {date_order} LIMIT ? OFFSET ?"
     return [dict(r) for r in conn.execute(sql, params + [limit, offset]).fetchall()]
 
 
 def count(conn: sqlite3.Connection, **filters) -> int:
     """Total postings matching the filters (ignoring limit/offset)."""
+    tokens = str(filters.get("keyword") or "").split()
+    if tokens:
+        clauses, params = _filter_clauses(filters, exclude="keyword", alias="j.")
+        extra = (" AND " + " AND ".join(clauses)) if clauses else ""
+        try:
+            # CROSS JOIN forces the FTS index to drive the scan (SQLite would
+            # otherwise pick the is_open index and probe FTS per row -> slow).
+            return conn.execute(
+                "SELECT COUNT(*) FROM jobs_fts f CROSS JOIN jobs j "
+                "ON j.rowid = f.rowid "
+                f"WHERE jobs_fts MATCH ?{extra}",
+                [_fts_match(tokens)] + params).fetchone()[0]
+        except sqlite3.OperationalError:
+            pass
     where, params = _build_where(filters)
     return conn.execute(f"SELECT COUNT(*) FROM jobs {where}", params).fetchone()[0]
 
