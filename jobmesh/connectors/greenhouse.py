@@ -16,6 +16,8 @@ import time
 
 import requests
 
+from ..ratelimit import host_semaphore
+
 from ..models import Job, now_iso
 from ..normalize import html_to_text, detect_remote, make_dedup_key
 from .base import Connector
@@ -71,11 +73,12 @@ class GreenhouseConnector(Connector):
         for root in roots:
             for attempt in range(3):
                 try:
-                    resp = self._session.get(
-                        f"{root}/{self.board}{suffix}",
-                        params={"content": "true"} if suffix.endswith("/jobs") else None,
-                        timeout=TIMEOUT,
-                    )
+                    with host_semaphore("greenhouse"):
+                        resp = self._session.get(
+                            f"{root}/{self.board}{suffix}",
+                            params={"content": "true"} if suffix.endswith("/jobs") else None,
+                            timeout=TIMEOUT,
+                        )
                 except requests.RequestException as exc:
                     last_exc = exc
                     time.sleep(1.5 * (attempt + 1))

@@ -16,7 +16,7 @@ import requests
 
 from . import storage
 from .connectors import build_connector
-from .ratelimit import RateLimited
+from .ratelimit import RateLimited, parse_retry_after
 
 log = logging.getLogger("jobmesh.pipeline")
 
@@ -71,6 +71,18 @@ def _fetch_with_retry(platform: str, board: str):
             return connector.fetch(), None, None
         except RateLimited as rl:
             return None, str(rl), rl
+        except requests.HTTPError as exc:
+            # A 429 from any connector (shared-host APIs like Greenhouse) is a
+            # rate limit: defer the board to later in the cycle instead of
+            # retrying in place, so we never burst the host.
+            if exc.response is not None and exc.response.status_code == 429:
+                rl = RateLimited(retry_after=parse_retry_after(exc.response))
+                return None, str(rl), rl
+            last = exc
+            if i < attempts - 1 and _is_transient(exc):
+                time.sleep(delay * (2 ** i))
+                continue
+            return None, str(exc), None
         except Exception as exc:  # network, parse, unknown platform, ...
             last = exc
             if i < attempts - 1 and _is_transient(exc):

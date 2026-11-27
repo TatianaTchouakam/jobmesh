@@ -18,10 +18,15 @@ import os
 
 
 # Built-in defaults so rotation is on in production without an env change.
-# Workday is ~2,200 boards on a few rate-limited clusters: a full polite pass
-# is ~3 h, so it runs 1/3 per cycle by default (each board ~every 3 cycles).
-# Override with WORKDAY_ROTATION_SHARDS (1 disables rotation).
-_DEFAULT_SHARDS = {"workday": 3}
+# The heaviest platforms run a fraction of their boards each cycle, so a full
+# cycle stays well under the refresh interval; every board is still refreshed
+# once every N cycles. Override per platform with <PLATFORM>_ROTATION_SHARDS
+# (1 disables rotation). Chosen for the biggest / slowest platforms:
+#   workday ~2,250 boards on rate-limited clusters (paced);
+#   join    ~2,950 boards;
+#   icims    ~740 boards, each fetched posting-by-posting (slowest per board).
+# Greenhouse/SmartRecruiters stay full: one fast API call per board.
+_DEFAULT_SHARDS = {"workday": 3, "join": 3, "icims": 3}
 
 
 def shards_for(platform: str) -> int:

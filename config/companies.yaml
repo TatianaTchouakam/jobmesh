@@ -1133,7 +1133,6 @@ lever:
   - enveda
   - sanabenefits
   # --- +4 cyber/edtech/logistique/Afrique verifie live (sweep 5, 21 nov. 2026) ---
-  - secureframe
   - loadsmart
   - educative
   - brilliant
@@ -1325,10 +1324,8 @@ ashby:
   - hightouch
   - hex
   - watershed
-  - clay
   - baseten
   - perplexity
-  - anysphere
   - nerdwallet      # NerdWallet — fintech / media, US (~27) [verifie 13 nov. 2026]
   # --- Monde / continents (verifie en direct) ---
   - andela   # Afrique (7)
@@ -1360,8 +1357,6 @@ ashby:
   - evermore
   - earth
   - cint
-  - alloy
-  - adc
   - plot-pointe
   - airwallex   # fintech
   - crusoe   # energy/compute
@@ -2224,14 +2219,7 @@ breezy:
   - vetsez
 
 recruitee:   # ATS — subdomain from {company}.recruitee.com — all verified live
-  - scoutbee
-  - usabilla
-  - mollie
-  - framer
   - channable
-  - bynder
-  - mambu
-  - trengo
   - univeit
   - mittwaldcmservicegmbhcokg
   - terrascan
@@ -2268,14 +2256,7 @@ recruitee:   # ATS — subdomain from {company}.recruitee.com — all verified l
 
 # --- Job boards (one public feed each, many companies; "all" = whole feed) ---
 personio:        # ATS — strong in Germany/DACH (find token at {company}.jobs.personio.de)
-  - getsafe
-  - mediamarkt
-  - vay
-  - demodesk
-  - relayr
   - everphone
-  - fernride
-  - tourradar
   - circus
   - wandelbots
   - 1komma5grad
@@ -5197,12 +5178,9 @@ smartjobboard: []
 # JOIN (join.com) — public keyless Next.js career pages; board = slug
 # maintained by scripts/discover_join.py (bounded sitemap discovery)
 join:
-  - sievo
-  - tourlane
   - McMakler
   - clark
   - bryter
-  - pliant
   - 08haselmaeuse
   - 10gatecom
   - 19-03de
@@ -5700,7 +5678,6 @@ join:
   - cognitivo
   - collectivemind
   - colmenade
-  - com-office-gmbhde
   - com13
   - comark
   - combine
@@ -5837,7 +5814,6 @@ join:
   - doerrgruppe
   - doetschgrether
   - dog-promotion
-  - dogan-reinigung
   - domiacourscom
   - dominos3
   - domusfincas
@@ -6071,7 +6047,6 @@ join:
   - flora-florstadtde
   - flotte1
   - fls-tax
-  - fnb-unternehmensberatungde
   - focus-chirurgiede
   - foerdepflege
   - fokussprachen
@@ -6581,7 +6556,6 @@ join:
   - kdjait
   - keimeyer
   - kem131
-  - kenkeiperde
   - kercia
   - kern-sohn
   - kessingde
@@ -7680,7 +7654,6 @@ join:
   - stadiongaststaette
   - stadtwerke-neumuenster
   - stains
-  - stalltuningde
   - stan
   - standard-ecom
   - starface
@@ -7915,7 +7888,6 @@ join:
   - umamii
   - umh4
   - uneat
-  - unequity
   - ungrund
   - uni-prof
   - unionhilfswerkde
@@ -8009,7 +7981,6 @@ join:
   - waeschemax
   - waffls
   - waits-gmbh
-  - waldhotel-berghof
   - walter-bornmannde
   - walternagel
   - wanning
@@ -8076,7 +8047,6 @@ join:
   - workingbicycle
   - workist
   - works-kiefner
-  - worldwideplacementlimitedcouk
   - wow-museum1
   - wr
   - ws-transportlogistikde

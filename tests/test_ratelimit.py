@@ -208,3 +208,54 @@ def test_persistent_429_fails_without_closing(tmp_path, monkeypatch):
     assert [r.status for r in results] == ["failure"]
     assert "429" in results[0].error
     assert still_open == 1          # a 429 never closes a board's listings
+
+
+def test_plain_http_429_is_deferred_centrally(tmp_path, monkeypatch):
+    """A connector that raises a plain HTTP 429 (no RateLimited) is still
+    deferred by the pipeline, not failed in a burst."""
+    import requests as _rq
+
+    class _R429:
+        status_code = 429
+        headers = {"Retry-After": "0"}
+
+    class _Conn:
+        calls = {}
+        def __init__(self, platform, board):
+            self.platform, self.board = platform, board
+        def fetch(self):
+            n = _Conn.calls.get(self.board, 0) + 1
+            _Conn.calls[self.board] = n
+            if n == 1:
+                raise _rq.HTTPError("429", response=_R429())
+            return [Job(self.platform, self.board, f"{self.board}-1", "Role", "Acme")]
+
+    monkeypatch.setattr(pipeline, "_RL_BACKOFF", [0.0, 0.0, 0.0])
+    monkeypatch.setattr(pipeline, "build_connector", lambda p, b: _Conn(p, b))
+    monkeypatch.setenv("INGEST_WORKERS", "2")
+    _Conn.calls = {}
+    db = str(tmp_path / "h429.db")
+    with storage.session(db) as conn:
+        results = pipeline.ingest(conn, {"greenhouse": ["a", "b"]})
+    assert [r.status for r in results].count("success") == 2  # recovered after deferral
+
+
+def test_host_semaphore_caps_concurrency():
+    import threading, time as _t
+    from jobmesh.ratelimit import host_semaphore, reset_limiters
+    import os
+    os.environ["GREENHOUSE_MAX_CONCURRENT"] = "3"
+    reset_limiters()
+    active = 0; peak = 0; g = threading.Lock()
+    def worker():
+        nonlocal active, peak
+        with host_semaphore("greenhouse"):
+            with g:
+                active += 1; peak = max(peak, active)
+            _t.sleep(0.03)
+            with g:
+                active -= 1
+    ts = [threading.Thread(target=worker) for _ in range(10)]
+    for t in ts: t.start()
+    for t in ts: t.join()
+    assert peak <= 3

@@ -26,6 +26,7 @@ import requests
 from ..models import Job, now_iso
 from ..normalize import html_to_text
 from ..robots import allowed as robots_allowed, USER_AGENT
+from ..ratelimit import get_limiter, parse_retry_after, RateLimited
 from .base import Connector
 
 ORIGIN = "https://recruiting.paylocity.com"
@@ -94,7 +95,13 @@ class PaylocityConnector(Connector):
     def fetch(self) -> list[Job]:
         if not robots_allowed(self._url, self._session):
             return []
-        resp = self._session.get(self._url, timeout=TIMEOUT)
+        # Every board is on the shared recruiting.paylocity.com host, which
+        # rate-limits by IP. Pace through the shared limiter and surface a 429
+        # so the pipeline retries this board later in the cycle (no burst).
+        with get_limiter("paylocity").slot("recruiting.paylocity.com"):
+            resp = self._session.get(self._url, timeout=TIMEOUT)
+        if resp.status_code == 429:
+            raise RateLimited(retry_after=parse_retry_after(resp))
         resp.raise_for_status()
         data = _extract_pagedata(resp.text)
         if not data:

@@ -111,7 +111,7 @@ class ClusterLimiter:
 
 # Per-platform default pacing (seconds between same-host requests). Page-per-job
 # platforms (CareerPlug) use a lighter pace than Workday's cluster API.
-_DEFAULT_INTERVALS = {"workday": 1.5, "careerplug": 0.4}
+_DEFAULT_INTERVALS = {"workday": 1.5, "careerplug": 0.4, "paylocity": 1.0}
 
 _LIMITERS: dict[str, ClusterLimiter] = {}
 _LIMITERS_LOCK = threading.Lock()
@@ -139,7 +139,30 @@ def get_limiter(name: str) -> ClusterLimiter:
         return lim
 
 
+_HOST_POOLS: dict[str, threading.BoundedSemaphore] = {}
+_HOST_DEFAULTS = {"greenhouse": 4}
+
+
+def host_semaphore(name: str) -> threading.BoundedSemaphore:
+    """A per-host concurrency cap for tolerant shared-host APIs.
+
+    Unlike the strict per-cluster limiter (one request at a time), this allows
+    a few concurrent requests to one host -- enough to stay fast while keeping
+    us under the host's burst limit, so we stop tripping 429 at the source.
+    Tunable via ``<NAME>_MAX_CONCURRENT``.
+    """
+    with _LIMITERS_LOCK:
+        sem = _HOST_POOLS.get(name)
+        if sem is None:
+            n = int(os.getenv(f"{name.upper()}_MAX_CONCURRENT",
+                              str(_HOST_DEFAULTS.get(name, 4))))
+            sem = threading.BoundedSemaphore(max(1, n))
+            _HOST_POOLS[name] = sem
+        return sem
+
+
 def reset_limiters() -> None:
     """Drop all cached limiters (tests only)."""
     with _LIMITERS_LOCK:
         _LIMITERS.clear()
+        _HOST_POOLS.clear()

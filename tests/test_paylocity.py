@@ -84,3 +84,24 @@ def test_empty_board_returns_nothing():
     page = "<html><head><script>window.dataLayer=[{}];</script></head></html>"
     c = PaylocityConnector(BOARD, session=_FakeSession(page))
     assert c.fetch() == []
+
+
+def test_paylocity_429_raises_ratelimited():
+    """A shared-host 429 is surfaced as RateLimited (pipeline defers the board)."""
+    from jobmesh.ratelimit import RateLimited, reset_limiters
+    import os
+    os.environ["PAYLOCITY_MIN_INTERVAL"] = "0"
+    reset_limiters()
+
+    class _RL(_FakeSession):
+        def get(self, url, timeout=None, **k):
+            if url.endswith("/robots.txt"):
+                return _Resp("", status=404)
+            r = _Resp("too many", status=429)
+            r.headers = {"Retry-After": "7"}
+            return r
+
+    import pytest
+    with pytest.raises(RateLimited) as ei:
+        PaylocityConnector(BOARD, session=_RL(_page([]))).fetch()
+    assert ei.value.retry_after == 7.0
