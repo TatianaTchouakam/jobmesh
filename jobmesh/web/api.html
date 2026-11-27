@@ -70,25 +70,46 @@
           <tr><td><code>offset</code></td><td>Pagination offset. Default 0.</td></tr>
         </tbody>
       </table>
-      <h3>Example</h3>
-      <pre><code>curl "https://jobmesh.world/jobs?keyword=data%20engineer&amp;country=DE&amp;limit=5"</code></pre>
+      <h3>Examples</h3>
+      <pre><code># curl
+curl "https://jobmesh.world/jobs?keyword=data%20engineer&amp;country=DE&amp;limit=5"</code></pre>
+      <pre><code># Python
+import requests
+r = requests.get("https://jobmesh.world/jobs", params={
+    "keyword": "data engineer", "country": "DE", "limit": 5})
+results = r.json()["results"]</code></pre>
+      <pre><code>// JavaScript (fetch)
+const r = await fetch(
+  "https://jobmesh.world/jobs?keyword=data+engineer&amp;country=DE&amp;limit=5");
+const { results, total } = await r.json();</code></pre>
+      <h3>Response</h3>
       <pre><code>{
   "count": 5,
   "total": 1234,
+  "total_capped": false,
   "limit": 5,
   "offset": 0,
+  "has_more": true,
+  "pro": false,
+  "free_limit": 50,
   "results": [
     {
+      "uid": "greenhouse:acme:1234567",
       "title": "Data Engineer",
       "company": "Example GmbH",
-      "location": "Berlin, DE",
+      "location": "Berlin, Germany",
+      "country": "DE",
       "source_platform": "greenhouse",
       "posted_at": "2026-11-24T10:00:00",
-      "apply_url": "https://.../apply"
+      "url": "https://boards.greenhouse.io/acme/jobs/1234567",
+      "apply_url": "https://.../apply",
+      "group_size": 2,
+      "other_source_urls": ["https://jobs.lever.co/acme/..."]
     }
   ]
 }</code></pre>
-      <p class="note">Premium key: pass <code>?api_key=...</code> or the header <code>X-API-Key</code> to lift the result cap to 1000.</p>
+      <p class="note"><b>Pagination</b> &mdash; page with <code>offset</code>/<code>limit</code>; <code>has_more</code> stays <code>true</code> while rows remain. <b>Counts</b> &mdash; above 10,000 matches, <code>total</code> comes back as <code>10000</code> with <code>total_capped:&nbsp;true</code> (show it as &ldquo;10,000+&rdquo;). <b>De&#8209;duplication</b> &mdash; one role posted on several sources collapses to a single result; <code>group_size</code> and <code>other_source_urls</code> expose the duplicates.</p>
+      <p class="note">Premium key: pass <code>?api_key=...</code> or the header <code>X-API-Key</code> to lift the per&#8209;request cap from <b>50</b> to <b>1000</b> results.</p>
     </div>
 
     <h2>Export &amp; feeds</h2>
@@ -114,6 +135,8 @@ curl -H "X-API-Key: ..." "https://jobmesh.world/export.csv?country=DE"</code></p
       <p class="note" style="margin:8px 0 14px">Employers with open-job counts; a single employer with its latest roles.</p>
       <div class="ep"><span class="m">GET</span> <code>/filter-values</code> · <code>/suggest?q=...</code></div>
       <p class="note" style="margin:8px 0 14px">Distinct values per filter field; prefix-first title/company suggestions.</p>
+      <div class="ep"><span class="m">GET</span> <code>/facets</code></div>
+      <p class="note" style="margin:8px 0 14px">Result counts per filter value for the current query &mdash; build faceted filters without extra calls.</p>
       <div class="ep"><span class="m">GET</span> <code>/changes?since=&lt;cursor&gt;</code></div>
       <p class="note" style="margin:8px 0 14px">New, modified and closed postings since a cursor (each row carries <code>change_type</code> and <code>is_open</code>); page with the returned <code>cursor</code>.</p>
       <p class="note">Extra <code>/jobs</code> filters: <code>posted_after=YYYY-MM-DD</code>, <code>seen_within=N</code> (days), <code>has_salary=true</code>, <code>include_closed=true</code>, <code>platform</code>.</p>
@@ -127,7 +150,7 @@ curl -H "X-API-Key: ..." "https://jobmesh.world/export.csv?country=DE"</code></p
 
     <h2>Rate limits</h2>
     <div class="panel">
-      <p class="note" style="margin:0 0 10px">Every API response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code> and <code>X-Request-Id</code>. Over the limit returns <code>429</code> with <code>Retry-After</code>. A Premium key raises the per-minute limit.</p>
+      <p class="note" style="margin:0 0 10px"><b>240 requests/minute</b> without a key, <b>2,400/minute</b> with a Premium key (rolling 60&#8209;second window). Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code> and <code>X-Request-Id</code>; over the limit returns <code>429</code> with <code>Retry-After</code>.</p>
     </div>
 
     <h2>Index &amp; coverage</h2>
