@@ -9410,6 +9410,9 @@ successfactors:
   - "jobs.cmacgm-group.com|CMA CGM"   # CMA CGM / CEVA (Douala, Kribi) — robots.txt et sitemap verifies 22 nov. 2026
   - "jobs.plan-international.org|Plan International"   # NGO mondiale (dev/humanitaire, Afrique) — sitemap+microdata verifies 23 nov. 2026 (27 offres)
   - "careers.mota-engil.com|Mota-Engil"   # BTP/infra, forte presence Afrique — sitemap+microdata verifies 23 nov. 2026 (317 offres)
+  - "jobs.schaeffler.com|Schaeffler"   # equipementier auto/industrie — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~677 offres), robots autorise /job/ et le sitemap, verifie live 27/11/2026 (offres ouvertes > 0)
+  - "jobs.fraunhofer.de|Fraunhofer"   # premier organisme de recherche applique en Europe — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~742 offres), verifie live 27/11/2026 (offres ouvertes > 0)
+  - "jobs.zf.com|ZF"   # equipementier automobile mondial — signature CSB (rmkcdn + microdata), sitemap /job/{slug}/{id}/ (~794 offres), verifie live 27/11/2026 (offres ouvertes > 0)
 
 # GoHire (ATS #18/78) — hosted careers: sitemap.txt + schema.org JSON-LD per job (no token). board = careers host
 gohire:
