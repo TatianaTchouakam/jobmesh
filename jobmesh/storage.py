@@ -248,22 +248,23 @@ def connect(db_path: str = DEFAULT_DB):
 # last_checked each cycle never re-indexes it.
 _FTS_SCHEMA = """
 CREATE VIRTUAL TABLE IF NOT EXISTS jobs_fts
-    USING fts5(title, company, location, tokenize='unicode61');
+    USING fts5(title, company, location, country, tokenize='unicode61');
 
 CREATE TRIGGER IF NOT EXISTS jobs_fts_ai AFTER INSERT ON jobs BEGIN
-    INSERT INTO jobs_fts(rowid, title, company, location)
-    VALUES (new.rowid, new.title, new.company, new.location);
+    INSERT INTO jobs_fts(rowid, title, company, location, country)
+    VALUES (new.rowid, new.title, new.company, new.location, new.country);
 END;
 CREATE TRIGGER IF NOT EXISTS jobs_fts_ad AFTER DELETE ON jobs BEGIN
     DELETE FROM jobs_fts WHERE rowid = old.rowid;
 END;
-CREATE TRIGGER IF NOT EXISTS jobs_fts_au AFTER UPDATE OF title, company, location ON jobs
+CREATE TRIGGER IF NOT EXISTS jobs_fts_au
+    AFTER UPDATE OF title, company, location, country ON jobs
     WHEN new.title IS NOT old.title OR new.company IS NOT old.company
-         OR new.location IS NOT old.location
+         OR new.location IS NOT old.location OR new.country IS NOT old.country
 BEGIN
     DELETE FROM jobs_fts WHERE rowid = old.rowid;
-    INSERT INTO jobs_fts(rowid, title, company, location)
-    VALUES (new.rowid, new.title, new.company, new.location);
+    INSERT INTO jobs_fts(rowid, title, company, location, country)
+    VALUES (new.rowid, new.title, new.company, new.location, new.country);
 END;
 """
 
@@ -276,13 +277,20 @@ def _ensure_fts(conn: sqlite3.Connection) -> bool:
     count mismatch is enough to trigger a one-off rebuild (e.g. first deploy
     on an existing database)."""
     try:
+        # An older index has only (title, company, location). Rebuild it to add
+        # the country column (so a country filter runs inside the FTS match).
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(jobs_fts)")]
+        if cols and "country" not in cols:
+            conn.execute("DROP TABLE IF EXISTS jobs_fts")
+            for trig in ("jobs_fts_ai", "jobs_fts_ad", "jobs_fts_au"):
+                conn.execute(f"DROP TRIGGER IF EXISTS {trig}")
         conn.executescript(_FTS_SCHEMA)
         n_jobs = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
         n_fts = conn.execute("SELECT COUNT(*) FROM jobs_fts").fetchone()[0]
         if n_jobs and n_fts != n_jobs:
             conn.execute("DELETE FROM jobs_fts")
-            conn.execute("INSERT INTO jobs_fts(rowid, title, company, location) "
-                         "SELECT rowid, title, company, location FROM jobs")
+            conn.execute("INSERT INTO jobs_fts(rowid, title, company, location, country) "
+                         "SELECT rowid, title, company, location, country FROM jobs")
             conn.commit()
         return True
     except sqlite3.OperationalError as exc:  # no FTS5 in this build
@@ -484,37 +492,40 @@ def log_fetch(
 
 # -- reads ----------------------------------------------------------------
 
-def _filter_clauses(f: dict, exclude: Optional[str] = None, alias: str = ""):
+def _filter_clauses(f: dict, exclude=None, alias: str = ""):
     """(clauses, params) for a filter dict. `alias` (e.g. "j.") qualifies the
-    columns so the same builder works in a plain query and in an FTS join."""
+    columns so the same builder works in a plain query and in an FTS join.
+    `exclude` is a field name or a set of field names to skip."""
     a = alias
+    ex = (exclude if isinstance(exclude, (set, frozenset, list, tuple))
+          else ({exclude} if exclude else set()))
     clauses, params = [], []
     if f.get("open_only", True):
         clauses.append(f"{a}is_open = 1")
-    if f.get("keyword") and exclude != "keyword":
+    if f.get("keyword") and "keyword" not in ex:
         for tok in str(f["keyword"]).split():
             clauses.append(f"({a}title LIKE ? OR {a}description LIKE ?)")
             params += [f"%{tok}%", f"%{tok}%"]
-    if f.get("company") and exclude != "company":
+    if f.get("company") and "company" not in ex:
         clauses.append(f"{a}company LIKE ?"); params.append(f"%{f['company']}%")
-    if f.get("location") and exclude != "location":
+    if f.get("location") and "location" not in ex:
         clauses.append(f"{a}location LIKE ?"); params.append(f"%{f['location']}%")
-    if f.get("platform") and exclude != "platform":
+    if f.get("platform") and "platform" not in ex:
         clauses.append(f"{a}source_platform = ?"); params.append(f["platform"])
-    if f.get("workplace_type") and exclude != "workplace_type":
+    if f.get("workplace_type") and "workplace_type" not in ex:
         clauses.append(f"{a}workplace_type = ?"); params.append(f["workplace_type"])
-    if f.get("employment_type") and exclude != "employment_type":
+    if f.get("employment_type") and "employment_type" not in ex:
         clauses.append(f"{a}employment_type = ?"); params.append(f["employment_type"])
-    if f.get("category") and exclude != "category":
+    if f.get("category") and "category" not in ex:
         clauses.append(f"{a}category = ?"); params.append(f["category"])
-    if f.get("level") and exclude != "level":
+    if f.get("level") and "level" not in ex:
         clauses.append(f"{a}level = ?"); params.append(f["level"])
-    if f.get("country") and exclude != "country":
+    if f.get("country") and "country" not in ex:
         # Indexed country column (populated at ingest). Fall back to a name
         # match only for a value the column can't carry (shouldn't happen).
         code = str(f["country"]).upper()
         clauses.append(f"{a}country = ?"); params.append(code)
-    if f.get("since") and exclude != "since":
+    if f.get("since") and "since" not in ex:
         try:
             _days = int(f["since"])
         except (TypeError, ValueError):
@@ -524,10 +535,10 @@ def _filter_clauses(f: dict, exclude: Optional[str] = None, alias: str = ""):
             _cut = (datetime.now(timezone.utc) - timedelta(days=_days)).strftime("%Y-%m-%d")
             clauses.append(f"substr(COALESCE({a}posted_at, {a}first_seen),1,10) >= ?")
             params.append(_cut)
-    if f.get("posted_after") and exclude != "posted_after":
+    if f.get("posted_after") and "posted_after" not in ex:
         clauses.append(f"substr(COALESCE({a}posted_at, {a}first_seen),1,10) >= ?")
         params.append(str(f["posted_after"])[:10])
-    if f.get("seen_within") and exclude != "seen_within":
+    if f.get("seen_within") and "seen_within" not in ex:
         try:
             _sw = int(f["seen_within"])
         except (TypeError, ValueError):
@@ -537,7 +548,7 @@ def _filter_clauses(f: dict, exclude: Optional[str] = None, alias: str = ""):
             _swc = (datetime.now(timezone.utc) - timedelta(days=_sw)).strftime("%Y-%m-%d")
             clauses.append(f"substr({a}first_seen,1,10) >= ?")
             params.append(_swc)
-    if f.get("has_salary") and exclude != "has_salary":
+    if f.get("has_salary") and "has_salary" not in ex:
         clauses.append(f"{a}salary IS NOT NULL AND TRIM({a}salary) != ''")
     return clauses, params
 
@@ -553,11 +564,21 @@ _FTS_RANK_CAP = int(os.getenv("FTS_RANK_CAP", "1000"))
 COUNT_CAP = int(os.getenv("SEARCH_COUNT_CAP", "10000"))
 
 
-def _fts_match(tokens: list[str]) -> str:
-    """FTS5 MATCH expression: every token required (implicit AND), quoted so
-    punctuation in a query can't break the FTS grammar."""
+_FTS_TEXT_COLS = "title company location"
+
+
+def _fts_match(tokens: list[str], country: str | None = None) -> str:
+    """FTS5 MATCH expression. The query tokens (every one required) are scoped
+    to the text columns so a term that happens to equal a country code can't
+    match the country column; an optional country filter is applied inside the
+    index via the country column, so a country filter needs no per-row probe."""
     safe = ['"' + t.replace('"', '') + '"' for t in tokens if t.strip()]
-    return " ".join(safe)
+    expr = "{" + _FTS_TEXT_COLS + "} : (" + " ".join(safe) + ")" if safe else ""
+    if country:
+        cc = str(country).lower().replace('"', '')
+        tag = 'country : ("' + cc + '")'
+        expr = (expr + " AND " + tag) if expr else tag
+    return expr
 
 
 # One row per role: the same posting indexed from several sources shares a
@@ -601,13 +622,17 @@ def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
     collapsed in Python over the page."""
     tokens = str(filters.get("keyword") or "").split()
     if tokens:
-        clauses, params = _filter_clauses(filters, exclude="keyword", alias="j2.")
+        clauses, params = _filter_clauses(
+            filters, exclude={"keyword", "country"}, alias="j2.")
         where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
+        # The country filter rides inside the FTS match (country column), so the
+        # top-k is already country-restricted -- no per-row country probe.
+        match = _fts_match(tokens, filters.get("country"))
         sql = (
             "SELECT j.* FROM ("
             " SELECT j2.rowid AS rid, MIN(m.rank) AS r, "
             "        COALESCE(j2.posted_at, j2.first_seen) AS d"
-            "  FROM (SELECT rowid, bm25(jobs_fts, 10.0, 3.0, 1.0) AS rank"
+            "  FROM (SELECT rowid, bm25(jobs_fts, 10.0, 3.0, 1.0, 0.0) AS rank"
             "        FROM jobs_fts WHERE jobs_fts MATCH ? ORDER BY rank LIMIT ?) m"
             "  CROSS JOIN jobs j2 ON j2.rowid = m.rowid"
             f"{where}"
@@ -617,7 +642,7 @@ def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
         )
         try:
             rows = [dict(r) for r in conn.execute(
-                sql, [_fts_match(tokens), _FTS_RANK_CAP] + params
+                sql, [match, _FTS_RANK_CAP] + params
                 + [limit, offset]).fetchall()]
             return _enrich_groups(conn, rows)
         except sqlite3.OperationalError:
@@ -659,25 +684,34 @@ def count(conn: sqlite3.Connection, cap: int | None = None, **filters) -> int:
     tokens = str(filters.get("keyword") or "").split()
     if tokens:
         cap = COUNT_CAP if cap is None else cap
-        clauses, params = _filter_clauses(filters, exclude="keyword", alias="j.")
+        clauses, params = _filter_clauses(
+            filters, exclude={"keyword", "country"}, alias="j.")
+        # Country rides inside the FTS match (country column); only the remaining
+        # filters (if any) still need a per-row probe.
+        match = _fts_match(tokens, filters.get("country"))
         extra_clauses = [c for c in clauses if "is_open" not in c]
         lim = f" LIMIT {cap + 1}" if cap else ""
+        # "Selective" = a country or another filter narrows the match. Then the
+        # candidate set coming out of the FTS index is small (country is indexed
+        # inside the match), so we can afford the per-row is_open/other probe and
+        # return an exact open count. A broad term with no such filter would
+        # instead probe up to cap rows, so there we count straight from the FTS
+        # index (a few ms; the open/closed skew is bounded and the UI caps at N+).
+        selective = bool(filters.get("country")) or bool(extra_clauses)
         try:
-            if not extra_clauses:
-                # Only the open filter (or none): count straight from the FTS
-                # index, no per-row probe -> a few ms even for a broad term.
+            if not selective:
                 return conn.execute(
                     "SELECT COUNT(*) FROM "
                     f"(SELECT 1 FROM jobs_fts WHERE jobs_fts MATCH ?{lim})",
-                    [_fts_match(tokens)]).fetchone()[0]
+                    [match]).fetchone()[0]
             # CROSS JOIN forces the FTS index to drive the scan (SQLite would
             # otherwise pick the is_open index and probe FTS per row -> slow).
-            extra = " AND " + " AND ".join(clauses)
+            extra = (" AND " + " AND ".join(clauses)) if clauses else ""
             return conn.execute(
                 "SELECT COUNT(*) FROM (SELECT 1 "
                 "FROM jobs_fts f CROSS JOIN jobs j ON j.rowid = f.rowid "
                 f"WHERE jobs_fts MATCH ?{extra}{lim})",
-                [_fts_match(tokens)] + params).fetchone()[0]
+                [match] + params).fetchone()[0]
         except sqlite3.OperationalError:
             pass
     where, params = _build_where(filters)

@@ -115,3 +115,16 @@ def test_stats_served_from_cache_fast(big_db):
         assert ms < 100, f"/stats took {ms:.0f}ms (should read the cache)"
         assert again["open_postings"] == cached["open_postings"]
         assert again["total_postings"] == N
+
+
+def test_keyword_plus_country_under_500ms(big_db):
+    # A keyword combined with a country filter stays fast: the country lives in
+    # the FTS index, so the match is already country-scoped (no per-row probe).
+    with storage.session(big_db) as conn:
+        for term in ("data", "engineer", "software"):
+            ms, rows = _ms(lambda: storage.search(
+                conn, limit=30, keyword=term, country="DE"))
+            assert ms < 500, f"search {term!r}+DE took {ms:.0f}ms"
+            ms, n = _ms(lambda: storage.count(conn, keyword=term, country="DE"))
+            assert ms < 500, f"count {term!r}+DE took {ms:.0f}ms"
+            assert n <= storage.COUNT_CAP + 1
