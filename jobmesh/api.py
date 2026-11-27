@@ -455,9 +455,13 @@ def list_jobs(
     with storage.session(DB_PATH) as conn:
         rows = storage.search(conn, limit=limit, offset=offset, **f)
         total = storage.count(conn, **f)
+    capped = total > storage.COUNT_CAP
+    if capped:
+        total = storage.COUNT_CAP
     return {
         "count": len(rows),
         "total": total,
+        "total_capped": capped,
         "limit": limit,
         "offset": offset,
         "has_more": offset + len(rows) < total,
@@ -914,6 +918,13 @@ def _maybe_start_refresher() -> None:
                             results = _ingest(conn, run_boards)
                             storage.record_ingest_run(
                                 conn, results, started, time.time())
+                            # Refresh query-planner stats and the headline-stats
+                            # cache so /stats and search stay fast after a cycle.
+                            try:
+                                conn.execute("PRAGMA optimize")
+                            except Exception:
+                                pass
+                            storage.refresh_stats_cache(conn)
                         try:
                             from .exportfiles import write_gz_exports, write_sitemaps
                             write_gz_exports(DB_PATH, EXPORT_DIR, _CSV_COLS)

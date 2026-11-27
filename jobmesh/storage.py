@@ -549,6 +549,8 @@ def _build_where(f: dict, exclude: Optional[str] = None):
 
 
 _FTS_RANK_CAP = int(os.getenv("FTS_RANK_CAP", "1000"))
+# Keyword result counts are bounded: beyond this the UI shows "N+".
+COUNT_CAP = int(os.getenv("SEARCH_COUNT_CAP", "10000"))
 
 
 def _fts_match(tokens: list[str]) -> str:
@@ -649,20 +651,32 @@ def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
     return _enrich_groups(conn, rows)
 
 
-def count(conn: sqlite3.Connection, **filters) -> int:
-    """Number of distinct roles (dedup_key groups) matching the filters."""
+def count(conn: sqlite3.Connection, cap: int | None = None, **filters) -> int:
+    """Postings matching the filters. Keyword counts are bounded at `cap`
+    (default COUNT_CAP): the query stops once it has seen cap+1 rows, so a
+    broad term stays fast and the UI shows e.g. "10,000+". Results are
+    de-duplicated for display; the count is of raw matches."""
     tokens = str(filters.get("keyword") or "").split()
     if tokens:
+        cap = COUNT_CAP if cap is None else cap
         clauses, params = _filter_clauses(filters, exclude="keyword", alias="j.")
-        extra = (" AND " + " AND ".join(clauses)) if clauses else ""
+        extra_clauses = [c for c in clauses if "is_open" not in c]
+        lim = f" LIMIT {cap + 1}" if cap else ""
         try:
+            if not extra_clauses:
+                # Only the open filter (or none): count straight from the FTS
+                # index, no per-row probe -> a few ms even for a broad term.
+                return conn.execute(
+                    "SELECT COUNT(*) FROM "
+                    f"(SELECT 1 FROM jobs_fts WHERE jobs_fts MATCH ?{lim})",
+                    [_fts_match(tokens)]).fetchone()[0]
             # CROSS JOIN forces the FTS index to drive the scan (SQLite would
             # otherwise pick the is_open index and probe FTS per row -> slow).
-            # Raw match count (fast); results are de-duplicated for display.
+            extra = " AND " + " AND ".join(clauses)
             return conn.execute(
-                "SELECT COUNT(*) "
+                "SELECT COUNT(*) FROM (SELECT 1 "
                 "FROM jobs_fts f CROSS JOIN jobs j ON j.rowid = f.rowid "
-                f"WHERE jobs_fts MATCH ?{extra}",
+                f"WHERE jobs_fts MATCH ?{extra}{lim})",
                 [_fts_match(tokens)] + params).fetchone()[0]
         except sqlite3.OperationalError:
             pass
@@ -783,15 +797,14 @@ def _rotation_info(conn) -> dict | None:
     return info or None
 
 
-def stats(conn: sqlite3.Connection) -> dict:
-    """Headline numbers about the current index."""
+def compute_stats_aggregates(conn: sqlite3.Connection) -> dict:
+    """The expensive headline aggregates (full COUNT/DISTINCT/GROUP BY).
+
+    Run once at the end of a cycle and cached in meta; never on a request."""
     total = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
-    open_ = conn.execute(
-        "SELECT COUNT(*) FROM jobs WHERE is_open=1"
-    ).fetchone()[0]
+    open_ = conn.execute("SELECT COUNT(*) FROM jobs WHERE is_open=1").fetchone()[0]
     boards = conn.execute(
-        "SELECT COUNT(DISTINCT source_platform || ':' || source_board) "
-        "FROM jobs"
+        "SELECT COUNT(DISTINCT source_platform || ':' || source_board) FROM jobs"
     ).fetchone()[0]
     dupes = conn.execute(
         "SELECT COUNT(*) - COUNT(DISTINCT dedup_key) FROM jobs "
@@ -820,6 +833,33 @@ def stats(conn: sqlite3.Connection) -> dict:
         "companies": companies,
         "duplicate_open_postings": dupes,
         "open_by_platform": by_platform,
+    }
+
+
+def refresh_stats_cache(conn: sqlite3.Connection) -> dict:
+    """Recompute the headline aggregates and cache them in meta (JSON)."""
+    agg = compute_stats_aggregates(conn)
+    set_meta(conn, "stats_cache", json.dumps(agg))
+    return agg
+
+
+def stats(conn: sqlite3.Connection) -> dict:
+    """Headline numbers about the current index.
+
+    The heavy aggregates come from the per-cycle cache in meta (served in a few
+    ms); only cheap live meta is read per request. The cache is backfilled on
+    first use if a cycle hasn't populated it yet."""
+    raw = get_meta(conn, "stats_cache")
+    agg = None
+    if raw:
+        try:
+            agg = json.loads(raw)
+        except (ValueError, TypeError):
+            agg = None
+    if agg is None:
+        agg = refresh_stats_cache(conn)      # one-off backfill, then cached
+    return {
+        **agg,
         "last_updated": get_meta(conn, "last_ingest_finished"),
         "last_ingest_seconds": (
             float(get_meta(conn, "last_ingest_seconds"))

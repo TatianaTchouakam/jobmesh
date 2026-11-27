@@ -8,7 +8,7 @@ from jobmesh.rotation import apply_rotation, shard_of, shards_for
 
 
 def test_workday_rotates_by_default():
-    assert shards_for("workday") == 3
+    assert shards_for("workday") == 4
     assert shards_for("greenhouse") == 1
 
 
@@ -31,20 +31,21 @@ def test_rotation_covers_everything_once_per_n_cycles():
               "greenhouse": ["acme", "beta"]}
     seen = set()
     sizes = []
-    for cycle in range(3):
+    shards = 4
+    for cycle in range(shards):
         run, info = apply_rotation(boards, cycle)
         # non-rotated platform passes through untouched every cycle
         assert run["greenhouse"] == ["acme", "beta"]
-        assert info["workday"]["shards"] == 3
-        assert info["workday"]["current"] == cycle % 3
+        assert info["workday"]["shards"] == shards
+        assert info["workday"]["current"] == cycle % shards
         sizes.append(len(run["workday"]))
         seen |= set(run["workday"])
-    assert seen == set(boards["workday"])     # every board fetched once per 3 cycles
+    assert seen == set(boards["workday"])     # every board fetched once per cycle set
     assert sum(sizes) == len(boards["workday"])  # no board in two shards
-    # cycle 3 wraps back to shard 0
+    # next cycle wraps back to shard 0
     run0, _ = apply_rotation(boards, 0)
-    run3, _ = apply_rotation(boards, 3)
-    assert set(run0["workday"]) == set(run3["workday"])
+    runN, _ = apply_rotation(boards, shards)
+    assert set(run0["workday"]) == set(runN["workday"])
 
 
 def test_stats_exposes_rotation(tmp_path):

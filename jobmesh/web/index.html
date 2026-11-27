@@ -873,7 +873,7 @@ async function loadFacets(){
   try{
     const f=await(await fetch("/facets?"+params().toString())).json();
     renderSelects(f);
-    {const cel=$("count");if(cel)cel.innerHTML=`${(f.total||0).toLocaleString()} <span>${t("open_roles")}</span>`;}
+    {const cel=$("count");if(cel){const tc=(f.total||0).toLocaleString()+(f.total_capped?"+":"");cel.innerHTML=`${tc} <span>${t("open_roles")}</span>`;}}
     let html='<div class="sidehead">'+t("filters_title")+'</div>';
     const DOPTS=[["1","since_today"],["7","since_7"],["30","since_30"]];
     html+=`<div class="fgroup"><h4>${t("g_date")}</h4>`;

@@ -44,6 +44,11 @@ def _cmd_ingest(args) -> None:
             storage.set_meta(conn, "rotation_info", _json.dumps(_rot_info))
             results = ingest(conn, _run_boards)
             storage.record_ingest_run(conn, results, _started, _time.time())
+            try:
+                conn.execute("PRAGMA optimize")
+            except Exception:
+                pass
+            storage.refresh_stats_cache(conn)
 
     ok = [r for r in results if r.status == "success"]
     failed = [r for r in results if r.status == "failure"]

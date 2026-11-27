@@ -111,7 +111,7 @@ class ClusterLimiter:
 
 # Per-platform default pacing (seconds between same-host requests). Page-per-job
 # platforms (CareerPlug) use a lighter pace than Workday's cluster API.
-_DEFAULT_INTERVALS = {"workday": 1.5, "careerplug": 0.4, "paylocity": 1.0}
+_DEFAULT_INTERVALS = {"workday": 2.0, "careerplug": 0.4, "paylocity": 1.0}
 
 _LIMITERS: dict[str, ClusterLimiter] = {}
 _LIMITERS_LOCK = threading.Lock()

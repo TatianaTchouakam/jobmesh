@@ -1,6 +1,6 @@
-"""Performance guard on a 400k-row index.
+"""Performance guard on a 600k-row index.
 
-Builds a synthetic 400,000-posting database once and asserts the hot read
+Builds a synthetic 600,000-posting database once and asserts the hot read
 paths stay fast: keyword search under 500 ms, country pages and the /changes
 cursor under 1 s. Runs at the storage layer (no HTTP serialisation), which is
 what the FTS index and the filter indexes are there to make fast.
@@ -12,7 +12,7 @@ import pytest
 
 from jobmesh import storage
 
-N = 400_000
+N = 600_000
 
 _TITLE_WORDS = ["Data", "Software", "Senior", "Junior", "Machine", "Learning",
                 "Engineer", "Analyst", "Scientist", "Backend", "Frontend",
@@ -41,7 +41,7 @@ def big_db(tmp_path_factory):
             rows.append((
                 f"gh:board{i % 1000}:{i}", "greenhouse", f"board{i % 1000}",
                 str(i), title, comp, loc, None, f"https://x/{i}", f"https://x/{i}",
-                None, None, None, None, None, 0, changed[:10], None,
+                None, None, None, None, None, 0, changed[:10], f"r{i % 5000}",
                 changed, changed, changed, country, 1 if i % 7 else 0,
             ))
             if len(rows) >= 10000:
@@ -59,6 +59,9 @@ def big_db(tmp_path_factory):
                 "employment_type,workplace_type,category,level,remote,posted_at,"
                 "dedup_key,first_seen,last_checked,last_changed,country,is_open) "
                 "VALUES (" + ",".join("?" * 23) + ")", rows)
+        conn.commit()
+        conn.execute("ANALYZE")          # same stats refresh we run at cycle end
+        storage.refresh_stats_cache(conn)
         conn.commit()
         n = conn.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
         nf = conn.execute("SELECT COUNT(*) FROM jobs_fts").fetchone()[0]
@@ -95,3 +98,20 @@ def test_changes_cursor_under_1s(big_db):
         ms, (rows, cur) = _ms(
             lambda: storage.changes_since(conn, since="2026-11-10T00:00:00Z", limit=200))
         assert rows and ms < 1000, f"changes took {ms:.0f}ms"
+
+
+def test_count_is_bounded(big_db):
+    with storage.session(big_db) as conn:
+        # A broad term matches far more than the cap but stays fast and bounded.
+        ms, n = _ms(lambda: storage.count(conn, keyword="data"))
+        assert n <= storage.COUNT_CAP + 1, f"count not bounded: {n}"
+        assert ms < 500, f"bounded count took {ms:.0f}ms"
+
+
+def test_stats_served_from_cache_fast(big_db):
+    with storage.session(big_db) as conn:
+        cached = storage.stats(conn)            # cache built in the fixture
+        ms, again = _ms(lambda: storage.stats(conn))
+        assert ms < 100, f"/stats took {ms:.0f}ms (should read the cache)"
+        assert again["open_postings"] == cached["open_postings"]
+        assert again["total_postings"] == N
