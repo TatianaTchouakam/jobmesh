@@ -122,8 +122,15 @@ class SitemapJsonLdConnector(Connector):
         except requests.RequestException:
             return []
         jobs: list[Job] = []
-        for p in parse_jobpostings(r.text):
-            job = posting_to_job(p, self.platform, self.board, fetched_at, url)
+        try:
+            postings = parse_jobpostings(r.text)
+        except Exception:
+            return jobs            # malformed JSON-LD on this page: skip it
+        for p in postings:
+            try:
+                job = posting_to_job(p, self.platform, self.board, fetched_at, url)
+            except Exception:
+                continue           # one odd posting shape never fails the board
             if job is None:
                 continue
             if self._company:
