@@ -18,6 +18,8 @@ import json
 import logging
 import os
 import sqlite3
+import threading
+import time as _time
 from contextlib import contextmanager
 from typing import Iterable, Iterator, Optional
 
@@ -206,6 +208,7 @@ def _connect_libsql(db_path: str, url: str):
     conn = _LibsqlConn(raw)
     conn.executescript(_SCHEMA)  # idempotent (CREATE ... IF NOT EXISTS)
     _migrate(conn)
+    migrate_heavy(conn)
     conn._raw.commit()
     conn._raw.sync()  # push the schema / migrations on first deploy
     conn._dirty = False
@@ -237,8 +240,10 @@ def connect(db_path: str = DEFAULT_DB):
     # later connections in the same process skip the (count-checking) migration.
     if db_path not in _MIGRATED:
         conn.executescript(_SCHEMA)
-        _migrate(conn)
+        _migrate(conn)                 # fast DDL only
         _MIGRATED.add(db_path)
+        if not DEFER_HEAVY_MIGRATION:  # tests / CLI / local: do the heavy part now
+            migrate_heavy(conn)
     return conn
 
 
@@ -325,26 +330,70 @@ def _backfill_country(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-_MIGRATED: set = set()   # db paths whose schema/FTS this process has ensured
+_MIGRATED: set = set()   # db paths whose fast schema this process has ensured
+_HEAVY_DONE: set = set()  # db paths whose heavy migration (backfill/FTS rebuild) is done
+_HEAVY_LOCK = threading.Lock()
+# The deployed server sets this True so startup stays fast: the heavy migration
+# (country backfill, FTS rebuild) then runs in a background thread and keyword
+# search falls back to LIKE until it finishes. Off for tests/CLI/local, where
+# the heavy migration runs synchronously on first connect (as before).
+DEFER_HEAVY_MIGRATION = False
+
+
+def _fts_available() -> bool:
+    """Whether the FTS index is ready to serve. During a deferred heavy
+    migration it may be missing or the wrong shape, so search uses LIKE."""
+    return (not DEFER_HEAVY_MIGRATION) or bool(_HEAVY_DONE)
 
 
 def _migrate(conn: sqlite3.Connection) -> None:
-    """Add columns introduced after a database was first created."""
+    """Fast, synchronous schema shape: add any missing columns and create the
+    indexes and the FTS table + triggers. No row backfills and no FTS rebuild --
+    those are the heavy part (``migrate_heavy``), deferred on the server so
+    startup answers in seconds."""
     existing = {row["name"] for row in conn.execute("PRAGMA table_info(jobs)")}
     for col in ("workplace_type", "category", "level"):
         if col not in existing:
             conn.execute(f"ALTER TABLE jobs ADD COLUMN {col} TEXT")
-    country_added = "country" not in existing
-    if country_added:
+    if "country" not in existing:
         conn.execute("ALTER TABLE jobs ADD COLUMN country TEXT")
     conn.commit()
     # Indexes/FTS from _SCHEMA may post-date the table: re-apply idempotently.
     conn.executescript(_SCHEMA)
     conn.execute('CREATE INDEX IF NOT EXISTS idx_jobs_country ON jobs(country, is_open)')
-    if country_added:
-        _backfill_country(conn)
-    _ensure_fts(conn)
+    # Create the FTS table + triggers if absent (fast). An existing index of the
+    # wrong shape is left as-is here and rebuilt by migrate_heavy().
+    try:
+        conn.executescript(_FTS_SCHEMA)
+    except sqlite3.OperationalError:
+        pass   # FTS5 not available in this build -> LIKE search
     conn.commit()
+
+
+def migrate_heavy(conn: sqlite3.Connection) -> None:
+    """Slow data migrations: backfill the country column and rebuild the FTS
+    index when its columns or row count are out of date. Safe to run in the
+    background -- keyword search falls back to LIKE until it finishes."""
+    _backfill_country(conn)   # only touches rows with country IS NULL (no-op once done)
+    _ensure_fts(conn)         # rebuilds (drop + reindex) if columns/count differ
+    conn.commit()
+
+
+def run_heavy_migration(db_path: str = DEFAULT_DB) -> float:
+    """Run migrate_heavy once per db_path, under a lock. Returns seconds taken.
+    Used by the server's background thread after a fast startup."""
+    if db_path in _HEAVY_DONE:
+        return 0.0
+    with _HEAVY_LOCK:
+        if db_path in _HEAVY_DONE:
+            return 0.0
+        t = _time.time()
+        with session(db_path) as conn:
+            migrate_heavy(conn)
+        _HEAVY_DONE.add(db_path)
+        took = _time.time() - t
+        log.info("heavy migration complete for %s in %.1fs", db_path, took)
+        return took
 
 
 @contextmanager
@@ -621,7 +670,7 @@ def search(conn: sqlite3.Connection, limit: int = 20, offset: int = 0,
     collapse in SQL (bounded by the FTS top-k), and the plain path is
     collapsed in Python over the page."""
     tokens = str(filters.get("keyword") or "").split()
-    if tokens:
+    if tokens and _fts_available():
         clauses, params = _filter_clauses(
             filters, exclude={"keyword", "country"}, alias="j2.")
         where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
@@ -682,7 +731,7 @@ def count(conn: sqlite3.Connection, cap: int | None = None, **filters) -> int:
     broad term stays fast and the UI shows e.g. "10,000+". Results are
     de-duplicated for display; the count is of raw matches."""
     tokens = str(filters.get("keyword") or "").split()
-    if tokens:
+    if tokens and _fts_available():
         cap = COUNT_CAP if cap is None else cap
         clauses, params = _filter_clauses(
             filters, exclude={"keyword", "country"}, alias="j.")

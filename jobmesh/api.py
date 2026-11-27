@@ -40,6 +40,13 @@ app = FastAPI(
 )
 
 DB_PATH = storage.DEFAULT_DB
+
+# On the deployed server (self-refresh on) keep startup fast: defer the heavy
+# migration (country backfill, FTS rebuild) to the background refresh thread so
+# the server answers /health in seconds instead of blocking on a full reindex.
+# Keyword search falls back to LIKE until that background migration finishes.
+if os.getenv("INGEST_INTERVAL_HOURS"):
+    storage.DEFER_HEAVY_MIGRATION = True
 WEB_DIR = os.path.join(os.path.dirname(__file__), "web")
 
 # Serve the bundled front-end libraries (d3, topojson) and the world map
@@ -890,6 +897,16 @@ def _maybe_start_refresher() -> None:
         from .config import load_boards
         from .pipeline import ingest as _ingest
         from .locks import ingest_lock
+
+        # Heavy migration runs here, off the startup path: the server is already
+        # answering /health and serving LIKE search. Search switches to the FTS
+        # index as soon as this returns.
+        try:
+            took = storage.run_heavy_migration(DB_PATH)
+            if took:
+                log.info("index ready (heavy migration %.1fs)", took)
+        except Exception as exc:
+            log.warning("heavy migration failed: %s", exc)
 
         cap = os.getenv("INGEST_MAX_BOARDS")
         # First ingest soon after boot when the index is missing or stale,

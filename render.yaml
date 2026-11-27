@@ -13,6 +13,7 @@ services:
     plan: standard
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn jobmesh.api:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health   # Render waits for a 200 here before routing; startup answers in seconds (heavy migration runs in the background)
     disk:
       name: jobmesh-data
       mountPath: /var/data
