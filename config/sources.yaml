@@ -70,7 +70,7 @@ required_ats:
   - { name: "Trakstar", connector: trakstar, status: ACTIVE }
   - { name: "TriNet", connector: trinet, status: ACTIVE }
   - { name: "UltiPro", connector: null, status: NO_PUBLIC_ROUTE, note: "Posting pages are an app payload with no reliable open/closed signal",
-      reason: "robots.txt re-checked 26/11/2026: Disallow */JobBoardView (the only job-data route, incl. LoadSearchResults); */JobBoard/ is Allowed but is a JS shell with no embedded jobs (no JSON-LD, no server-rendered list). No clean public data route.", next_action: "PARTNERSHIP_PENDING — UKG Developer Portal partner job-board feed (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
+      reason: "Re-verified 27/11/2026 with fresh posting ids from Common Crawl (recruiting2.ultipro.com, e.g. tenant AAG1000AAGD, 66 live OpportunityDetail captures in CC-MAIN-2026-47). robots.txt: Allow */JobBoard/ but Disallow */JobBoardView — and every job-data endpoint the page calls (LoadSearchResults, GetOpportunity*, GetFilters) is under */JobBoardView. The allowed OpportunityDetail page is a JS app that server-renders no JobPosting (no JSON-LD, no embedded job object), so there is no robots-permitted route to read the job data or an open/closed signal. No clean public data route.", next_action: "PARTNERSHIP_PENDING — UKG Developer Portal partner job-board feed (see PARTNERSHIPS.md)", request_status: "Partner request sent 26/11/2026" }
   - { name: "WeRecruit", connector: werecruit, status: ACTIVE }
   - { name: "Workable", connector: workable, status: ACTIVE }
   - { name: "Workday", connector: workday, status: ACTIVE }
