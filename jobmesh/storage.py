@@ -361,6 +361,7 @@ def _migrate(conn: sqlite3.Connection) -> None:
     # Indexes/FTS from _SCHEMA may post-date the table: re-apply idempotently.
     conn.executescript(_SCHEMA)
     conn.execute('CREATE INDEX IF NOT EXISTS idx_jobs_country ON jobs(country, is_open)')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_fetchlog_platform_board ON fetch_log(platform, board, id)')
     # Create the FTS table + triggers if absent (fast). An existing index of the
     # wrong shape is left as-is here and rebuilt by migrate_heavy().
     try:
@@ -995,22 +996,47 @@ def coverage(conn: sqlite3.Connection) -> dict:
         "FROM jobs WHERE is_open=1 GROUP BY source_platform "
         "ORDER BY open_jobs DESC"
     ).fetchall()
-    last = {
-        r["platform"]: {"status": r["status"], "ran_at": r["ran_at"]}
-        for r in conn.execute(
-            "SELECT platform, status, ran_at FROM fetch_log "
-            "WHERE id IN (SELECT MAX(id) FROM fetch_log GROUP BY platform)"
-        ).fetchall()
-    }
+    # Latest fetch per *board* (not per platform): a platform's health is the
+    # health of its boards, so one board failing at the end of a cycle must not
+    # flip the whole platform to "failure" while hundreds of boards succeeded.
+    agg: dict = {}
+    for r in conn.execute(
+        "SELECT platform, status, error, ran_at FROM fetch_log "
+        "WHERE id IN (SELECT MAX(id) FROM fetch_log GROUP BY platform, board)"
+    ).fetchall():
+        a = agg.setdefault(r["platform"],
+                           {"ok": 0, "failed": 0, "rate_limited": 0, "last_run": None})
+        if r["status"] == "success":
+            a["ok"] += 1
+        else:
+            a["failed"] += 1
+            err = (r["error"] or "").lower()
+            if "429" in err or "rate limit" in err or "too many requests" in err:
+                a["rate_limited"] += 1
+        if r["ran_at"] and (a["last_run"] is None or r["ran_at"] > a["last_run"]):
+            a["last_run"] = r["ran_at"]
     platforms = []
     for r in rows:
         p = r["platform"]
+        a = agg.get(p, {})
+        ok, failed = a.get("ok", 0), a.get("failed", 0)
+        if ok and not failed:
+            status = "success"
+        elif ok and failed:
+            status = "degraded"      # some boards failing, most working
+        elif failed:
+            status = "failure"
+        else:
+            status = None
         platforms.append({
             "platform": p,
             "open_jobs": r["open_jobs"],
             "boards": r["boards"],
-            "last_run": last.get(p, {}).get("ran_at"),
-            "last_status": last.get(p, {}).get("status"),
+            "last_run": a.get("last_run"),
+            "last_status": status,
+            "boards_ok": ok,
+            "boards_failed": failed,
+            "boards_rate_limited": a.get("rate_limited", 0),
         })
     return {"platforms_live": len(platforms), "platforms": platforms}
 

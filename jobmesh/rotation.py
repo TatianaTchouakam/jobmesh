@@ -26,7 +26,7 @@ import os
 #   join    ~2,950 boards;
 #   icims    ~740 boards, each fetched posting-by-posting (slowest per board).
 # Greenhouse/SmartRecruiters stay full: one fast API call per board.
-_DEFAULT_SHARDS = {"workday": 4, "join": 3, "icims": 3, "greenhouse": 2, "smartrecruiters": 2, "ashby": 2}
+_DEFAULT_SHARDS = {"workday": 5, "join": 3, "icims": 3, "greenhouse": 3, "smartrecruiters": 3, "ashby": 3}
 
 
 def shards_for(platform: str) -> int:

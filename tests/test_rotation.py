@@ -8,7 +8,7 @@ from jobmesh.rotation import apply_rotation, shard_of, shards_for
 
 
 def test_workday_rotates_by_default():
-    assert shards_for("workday") == 4
+    assert shards_for("workday") == 5
     assert shards_for("lever") == 1
 
 
@@ -31,7 +31,7 @@ def test_rotation_covers_everything_once_per_n_cycles():
               "lever": ["acme", "beta"]}
     seen = set()
     sizes = []
-    shards = 4
+    shards = shards_for("workday")
     for cycle in range(shards):
         run, info = apply_rotation(boards, cycle)
         # non-rotated platform passes through untouched every cycle
