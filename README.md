@@ -17,6 +17,8 @@ it through a documented API. Each job links back to its original posting.
 
 **MCP server (for AI agents):** listed on the official [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.TatianaTchouakam/jobmesh`. Any MCP client can connect to `https://jobmesh.world/mcp` and call `search_jobs`, `index_stats` and `source_coverage`.
 
+**Also on RapidAPI:** the same API is published on [RapidAPI](https://rapidapi.com/jobmesh/api/jobmesh) — a free Basic plan (1,000 requests/month) and a Pro plan (100,000 requests/month).
+
 > 🚧 **Work in progress** – growing towards the goal of **78 platform types**.
 
 ### Current status
@@ -41,6 +43,7 @@ current figures.
 | Platforms | 67 / 78 live, each with the exact reason if not |
 | Refresh | every 4 h, shown per state |
 | Search API | ✅ documented at [/api](https://jobmesh.world/api) |
+| RapidAPI listing | ✅ [rapidapi.com/jobmesh](https://rapidapi.com/jobmesh/api/jobmesh) (free + Pro) |
 | MCP server | ✅ official MCP Registry |
 | CSV **and** JSON feed | ✅ `/export.csv` + `/export.json` |
 | Deduplicated | ✅ |
