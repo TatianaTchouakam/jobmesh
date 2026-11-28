@@ -390,6 +390,13 @@ def run_heavy_migration(db_path: str = DEFAULT_DB) -> float:
         t = _time.time()
         with session(db_path) as conn:
             migrate_heavy(conn)
+            # Fresh FTS has no query-planner stats until the next cycle-end
+            # optimize (~hours away), which makes search pick poor plans right
+            # after a deploy. Refresh stats now, as soon as the index is rebuilt.
+            try:
+                conn.execute("PRAGMA optimize")
+            except Exception:
+                pass
         _HEAVY_DONE.add(db_path)
         took = _time.time() - t
         log.info("heavy migration complete for %s in %.1fs", db_path, took)
